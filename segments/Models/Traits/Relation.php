@@ -51,6 +51,23 @@ trait Relation
         ]);
     }
 
+    // public function parallelTo($relatedModel, $foreignKey = null, $localKey = null)
+    // {
+    //     $this->setRelationCaption(__FUNCTION__);
+
+    //     $relatedModel = new $relatedModel();
+    //     $foreignKey = (!empty($foreignKey)) ? $foreignKey : Str::singular($relatedModel->table) . '_id';
+    //     $localKey = (!empty($localKey)) ? $localKey : $this->primary_key;
+
+    //     return $relatedModel->where($localKey, $this->$foreignKey)->relationalProps([
+    //         'local_model_obj' => $this->___clearWhere(),
+    //         'related_model' => $relatedModel->___clearWhere(),
+    //         'foreign_key' => $foreignKey,
+    //         'local_key' => $localKey,
+    //         'type' => __FUNCTION__
+    //     ]);
+    // }
+
     public function parallelTo($relatedModel, $foreignKey = null, $localKey = null)
     {
         $this->setRelationCaption(__FUNCTION__);
@@ -60,10 +77,7 @@ trait Relation
         $localKey = (!empty($localKey)) ? $localKey : $this->primary_key;
 
         return $relatedModel->where($localKey, $this->$foreignKey)->relationalProps([
-            'local_model_obj' => $this->___clearWhere(),
-            'related_model' => $relatedModel->___clearWhere(),
-            'foreign_key' => $foreignKey,
-            'local_key' => $localKey,
+            'related_model' => $relatedModel->___clearWhere()->where($localKey, $this->$foreignKey),
             'type' => __FUNCTION__
         ]);
     }

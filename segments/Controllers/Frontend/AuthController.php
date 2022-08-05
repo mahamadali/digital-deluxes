@@ -22,11 +22,11 @@ class AuthController
 		$password = $request->password;
 
 		$user = User::where('email', $email)->where('password', md5($password))->with('role')->first();
-		if ( !empty($user) ) {
+		if (!empty($user) ) {
 			Session::set('auth', $user);
 			return $this->redirectAfterLogin($user);
 		} else {
-			return redirect()->to(route('auth.login'))->withFlashError('Incorrect credentials!')->go();
+			return redirect()->to(route('frontend.auth.login'))->withFlashError('Incorrect credentials!')->go();
 		}
 	}
 
@@ -45,7 +45,7 @@ class AuthController
 			return redirect()->to(route('admin.dashboard'))->go();
 			break;
 			case 'user':
-			return redirect()->to(route('user.dashboard'))->go();
+			return redirect()->to(route('frontend.home'))->go();
 			break;
 			default:
 			return Engine::error([

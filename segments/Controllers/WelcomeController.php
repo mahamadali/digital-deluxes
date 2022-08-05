@@ -16,4 +16,14 @@ class WelcomeController
 		Session::remove('auth');
 		return redirect()->to(route('frontend.auth.login'))->go();
 	}
+
+    public function Profile(Request $request) {
+        return render('frontend/profile');
+	}
+
+    public function Store(Request $request) {
+        return render('frontend/store');
+	}
+    
+    
 }

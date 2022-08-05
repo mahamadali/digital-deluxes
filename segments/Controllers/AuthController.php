@@ -9,9 +9,6 @@ use Mail\WelcomeEmail;
 use Jolly\Engine;
 use Models\Role;
 use Models\User;
-use Models\PracticeArea;
-use Models\UserPracticeArea;
-use Models\City;
 
 class AuthController
 {
@@ -81,8 +78,9 @@ class AuthController
 		$validator = $request->validate([
             'first_name' => 'required',
             'last_name' => 'required',
-            'law_firm' => 'required',
-            'email' => 'required|unique:users,email'
+            'phone' => 'required',
+            'email' => 'required|unique:users,email',
+			'password' => 'required',
         ],[
             'email.unique' => 'Email must be unique'
         ]);
@@ -95,20 +93,14 @@ class AuthController
 		$user->first_name = $request->first_name;
 		$user->last_name = $request->last_name;
 		$user->email = $request->email;
-		$user->city_id = $request->city_id;
-		$user->law_firm = $request->law_firm;
+		$user->phone = $request->phone;
+		$user->password = md5($request->password);
 		$user->role_id = Role::where('name', 'user')->first()->id;
 		$user = $user->save();
 
-		foreach($request->practice_areas as $key => $practice_area) {
-			$user_practice_area = new UserPracticeArea();
-			$user_practice_area->user_id = $user->id;
-			$user_practice_area->practice_area_id = ($practice_area == 'other') ? NULL : $practice_area;
-			$user_practice_area->other = $request->other_practice_area[$key];
-			$user_practice_area->save();
-		}
+		
 
-		Alert::as(new WelcomeEmail(User::where('id', $user->id)->with('city')->first()))->notify();
+		Alert::as(new WelcomeEmail(User::where('id', $user->id)->first()))->notify();
 
 		return response()->json([
 				'status' => 200,

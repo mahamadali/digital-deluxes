@@ -69,15 +69,21 @@
                                 <li><a href="http://www.twitter.com"><img src="assets/img/twitter.svg" alt="twitter"></a></li>
                             </ul>
                         </div> -->
+                        
                         <div class="form-login__box">
                             <!-- <div class="uk-heading-line uk-text-center"><span>or with Email</span></div> -->
-                            <form action="#!">
-                                <div class="uk-margin"><input class="uk-input" type="email" placeholder="Email"></div>
-                                <div class="uk-margin"><input class="uk-input" type="text" placeholder="Username"></div>
-                                <div class="uk-margin"><input class="uk-input" type="password" placeholder="Password"></div>
-                                <div class="uk-margin"><button class="uk-button uk-button-danger uk-width-1-1" type="button">Register</button></div>
-                                <div class="uk-text-center"><span>Already have an account?</span><a class="uk-margin-small-left" href="01_login-in.html">Log In</a></div>
+                            <form  method="post" action="{{ route('auth.register') }}" name="register">
+					  	        {{ prevent_csrf() }}
+                                <div class="uk-margin"><input class="uk-input" type="text" name="first_name" placeholder="Enter First Name"></div>
+                                <div class="uk-margin"><input class="uk-input" type="text" name="last_name" placeholder="Enter Last Name"></div>
+                                <div class="uk-margin"><input class="uk-input" type="text" name="phone" placeholder="Enter Phone Number"></div>
+                                <div class="uk-margin"><input class="uk-input" type="email" name="email" placeholder="Enter Email"></div>
+                                <div class="uk-margin"><input class="uk-input" type="password" name="password" placeholder="Password"></div>
+                                <div class="uk-margin"><button class="uk-button uk-button-danger uk-width-1-1" type="submit">Register</button></div>
+                                <div class="uk-text-center"><span>Already have an account?</span><a class="uk-margin-small-left" href="{{ url('login') }}">Log In</a></div>
                             </form>
+
+                            <div id="messages"></div>
                         </div>
                     </div>
                 </div>
@@ -87,6 +93,72 @@
 
     <script src="{{ url('assets/frontend/js/libs.js') }}"></script>
     <script src="{{ url('assets/frontend/js/main.js') }}"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+
+    <script>
+         $("form[name='register']").validate({
+            rules: {
+                first_name: {
+                    required: true
+                },
+                last_name: {
+                    required: true
+                },
+                phone: {
+                    required: true
+                },
+                email: {
+                    required: true,
+                    email: true
+                },
+                password: {
+                    required: true,
+                }
+            },
+            messages: {
+                email: "Please enter a valid email address",
+                password: {
+                    required: "Please enter password",
+                }
+            },
+            submitHandler: function(form) {
+                $(form).find('button[type="submit"]').html('<i class="fa fa-spinner fa-spin"></i>Processing...');
+                $(form).find('button[type="submit"]').prop('disabled', true);
+
+                $.ajax({
+                url : '{{route("auth.register")}}',
+                type : 'POST',
+                data : $(form).serializeArray(),
+                dataType: 'json',
+                success: function(response) {
+
+                    $(form).find('button[type="submit"]').html('Sign Up');
+                    $(form).find('button[type="submit"]').prop('disabled', false);
+
+                    $('#messages').html('');
+                    if(response.status == 304) {
+                        response.errors.forEach(error => {
+                            $('#messages').append('<p align="center" style="color:red;">'+error+'</p>');
+                        });
+                    }
+
+                    if(response.status == 200) {
+                        $('#messages').append('<p align="center" style="color:green;">'+response.message+'</p>');
+                        form.reset();
+                        document.cookie = 'city_id=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                    }
+                },
+                error: function() {
+                    $(form).find('button[type="submit"]').html('Sign Up');
+                    $(form).find('button[type="submit"]').prop('disabled', false);
+                }
+                });
+                
+                }
+            });
+    </script>    
+
+
 </body>
 
 </html>

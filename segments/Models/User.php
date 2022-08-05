@@ -13,6 +13,7 @@ class User extends Model
 
 	protected $table = 'users';
 	protected $attaches = ['full_name'];
+	protected $with = ['role'];
 
 	protected $defaults = [];
 

@@ -68,15 +68,22 @@
                             </ul>
                         </div> -->
                         <div class="form-login__box">
+                        @if (session()->hasFlash('error')):
+                            <div class="alert alert-danger">
+                                <span>{{ session()->flash('error') }}</span>
+                            </div>
+                        @endif
                             <!-- <div class="uk-heading-line uk-text-center"><span>or with Email</span></div> -->
-                            <form action="#!">
-                                <div class="uk-margin"><input class="uk-input" type="text" placeholder="Username"></div>
-                                <div class="uk-margin"><input class="uk-input" type="password" placeholder="Password"></div>
-                                <div class="uk-margin"><a class="uk-button uk-button-danger uk-width-1-1" href="03_home.html">Log In</a></div>
+                            <form  method="post" action="{{ route('frontend.auth.check.login') }}" name="login">
+					  	        {{ prevent_csrf() }}
+                                <div class="uk-margin"><input class="uk-input" type="email" name="email" placeholder="Email" required></div>
+                                <div class="uk-margin"><input class="uk-input" type="password" name="password" placeholder="Password" required></div>
+                                <div class="uk-margin"><button class="uk-button uk-button-danger uk-width-1-1" type="submit">Log In</button></div>
                                 <div class="uk-margin uk-text-center"><a href="01_login-in.html">Forgotten password?</a></div>
                                 <hr>
-                                <div class="uk-text-center"><span>Don’t have an account?</span><a class="uk-margin-small-left" href="02_register.html">Register</a></div>
+                                <div class="uk-text-center"><span>Don’t have an account?</span><a class="uk-margin-small-left" href="{{ url('sign-up') }}">Register</a></div>
                             </form>
+                            <div id="messages"></div>
                         </div>
                     </div>
                 </div>
@@ -86,6 +93,62 @@
 
     <script src="{{ url('assets/frontend/js/libs.js') }}"></script>
     <script src="{{ url('assets/frontend/js/main.js') }}"></script>
+    <!-- <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+
+    <script>
+         $("form[name='login']").validate({
+            rules: {
+                email: {
+                    required: true,
+                    email: true
+                },
+                password: {
+                    required: true,
+                }
+            },
+            messages: {
+                email: "Please enter a valid email address",
+                password: {
+                    required: "Please enter password",
+                }
+            },
+            submitHandler: function(form) {
+                $(form).find('button[type="submit"]').html('<i class="fa fa-spinner fa-spin"></i>Processing...');
+                $(form).find('button[type="submit"]').prop('disabled', true);
+
+                $.ajax({
+                url : '{{route("frontend.auth.check.login")}}',
+                type : 'POST',
+                data : $(form).serializeArray(),
+                dataType: 'json',
+                success: function(response) {
+
+                    $(form).find('button[type="submit"]').html('Login');
+                    $(form).find('button[type="submit"]').prop('disabled', false);
+
+                    $('#messages').html('');
+                    if(response.status == 304) {
+                        response.errors.forEach(error => {
+                            $('#messages').append('<p align="center" style="color:red;">'+error+'</p>');
+                        });
+                    }
+
+                    if(response.status == 200) {
+                        $('#messages').append('<p align="center" style="color:green;">'+response.message+'</p>');
+                        form.reset();
+                        document.cookie = 'city_id=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                    }
+                },
+                error: function() {
+                    $(form).find('button[type="submit"]').html('Login');
+                    $(form).find('button[type="submit"]').prop('disabled', false);
+                }
+                });
+                
+                }
+            });
+    </script>     -->
+
 </body>
 
 </html>
