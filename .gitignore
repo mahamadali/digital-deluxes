@@ -4,6 +4,3 @@ settings/app.php
 settings/database.php
 settings/alert.php
 compiler/builds/
-settings/mail.php
-settings/alert.php
-settings/paypal.php
