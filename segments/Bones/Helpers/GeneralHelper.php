@@ -1,4 +1,6 @@
 <?php
+
+use Bones\Str;
 use Models\User;
 
 if (! function_exists('generateOTP')) {
@@ -63,5 +65,39 @@ if (! function_exists('dd')) {
         echo "<pre>";
         print_r($data);
         exit;
+    }
+}
+
+if (! function_exists('callKinguinApi')) {
+    function callKinguinApi($url, $params = [], $type = 'GET')
+    {
+        $ch = curl_init();
+
+        $url = setting('kinguin.endpoint') . $url;
+        if (!empty($params)){
+            $url .= '?' . http_build_query($params); 
+        }
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $type);
+        
+        $headers = array();
+        $headers[] = 'X-Api-Key: '.setting('kinguin.api_key');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        
+        $response = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            throw new Exception('Curl: ' . curl_error($ch) . ' on ' . $url);
+        }
+
+        if (!Str::isJson($response)) {
+            return false;
+        }
+
+        curl_close($ch);
+        
+        return json_decode($response);
     }
 }
