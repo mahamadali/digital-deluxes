@@ -101,3 +101,31 @@ if (! function_exists('callKinguinApi')) {
         return json_decode($response);
     }
 }
+
+if (! function_exists('isPageWithQueryString')) {
+    function isPageWithQueryString()
+    {
+        $url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+        if(strpos($url,'?') !== false) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+if (! function_exists('currentPageFullURL')) {
+    function currentPageFullURL($exclude = [])
+    {
+        $params = [];
+        parse_str($_SERVER['QUERY_STRING'], $params);
+        if (!empty($exclude)) {
+            foreach ($params as $param => $value) {
+                if (in_array($param, $exclude)) {
+                    unset($params[$param]);
+                }
+            }
+        }
+        return $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'].strtok($_SERVER["REQUEST_URI"], '?').'?'.http_build_query($params);
+    }
+}

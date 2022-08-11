@@ -2,6 +2,7 @@
 
 namespace Jolly;
 
+use Bones\Str;
 use JollyException\FileNotFound;
 use Models\Base\Model;
 use Models\User;
@@ -38,14 +39,23 @@ class Engine
             ]);
         }
 
-        foreach ($data as &$with) {
+        foreach ($data as $setKey => &$with) {
             if (is_array($with)) {
                 $tmpWith = [];
-                foreach ($with as $withSet) {
+                foreach ($with as $key => $withSet) {
                     if (is_object($withSet) && is_subclass_of($withSet, Model::class)) {
                         $tmpWith[] = $withSet;
                     } else {
-                        $tmpWith = json_decode(json_encode($with));
+                        if (count($with) != count($with, COUNT_RECURSIVE)) {
+                            if (Str::containsWord($key, ['__pagination'])) {
+                                $data[$setKey.$key] = (gettype($withSet) == 'array') ? json_decode(json_encode($withSet)) : $withSet;
+                                unset($with[$key]);
+                            } else {
+                                $tmpWith[] = (gettype($withSet) == 'array') ? json_decode(json_encode($withSet)) : $withSet;
+                            }
+                        } else {
+                            $tmpWith = json_decode(json_encode($with));
+                        }
                     }
                 }
                 $with = $tmpWith;

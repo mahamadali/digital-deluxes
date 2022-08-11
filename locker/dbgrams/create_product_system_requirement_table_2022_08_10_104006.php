@@ -6,7 +6,7 @@ use Bones\Skeletons\DataWing\Skeleton;
 return new class 
 {
 
-	protected $table = 'product_genres';
+	protected $table = 'product_system_requirement';
 
 	public function arise()
 	{
@@ -14,7 +14,8 @@ return new class
 		{
 			$table->id()->primaryKey();
 			$table->unsignedBigInteger('product_id');
-			$table->string('name');
+			$table->string('system');
+			$table->text('requirement');
 			$table->timestamps();
 			return $table;
 		});

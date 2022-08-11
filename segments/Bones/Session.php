@@ -98,6 +98,7 @@ class Session
     public static function appendSet(string $key, $value, bool $reserved = false)
     {
         $existingSet = (self::has($key, $reserved)) ? self::get($key, $reserved) : [];
+        
 
         if (!is_array($existingSet)) {
             throw new Exception('Session: appendSet() can only be applied on array');

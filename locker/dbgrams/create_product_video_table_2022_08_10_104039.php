@@ -6,7 +6,7 @@ use Bones\Skeletons\DataWing\Skeleton;
 return new class 
 {
 
-	protected $table = 'product_publishers';
+	protected $table = 'product_video';
 
 	public function arise()
 	{
@@ -15,6 +15,7 @@ return new class
 			$table->id()->primaryKey();
 			$table->unsignedBigInteger('product_id');
 			$table->string('name');
+			$table->string('video_id');
 			$table->timestamps();
 			return $table;
 		});

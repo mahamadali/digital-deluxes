@@ -551,6 +551,11 @@ class Model extends Database
         return $this;
     }
 
+    public function ___paginate($pageLimit = 0, $page = 1, $fields = null)
+    {
+        return $this->db->paginate($pageLimit, $page, $fields, $this->table);
+    }
+
     public function ___makeUnique($attr)
     {
         if (!empty($this->$attr) && is_array($this->$attr)) {

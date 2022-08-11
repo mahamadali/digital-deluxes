@@ -32,6 +32,13 @@ return new class
 			$table->unsignedBigInteger('totalQty');
 			$table->string('ageRating');
 			$table->string('steam');
+			$table->text('cheapestOfferId');
+			$table->text('languages');
+			$table->text('tags');
+			$table->text('merchantName');
+			$table->text('developers');
+			$table->text('publishers');
+			$table->text('genres');
 			$table->timestamps();
 			return $table;
 		});

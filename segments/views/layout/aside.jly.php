@@ -10,7 +10,7 @@
             <li><a href="07_friends.html"><i class="ico_friends"></i><span>Friends</span></a></li>
             <li><a href="08_wallet.html"><i class="ico_wallet"></i><span>Wallet</span></a></li> -->
             <li class="uk-nav-header">Main</li>
-            <li><a href="{{ route('frontend.store') }}"><i class="ico_store"></i><span>Store</span></a></li>
+            <li><a href="{{ route('frontend.store.list') }}"><i class="ico_store"></i><span>Store</span></a></li>
             <!-- <li><a href="11_market.html"><i class="ico_market"></i><span>Market</span></a></li>
             <li><a href="12_streams.html"><i class="ico_streams"></i><span>Streams</span></a></li>
             <li><a href="13_community.html"><i class="ico_community"></i><span>Community</span></a></li> -->

@@ -2669,7 +2669,7 @@ class Database
      * @return array
      * @throws Exception
      */
-    public static function paginate($pageLimit = 0, $page = 1, $fields = null, $table = '')
+    public static function __paginate($pageLimit = 0, $page = 1, $fields = null, $table = '')
     {
         if (empty($table)) $table = self::$_tableName;
         if (empty($pageLimit)) $pageLimit = self::$pageLimit;

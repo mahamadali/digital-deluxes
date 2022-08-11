@@ -9,6 +9,7 @@ class IsFrontNotAuthenticated
 {
 	public function check(Request $request)
 	{
+		
 		if(Session::has('auth')) {
 			return redirect()->to(route('frontend.home'))->go();
 		}

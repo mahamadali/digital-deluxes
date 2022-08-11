@@ -20,10 +20,6 @@ class WelcomeController
     public function Profile(Request $request) {
         return render('frontend/profile');
 	}
-
-    public function Store(Request $request) {
-        return render('frontend/store');
-	}
     
     
 }
