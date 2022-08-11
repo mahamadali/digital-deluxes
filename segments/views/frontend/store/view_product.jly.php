@@ -1,11 +1,15 @@
 @extends('app')
 
 @block("title") {{ setting('app.title', 'Ali Rocks!') }} @endblock
-
+<style>
+    .grey_text{
+        color:#767676;
+    }
+</style>
 @block("content")
 <main class="page-main">
                 <ul class="uk-breadcrumb">
-                    <li><a href="09_games-store.html"><span data-uk-icon="chevron-left"></span><span>Back to Store</span></a></li>
+                    <li><a href="{{ route('frontend.store.list') }}"><span data-uk-icon="chevron-left"></span><span>Back to Store</span></a></li>
                     <li><span>{{ $product->name }}</span></li>
                 </ul>
                 <h3 class="uk-text-lead">{{ $product->name }}</h3>
@@ -92,11 +96,16 @@
 
                                 <li>
                                     <div>Platforms:</div>
-                                    <div class="game-card__platform">{{ $product->platform }}</div>
+                                    <div>{{ $product->platform }}</div>
                                 </li>
 
                                 <li>
-                                    <div>Activation Details:</div>
+                                    <div><b>Activation Details:</b></div>
+                                 
+                                </li>
+
+                                <li>
+                                    <div></div>
                                     <div>{{ $product->activationDetails }}</div>
                                 </li>
                                 
@@ -105,12 +114,12 @@
                             </ul>
                             
                             @if(!empty($product->systemRequirements())):
-                            <div>System Requirement:</div>
+                            <div><b class="grey_text">System Requirement:</b></div>
 
                             <ul class="game-profile-card__type">
                                 <li>
                                     @foreach($product->systemRequirements() as $system_requirement):
-                                    <div class="game-card__platform">{{ $system_requirement->system }}</div>
+                                    <div><b>{{ $system_requirement->system }}</b></div>
                                     <div>{{ $system_requirement->requirement ? implode(', ',json_decode($system_requirement->requirement)) : 'N/A' }}</div>
                                     @endforeach
                                 </li>

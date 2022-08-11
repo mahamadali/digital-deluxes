@@ -20,17 +20,24 @@ class StoreController
         $products = Product::orderBy('id','ASC');
 
         $name = $request->get("name") ?? '';
-		$price = $request->get("price") ?? '';
+		$min_price = $request->get("min_price") ?? '';
+		$max_price = $request->get("max_price") ?? '';
 
         if($name){
 			$products = $products->where('name', '%'.$name.'%', 'LIKE');
         }
 
-		if($price){
-            $products = $products->where('price', $price);
+		
+
+		if($min_price){
+            $products = $products->where('price', (int) $min_price, '>=');
         }
 
-		$product_limit = 10;
+		if($max_price){
+            $products = $products->where('price', (int) $max_price, '<=');
+        }
+
+		$product_limit = 12;
         $products = $products->paginate($product_limit, $page);
 
         return render('frontend/store/index', [

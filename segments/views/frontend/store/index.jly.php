@@ -26,19 +26,25 @@
                     <div class="search">
                         <div class="search__input"><i class="ico_search"></i>
                         <input type="search" name="name" placeholder="Search" value="{{ $_GET['name'] ?? '' }}"></div>
-                        <!-- <div class="search__btn"><button type="button"><i class="ico_microphone"></i></button></div> -->
                     </div>
                 </div>
 
-                <div class="uk-width-1-2">
+                <div class="uk-width-1-3">
                     <div class="search">
                         <div class="search__input">
-                        <input type="text" name="price" placeholder="Price" value="{{ $_GET['price'] ?? '' }}"></div>
+                        <input type="text" name="min_price" placeholder="Min Price" value="{{ $_GET['min_price'] ?? '' }}"></div>
+                    </div>
+                </div>
+
+                <div class="uk-width-1-3">
+                    <div class="search">
+                        <div class="search__input">
+                        <input type="text" name="max_price" placeholder="Max Price" value="{{ $_GET['max_price'] ?? '' }}"></div>
                     </div>
                 </div>
 
                 
-                <div class="uk-width-1-2">
+                <div class="uk-width-1-3">
                     <div class="">
                              <button class="search_btn" type="submit">Search</button>
                     </div>
