@@ -3,7 +3,7 @@
         <ul class="uk-nav">
             <li class="uk-active"><a href="{{ route('frontend.home') }}"><i class="ico_home"></i><span>Home</span></a></li>
             <li class="uk-nav-header">Account</li>
-            <li><a href="{{ route('frontend.profile') }}"><i class="ico_profile"></i><span>Profile</span></a></li>
+            <li><a href="{{ route('frontend.profile.index') }}"><i class="ico_profile"></i><span>Profile</span></a></li>
             <li><a href="{{ route('frontend.logout') }}"><i class="ico_arrow-circle-left"></i><span>Logout</span></a></li>
             <!-- <li><a href="05_favourites.html"><i class="ico_favourites"></i><span>Favourites</span><span class="count">15</span></a></li>
             <li><a href="06_chats.html"><i class="ico_chats"></i><span>Chats</span></a></li>

@@ -50,6 +50,7 @@
             <div class="page-content">
                 @include('layout/aside')
                 @plot('content')
+                @include('layout/alert')
             </div>
         </div>
         @plot('popup')
