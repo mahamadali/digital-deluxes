@@ -17,7 +17,8 @@ class Response
             }
         }
 
-        echo json_encode(self::$response); 
+        echo json_encode(self::$response);
+        exit;
     }
     
     public static function format($contentType = 'text/html')

@@ -90,6 +90,12 @@ class WelcomeController
 		}
 
 	}
+
+	public function wishlist(Request $request) {
+		return render('frontend/wishlist', [
+			'wishlists' => user()->wishlists
+		]);
+	}
     
     
 }

@@ -14,13 +14,18 @@ class User extends Model
 
 	protected $table = 'users';
 	protected $attaches = ['full_name'];
-	protected $with = ['role'];
+	protected $with = ['role', 'wishlists'];
 
 	protected $defaults = [];
 
 	public function role() 
 	{
 		return $this->parallelTo(Role::class, 'role_id');
+	}
+
+	public function wishlists() 
+	{
+		return $this->hasMany(UserWishlist::class, 'user_id')->orderBy('id');
 	}
 
 	public function getFullNameProperty()
