@@ -21,6 +21,7 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
   Router::bunch('/cart', ['as' => 'cart.'], function () {
     Router::get('/', [CartController::class, 'index'])->name('index');
     Router::get('/add/{product_id}', [CartController::class, 'addToCart'])->name('add');
+    Router::get('/remove/{cart_id}', [CartController::class, 'removeToCart'])->name('remove');
   });
 
 

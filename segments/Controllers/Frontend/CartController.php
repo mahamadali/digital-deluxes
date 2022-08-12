@@ -39,4 +39,13 @@ class CartController
 
 		return redirect()->withFlashSuccess('Add To Cart added successfully!')->with('old', $request->all())->back();
 	}
+
+	public function removeToCart(Request $request,$cart_id)
+	{
+		Cart::where('id',$cart_id)->where('user_id',auth()->id)->delete();
+
+		return redirect()->withFlashSuccess('Product removed from cart successfully!')->with('old', $request->all())->back();
+
+		
+	}
 }
