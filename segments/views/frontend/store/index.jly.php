@@ -65,7 +65,7 @@
         <div>
             <div class="game-card">
                 <div class="game-card__box">
-                    <div class="game-card__media"><a href="{{ url('store/view/'.$product->id) }}"><img src="{{ $product->coverImageOriginal }}" alt="Struggle of Rivalry" /></a></div>
+                    <div class="game-card__media"><a href="{{ url('store/view/'.$product->id) }}"><img src="{{ $product->coverImageOriginal }}" alt="{{ $product->name }}" /></a></div>
                     <div class="game-card__info"><a class="game-card__title" href="{{ url('frontend/store/view/'.$product->id) }}"> {{ $product->name }}</a>
                         <div class="game-card__genre">{{ $product->platform }}</div>
                         <div class="game-card__rating-and-price">

@@ -28,4 +28,13 @@ class Product extends Model
     public function systemRequirements(){
 		return $this->hasMany(ProductSystemRequirement::class, 'product_id')->get();
 	}
+
+	public function isInWishlist() {
+		$product_id = $this->id;
+		$wishlist = UserWishlist::where('user_id', auth()->id)->where('product_id', $product_id)->first();
+		if(!empty($wishlist)) {
+			return true;
+		}
+		return false;
+	}
 }

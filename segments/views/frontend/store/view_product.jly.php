@@ -137,9 +137,62 @@
                             
                         </div>
                         <div class="game-profile-price">
-                            <div class="game-profile-price__value">${{ $product->price }} USD</div><button class="uk-button uk-button-danger uk-width-1-1" type="button"><span class="ico_shopping-cart"></span><span>Buy Now</span></button><button class="uk-button uk-button-primary uk-width-1-1" type="button"><span class="ico_add-square"></span><span>Add to Favourites</span></button>
+                            <div class="game-profile-price__value">${{ $product->price }} USD</div>
+                            <button class="uk-button uk-button-danger uk-width-1-1" type="button">
+                                <span class="ico_shopping-cart"></span><span>Buy Now</span>
+                            </button>
+                            @if($product->isInWishlist()):
+                            <button class="uk-button uk-button-danger uk-width-1-1 remove_from_fav" data-url="{{ route('frontend.store.remove-from-fav', ['product' => $product->id]) }}" type="button">
+                                <span class="ico_favourites"></span><span>Remove From Wishlist</span>
+                            </button>
+                            @else
+                            <button class="uk-button uk-button-primary uk-width-1-1 add_to_fav" data-url="{{ route('frontend.store.add-to-fav', ['product' => $product->id]) }}" type="button">
+                                <span class="ico_favourites"></span><span>Add to Wishlist</span>
+                            </button>
+                            @endif
+                            <div id="messages"></div>
                         </div>
                     </div>
                 </div>
             </main>
+@endblock
+
+@block('scripts')
+<script>
+    $(document).ready(function() {
+        $(document).on('click', '.add_to_fav', function() {
+            var obj = $(this);
+            $.ajax({
+                url : $(this).data('url'),
+                type : 'POST',
+                data: {
+                    'prevent_csrf_token': '{{ prevent_csrf_token() }}'
+                },
+                dataType: 'json',
+                success: function(response) {
+                    $('#messages').html('<p align="center" style="color:green;">'+response.message+'</p>');
+                    $(obj).after('<button class="uk-button uk-button-danger uk-width-1-1 remove_from_fav" data-url="{{ route('frontend.store.remove-from-fav', ['product' => $product->id]) }}" type="button"><span class="ico_favourites"></span><span>Remove from Wishlist</span></button>');
+                    $(obj).remove();
+                }
+            });
+        });
+
+        $(document).on('click', '.remove_from_fav', function() {
+            var obj = $(this);
+            $.ajax({
+                url : $(this).data('url'),
+                type : 'POST',
+                data: {
+                    'prevent_csrf_token': '{{ prevent_csrf_token() }}'
+                },
+                dataType: 'json',
+                success: function(response) {
+                    $('#messages').html('<p align="center" style="color:green;">'+response.message+'</p>');
+                    $(obj).after('<button class="uk-button uk-button-primary uk-width-1-1 add_to_fav" data-url="{{ route('frontend.store.add-to-fav', ['product' => $product->id]) }}" type="button"><span class="ico_favourites"></span><span>Add to Wishlist</span></button>');
+                    $(obj).remove();
+                }
+            });
+        });
+    });
+</script>
 @endblock

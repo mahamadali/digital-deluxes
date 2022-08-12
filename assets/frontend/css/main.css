@@ -2346,7 +2346,7 @@ a:hover {
     -webkit-transition: all 0.25s linear;
     -o-transition: all 0.25s linear;
     color: #646464;
-    font-size: 6px;
+    font-size: 20px;
     transition: all 0.25s linear;
 }
 
@@ -5516,7 +5516,7 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
 }
 
 
-.my-game-item__more a:before,
+/* .my-game-item__more a:before,
 .game-card__more a:before,
 .item__more a:before {
     content: "";
@@ -5533,7 +5533,7 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     transform: scale(0);
     -webkit-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
-}
+} */
 
 .user-item__more:before,
 .item__more:before {

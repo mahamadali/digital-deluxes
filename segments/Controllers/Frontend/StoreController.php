@@ -6,6 +6,7 @@ namespace Controllers\Frontend;
 use Bones\Request;
 use Bones\Session;
 use Models\Product;
+use Models\UserWishlist;
 
 class StoreController
 {
@@ -52,6 +53,28 @@ class StoreController
 		return render('frontend/store/view_product', [
 			'product' => $product
 		]);
+	}
+
+	public function addToFav(Request $request, Product $product) {
+		$wishlist = UserWishlist::where('user_id', auth()->id)->where('product_id', $product->id)->first();
+		if(!empty($wishlist)) {
+			return response()->json(['status' => 304, 'message' => 'Already in wishlist']);
+		}
+
+		$wishlist = new UserWishlist();
+		$wishlist->user_id = auth()->id;
+		$wishlist->product_id = $product->id;
+		$wishlist->save();
+
+		return response()->json(['status' => 200, 'message' => 'Product added into your wishlists']);
+
+	}
+
+	public function RemoveFromFav(Request $request, Product $product) {
+		$wishlist = UserWishlist::where('user_id', auth()->id)->where('product_id', $product->id)->delete();
+
+		return response()->json(['status' => 200, 'message' => 'Product removed from your wishlists']);
+
 	}
 
 }
