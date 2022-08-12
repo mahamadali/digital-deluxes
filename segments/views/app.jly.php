@@ -14,6 +14,7 @@
         <link rel="stylesheet" href="{{ url('assets/frontend/css/main.css') }}">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
         @plot('styles')
     </head>
     <body class="page-home">
@@ -50,12 +51,13 @@
             <div class="page-content">
                 @include('layout/aside')
                 @plot('content')
-                @include('layout/alert')
             </div>
         </div>
         @plot('popup')
         <script src="{{ url('assets/frontend/js/libs.js') }}"></script>
         <script src="{{ url('assets/frontend/js/main.js') }}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
         @plot('scripts')
+        @include('layout/alert')
     </body>
 </html>

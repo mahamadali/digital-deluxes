@@ -16,7 +16,7 @@
             </div>
           
             <div class="page-header__action">
-               <a class="action-btn" href="06_chats.html"><i class="ico_message"></i><span class="animation-ripple-delay1"></span></a>
+               <a class="action-btn" href="{{ route('frontend.cart.index') }}"><i class="ico_shopping-cart"></i><span class="animation-ripple-delay1">{{ count(auth()->cart_items()) }}</span></a>
                <a class="action-btn" href="07_friends.html"><i class="ico_notification"></i><span class="animation-ripple-delay2"></span></a>
                <a class="profile" href="{{ route('frontend.profile.index') }}">
                @if(!empty($user->profile_image)):

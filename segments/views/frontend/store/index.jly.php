@@ -70,7 +70,7 @@
                         <div class="game-card__genre">{{ $product->platform }}</div>
                         <div class="game-card__rating-and-price">
                             <div class="game-card__price"><span>${{ $product->price }} </span></div>
-                            <div class="game-card__rating add_to_cart" ><i class="ico_shopping-cart"></i></div>
+                            <div class="game-card__rating add_to_cart" ><a href="{{ route('frontend.cart.add',[$product->id]) }}"><i class="ico_shopping-cart"></i></a></div>
                         </div>
                     </div>
                 </div>
