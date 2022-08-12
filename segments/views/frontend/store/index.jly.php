@@ -10,6 +10,9 @@
         border: 1px solid #f46119;
         border-radius: 5%;
     }
+    .add_to_cart{
+        cursor: pointer;
+    }
 </style>
 @block("content")
 <main class="page-main">
@@ -67,6 +70,7 @@
                         <div class="game-card__genre">{{ $product->platform }}</div>
                         <div class="game-card__rating-and-price">
                             <div class="game-card__price"><span>${{ $product->price }} </span></div>
+                            <div class="game-card__rating add_to_cart" ><i class="ico_shopping-cart"></i></div>
                         </div>
                     </div>
                 </div>
