@@ -9,7 +9,7 @@
             <div class="page-header__search">
                <form action="{{ route('frontend.store.list') }}">
                   <div class="search">
-                        <div class="search__input"><i class="ico_search"></i><input type="search" name="name" placeholder="Search" value="{{ $_GET['name'] ?? '' }}"></div>
+                        <div class="search__input"><i class="ico_search"></i><input type="search" name="name" placeholder="{{ trans('store.search') }}" value="{{ $_GET['name'] ?? '' }}"></div>
                         <!-- <div class="search__btn"><button type="button"><i class="ico_search"></i></button></div> -->
                   </div>
                </form>     

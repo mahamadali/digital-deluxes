@@ -9,7 +9,7 @@
 @block("content")
 <main class="page-main">
                 <ul class="uk-breadcrumb">
-                    <li><a href="{{ route('frontend.store.list') }}"><span data-uk-icon="chevron-left"></span><span>Back to Store</span></a></li>
+                    <li><a href="{{ route('frontend.store.list') }}"><span data-uk-icon="chevron-left"></span><span>{{ trans('store.back_to_store') }}</span></a></li>
                     <li><span>{{ $product->name }}</span></li>
                 </ul>
                 <h3 class="uk-text-lead">{{ $product->name }}</h3>
@@ -70,37 +70,37 @@
                                     <div class="game-card__rating"><span>4.7</span><i class="ico_star"></i><span class="rating-vote">(433)</span></div>
                                 </li> -->
                                 <li>
-                                    <div>Release date:</div>
+                                    <div>{{ trans('store.release_date') }}:</div>
                                     <div>{{ $product->releaseDate ? date("d M,Y", strtotime($product->releaseDate)) : 'N/A' }}</div>
                                 </li>
                                 <li>
-                                    <div>Developer:</div>
+                                    <div>{{ trans('store.developer') }}:</div>
                                     <div>{{ $product->developers ? implode(', ',json_decode($product->developers)) : 'N/A' }}</div>
                                 </li>
 
                                 <li>
-                                    <div>Publisher:</div>
+                                    <div>{{ trans('store.publisher') }}:</div>
                                     <div>{{ $product->publishers ? implode(', ',json_decode($product->publishers)) : 'N/A' }}</div>
                                 </li>
 
 
                                 <li>
-                                    <div>Genres:</div>
+                                    <div>{{ trans('store.genres') }}:</div>
                                     <div>{{ $product->genres ? implode(', ',json_decode($product->genres)) : 'N/A' }}</div>
                                 </li>
 
                                 <li>
-                                    <div>Merchant Name:</div>
+                                    <div>{{ trans('store.merchant_name') }}:</div>
                                     <div>{{ $product->merchantName ? implode(', ',json_decode($product->merchantName)) : 'N/A' }}</div>
                                 </li>
 
                                 <li>
-                                    <div>Platforms:</div>
+                                    <div>{{ trans('store.platforms') }}:</div>
                                     <div>{{ $product->platform }}</div>
                                 </li>
 
                                 <li>
-                                    <div><b>Activation Details:</b></div>
+                                    <div><b>{{ trans('store.activation_details') }}:</b></div>
                                  
                                 </li>
 
@@ -114,7 +114,7 @@
                             </ul>
                             
                             @if(!empty($product->systemRequirements())):
-                            <div><b class="grey_text">System Requirement:</b></div>
+                            <div><b class="grey_text">{{ trans('store.system_requirements') }}:</b></div>
 
                             <ul class="game-profile-card__type">
                                 <li>
@@ -139,15 +139,15 @@
                         <div class="game-profile-price">
                             <div class="game-profile-price__value">${{ $product->price }} USD</div>
                             <button class="uk-button uk-button-danger uk-width-1-1" type="button">
-                                <span class="ico_shopping-cart"></span><span>Buy Now</span>
+                                <span class="ico_shopping-cart"></span><span>{{ trans('store.buy_now') }}</span>
                             </button>
                             @if($product->isInWishlist()):
                             <button class="uk-button uk-button-danger uk-width-1-1 remove_from_fav" data-url="{{ route('frontend.store.remove-from-fav', ['product' => $product->id]) }}" type="button">
-                                <span class="ico_favourites"></span><span>Remove From Wishlist</span>
+                                <span class="ico_favourites"></span><span>{{ trans('store.remove_from_wishlist') }}</span>
                             </button>
                             @else
                             <button class="uk-button uk-button-primary uk-width-1-1 add_to_fav" data-url="{{ route('frontend.store.add-to-fav', ['product' => $product->id]) }}" type="button">
-                                <span class="ico_favourites"></span><span>Add to Wishlist</span>
+                                <span class="ico_favourites"></span><span>{{ trans('store.add_to_wishlist') }}</span>
                             </button>
                             @endif
                             <div id="messages"></div>

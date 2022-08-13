@@ -7,7 +7,7 @@
         <div class="uk-width">
             <div class="widjet --filters">
                 <div class="widjet__head">
-                    <h3 class="uk-text-lead">My Wishlits</h3>
+                    <h3 class="uk-text-lead">{{ trans('wishlist.my_wishlists') }}</h3>
                 </div>
             </div>
             @foreach($wishlists as $wishlist):

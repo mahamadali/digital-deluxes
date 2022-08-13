@@ -6,7 +6,7 @@
 <main class="page-main">
     <div class="uk-grid" data-uk-grid>
         <div class="uk-width-2-3@l uk-width-3-3@m uk-width-3-3@s">
-            <h3 class="uk-text-lead">Recommended & Featured</h3>
+            <h3 class="uk-text-lead">{{ trans('homepage.recommended_featured') }}</h3>
             <div class="js-recommend">
                 <div class="swiper">
                     <div class="swiper-wrapper">
@@ -31,7 +31,7 @@
             </div>
         </div>
         <div class="uk-width-1-3@l uk-width-3-3@m uk-width-3-3@s">
-            <h3 class="uk-text-lead">Trending Now</h3>
+            <h3 class="uk-text-lead">{{ trans('homepage.trending_now') }}</h3>
             <div class="js-trending">
                 <div class="swiper">
                     <div class="swiper-wrapper">
@@ -69,7 +69,7 @@
             </div>
         </div>
         <div class="uk-width-1-1">
-            <h3 class="uk-text-lead">Most Popular</h3>
+            <h3 class="uk-text-lead">{{ trans('homepage.most_popular') }}</h3>
             <div class="js-popular">
                 <div class="swiper">
                     <div class="swiper-wrapper">

@@ -17,7 +17,7 @@
                     <div class="uk-width-2-3@l">
                         <div class="widjet --profile">
                             <div class="widjet__head">
-                                <h3 class="uk-text-lead">Profile</h3>
+                                <h3 class="uk-text-lead">{{ trans('profile.profile') }}</h3>
                             </div>
                             <div class="widjet__body">
                                 <div class="user-info">
@@ -27,7 +27,7 @@
                                     
                                     <div class="user-info__box">
                                         <div class="user-info__title">{{ $user->getFullNameProperty() }}</div>
-                                        <div class="user-info__text">Member since {{  date("M Y", strtotime($user->created_at))  }}</div>
+                                        <div class="user-info__text">{{ trans('profile.member_since') }} {{  date("M Y", strtotime($user->created_at))  }}</div>
                                     </div>
                                 </div>
                                 <!-- <a class="uk-button uk-button-danger" href="04_profile.html"><i class="ico_edit"></i><span class="uk-margin-small-left">Edit Profile</span></a> -->
@@ -35,7 +35,7 @@
                         </div>
                         <div class="widjet --bio">
                             <div class="widjet__head">
-                                <h3 class="uk-text-lead">Edit Profile</h3>
+                                <h3 class="uk-text-lead">{{ trans('profile.edit_profile') }}</h3>
                             </div>
                             <div class="widjet__body">
                                 <form method="post" action="{{ route('frontend.profile.update') }}"  enctype="multipart/form-data">
@@ -46,11 +46,11 @@
                                 <div class="uk-margin"><input type="password" class="uk-input" name="password" placeholder="Password"></div>
                                 <div class="uk-margin"><input type="password" class="uk-input" name="confirm_password" placeholder="Confirm Password"></div>
                                 <div class="uk-margin">
-                                    Upload Profile Image: 
+                                    {{ trans('profile.upload_profile_image') }}: 
                                     <input type="file" class="uk-input-file" name="profile_image">
                                     
                                 </div>
-                                <div class="uk-margin"><button class="uk-button uk-button-danger uk-width-1-1" type="submit">Save</button></div>
+                                <div class="uk-margin"><button class="uk-button uk-button-danger uk-width-1-1" type="submit">{{ trans('profile.save') }}</button></div>
                                 </form>
 
                                 @if (session()->hasFlash('error')):

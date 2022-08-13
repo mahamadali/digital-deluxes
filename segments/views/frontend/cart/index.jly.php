@@ -38,7 +38,7 @@
         <div class="uk-width-2-3@l">
             <div class="widjet --filters">
                 <div class="widjet__head">
-                    <h3 class="uk-text-lead">Carts</h3>
+                    <h3 class="uk-text-lead">{{ trans('cart.carts') }}</h3>
                 </div>
             </div>
             <div class="widjet --market">
@@ -49,9 +49,9 @@
                         <div class="widjet-game__media"><a href="#"><img src="{{ $cart->product()->coverImage }}" alt="image"></a></div>
                         <div class="widjet-game__info">
                             <div class="widjet-game__title"><a href="#">{{ $cart->product()->name }}</a></div>
-                            <div class="widjet-game__starting">Price: $<b class="price">{{ $cart->product()->price }}</b></div>
+                            <div class="widjet-game__starting">{{ trans('cart.price') }}: $<b class="price">{{ $cart->product()->price }}</b></div>
                             <div class="widjet-game__quantity">
-                                Quantity:<input type="text"  class="uk-input quantity" value="{{ $cart->product_qty }}" style="height:35px;width:100px;">
+                                {{ trans('cart.quantity') }}:<input type="text"  class="uk-input quantity" value="{{ $cart->product_qty }}" style="height:35px;width:100px;">
                                 </div>
                         </div>
 
@@ -67,23 +67,23 @@
         <div class="uk-width-1-3@l">
             <div class="widjet --upload">
                 <div class="widjet__head">
-                    <h3 class="uk-text-lead">CHECKOUT</h3>
+                    <h3 class="uk-text-lead">{{ trans('cart.checkout') }}</h3>
                 </div>
                 <div class="custom__body">
                  <div class="col-custom-row-12">
                     <div class="col-custom-12">
-                         Subtotal  <b class="custom-right subtotal_count">100</b>
+                         {{ trans('cart.subtotal') }}  <b class="custom-right subtotal_count">100</b>
                     </div>
                  </div>
 
                  <div class="col-custom-row-12">
                     <div class="col-custom-12">
-                         Total  <b class="custom-right total_count">100</b>
+                         {{ trans('cart.total') }}  <b class="custom-right total_count">100</b>
                     </div>
                  </div>
                  <div class="col-custom-row-12">
                     <div class="col-custom-12">
-                        <button class="uk-button uk-button-secondary custom-center" type="button" style="width: 100%;">CHECKOUT</button></div> 
+                        <button class="uk-button uk-button-secondary custom-center" type="button" style="width: 100%;">{{ trans('cart.checkout') }}</button></div> 
                     </div>
                  </div>
                 </div>

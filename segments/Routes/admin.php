@@ -1,12 +1,12 @@
 <?php
 
 use Bones\Router;
+use Bones\Request;
 use Controllers\Backend\DashboardController;
 use Controllers\Backend\UserController;
 use Controllers\AuthController;
 use Barriers\Admin\IsAuthenticated;
 use Controllers\Backend\SettingController;
-
 
 
 Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]], function() {
@@ -20,6 +20,10 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 		Router::get('/list', [ SettingController::class, 'index' ])->name('list');
 		Router::post('/update', [ SettingController::class, 'update' ])->name('update');
 	});
+});
+
+Router::get('/language/{lang}', function(Request $request, $lang) {
+	session()->setLanguage($lang);
 });
 
 Router::get('/logout', [ AuthController::class, 'logout' ])->name('auth.logout');

@@ -18,7 +18,7 @@
 <main class="page-main">
     <div class="widjet --filters">
         <div class="widjet__head">
-            <h3 class="uk-text-lead">Games Store</h3>
+            <h3 class="uk-text-lead">{{ trans('store.game_store') }}</h3>
         </div>
         <div class="widjet__body">
         <form>
@@ -28,28 +28,28 @@
                 <div class="uk-width-1-1">
                     <div class="search">
                         <div class="search__input"><i class="ico_search"></i>
-                        <input type="search" name="name" placeholder="Search" value="{{ $_GET['name'] ?? '' }}"></div>
+                        <input type="search" name="name" placeholder="{{ trans('store.search') }}" value="{{ $_GET['name'] ?? '' }}"></div>
                     </div>
                 </div>
 
                 <div class="uk-width-1-3">
                     <div class="search">
                         <div class="search__input">
-                        <input type="text" name="min_price" placeholder="Min Price" value="{{ $_GET['min_price'] ?? '' }}"></div>
+                        <input type="text" name="min_price" placeholder="{{ trans('store.min_price') }}" value="{{ $_GET['min_price'] ?? '' }}"></div>
                     </div>
                 </div>
 
                 <div class="uk-width-1-3">
                     <div class="search">
                         <div class="search__input">
-                        <input type="text" name="max_price" placeholder="Max Price" value="{{ $_GET['max_price'] ?? '' }}"></div>
+                        <input type="text" name="max_price" placeholder="{{ trans('store.max_price') }}" value="{{ $_GET['max_price'] ?? '' }}"></div>
                     </div>
                 </div>
 
                 
                 <div class="uk-width-1-3">
                     <div class="">
-                             <button class="search_btn" type="submit">Search</button>
+                             <button class="search_btn" type="submit">{{ trans('store.search') }}</button>
                     </div>
                 </div>
             <div>
