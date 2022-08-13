@@ -9,6 +9,7 @@
         <meta name="HandheldFriendly" content="true">
         <meta name="format-detection" content="telephone=no">
         <meta content="IE=edge" http-equiv="X-UA-Compatible">
+        <meta name="token" content="{{ prevent_csrf_token() }}">
         <link rel="shortcut icon" href="{{ url('assets/frontend/img/favicon.png') }}" type="image/x-icon">
         <link rel="stylesheet" href="{{ url('assets/frontend/css/libs.min.css') }}">
         <link rel="stylesheet" href="{{ url('assets/frontend/css/main.css') }}">
@@ -18,8 +19,9 @@
         @plot('styles')
     </head>
     <body class="page-home">
-
-        <input id="toggle" type="checkbox">
+        
+        <a class="action-btn floating-cart-widget" id="cd-cart-trigger" href="Javascript:void(0);" class="floating-cart-widget"><i class="ico_shopping-cart"></i><span class="animation-ripple-delay1">{{ count(auth()->cart_items()) }}</span></a>
+        <!-- <input id="toggle" type="checkbox"> -->
         <script type="text/javascript">
             document.getElementById("toggle").addEventListener("click", function() {
                 document.getElementsByTagName('body')[0].classList.toggle("dark-theme");
@@ -54,9 +56,49 @@
             </div>
         </div>
         @plot('popup')
+        @include('frontend/popups')
         <script src="{{ url('assets/frontend/js/libs.js') }}"></script>
         <script src="{{ url('assets/frontend/js/main.js') }}"></script>
+        <script src="{{ url('assets/frontend/js/general-func.js') }}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+        <script type="text/javascript" src="https://checkout.wompi.co/widget.js"></script>
+
+        <script>
+        var cartTotal = '{{ exchangeRate(cartTotal(), "EUR", "COP") }}';
+        
+        if(cartTotal > 0) {
+            var checkout = new WidgetCheckout({
+            currency: 'COP',
+            amountInCents: '{{ exchangeRate(cartTotal(), "EUR", "COP") * 100 }}',
+            reference: '{{ random_strings(12) }}',
+            publicKey: '{{ setting("wompi.PUB_KEY") }}',
+            redirectUrl: '{{ setting("wompi.REDIRECT_URL") }}', // Opcional
+            customerData: { // Opcional
+                email:'{{ user()->email }}',
+                fullName: '{{ user()->first_name." ".user()->last_name }}',
+                phoneNumber: '{{ user()->phone }}',
+                phoneNumberPrefix: '+1',
+                legalId: '{{ user()->id }}',
+                legalIdType: 'CC'
+            }
+            });
+        }
+
+        $('.checkout-btn').on('click', function() {
+            checkout.open(function ( result ) {
+            var transaction = result.transaction
+            console.log('Transaction ID: ', transaction.id)
+            console.log('Transaction object: ', transaction)
+            $('#page-preloader').show();
+            if(transaction.status == "APPROVED") {
+                window.location.href = transaction.redirectUrl+"?id="+transaction.id;
+            } else {
+                $('#page-preloader').hide();
+                toastr.error(transaction.statusMessage);
+            }
+            });
+        })
+        </script>
         @plot('scripts')
         @include('layout/alert')
     </body>
