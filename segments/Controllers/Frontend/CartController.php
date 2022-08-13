@@ -45,7 +45,18 @@ class CartController
 		Cart::where('id',$cart_id)->where('user_id',auth()->id)->delete();
 
 		return redirect()->withFlashSuccess('Product removed from cart successfully!')->with('old', $request->all())->back();
-
 		
+	}
+
+	public function updateQty(Request $request, Product $product)
+	{
+		$is_cart_exist = Cart::where('product_id', $product->id)->where('user_id', auth()->id)->first();
+		
+		if(!empty($is_cart_exist)){
+			$is_cart_exist->product_qty = $request->qty;
+			$is_cart_exist->save();
+		}
+
+		return response()->json(['status' => 200, 'message' => 'Cart updated!']);
 	}
 }
