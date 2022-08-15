@@ -39,8 +39,8 @@
                         <div class="swiper-slide">
                             <div class="game-card --horizontal">
                                 <div class="game-card__box">
-                                    <div class="game-card__media"><a href="10_game-profile.html"><img src="{{ $product->coverImageOriginal }}" alt="{{ $product->name }}" /></a></div>
-                                    <div class="game-card__info"><a class="game-card__title" href="10_game-profile.html"> {{ $product->name }}</a>
+                                    <div class="game-card__media"><a href="{{ url('store/view/'.$product->id) }}"><img src="{{ $product->coverImageOriginal }}" alt="{{ $product->name }}" /></a></div>
+                                    <div class="game-card__info"><a class="game-card__title" href="{{ url('store/view/'.$product->id) }}"> {{ $product->name }}</a>
                                         <div class="game-card__genre">
                                         @php
                                             if(strlen($product->description) > 300){
@@ -53,6 +53,7 @@
                                         <div class="game-card__rating-and-price">
                                             <!-- <div class="game-card__rating"><span>4.5</span><i class="ico_star"></i></div> -->
                                             <div class="game-card__price"><span>${{ $product->price }}</span></div>
+                                            <div class="game-card__rating add_to_cart" ><a href="{{ route('frontend.cart.add',[$product->id]) }}"><i class="ico_shopping-cart"></i></a></div>
                                         </div>
                                     </div>
                                 </div>
@@ -77,14 +78,15 @@
                         <div class="swiper-slide">
                             <div class="game-card">
                                 <div class="game-card__box">
-                                    <div class="game-card__media"><a href="10_game-profile.html"><img src="{{ $product->coverImageOriginal }}" alt="{{ $product->name }}" /></a></div>
-                                    <div class="game-card__info"><a class="game-card__title" href="10_game-profile.html"> {{ $product->name }}</a>
+                                    <div class="game-card__media"><a href="{{ url('store/view/'.$product->id) }}"><img src="{{ $product->coverImageOriginal }}" alt="{{ $product->name }}" /></a></div>
+                                    <div class="game-card__info"><a class="game-card__title" href="{{ url('store/view/'.$product->id) }}"> {{ $product->name }}</a>
                                         <div class="game-card__genre">
                                         {{ $product->platform }}
                                         </div>
                                         <div class="game-card__rating-and-price">
                                             <!-- <div class="game-card__rating"><span>4.8</span><i class="ico_star"></i></div> -->
                                             <div class="game-card__price"><span>${{ $product->price }} </span></div>
+                                            <div class="game-card__rating add_to_cart" ><a href="{{ route('frontend.cart.add',[$product->id]) }}"><i class="ico_shopping-cart"></i></a></div>
                                         </div>
                                     </div>
                                 </div>

@@ -841,7 +841,7 @@ a {
 }
 
 a:hover {
-    color: #F46119;
+    color: #FFF;
 }
 
 .search {
@@ -1112,6 +1112,10 @@ a:hover {
 .uk-button-danger:active,
 .uk-button-danger.nice-select.open {
     background: #F46119;
+}
+
+.uk-button-danger:hover a {
+    color: #FFF;
 }
 
 .uk-button-link {

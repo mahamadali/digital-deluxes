@@ -70,7 +70,7 @@
             var checkout = new WidgetCheckout({
             currency: 'COP',
             amountInCents: '{{ exchangeRate(cartTotal(), "EUR", "COP") * 100 }}',
-            reference: '{{ random_strings(12) }}',
+            reference: '{{ strtoupper(random_strings(12)) }}',
             publicKey: '{{ setting("wompi.PUB_KEY") }}',
             redirectUrl: '{{ setting("wompi.REDIRECT_URL") }}', // Opcional
             customerData: { // Opcional

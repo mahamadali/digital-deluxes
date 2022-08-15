@@ -14,7 +14,7 @@ class User extends Model
 
 	protected $table = 'users';
 	protected $attaches = ['full_name'];
-	protected $with = ['role', 'wishlists'];
+	protected $with = ['role', 'wishlists', 'orders'];
 
 	protected $defaults = [];
 
@@ -35,6 +35,10 @@ class User extends Model
 
 	public function cart_items(){
 		return $this->hasMany(Cart::class, 'user_id')->get();
+	}
+
+	public function orders(){
+		return $this->hasMany(Order::class, 'user_id');
 	}
 	
 

@@ -17,6 +17,10 @@ class Product extends Model
 		return $this->hasMany(ProductOffer::class, 'product_id')->get();
 	}
 
+	public function offer(){
+		return $this->hasOne(ProductOffer::class, 'product_id');
+	}
+
     public function screenshots(){
 		return $this->hasMany(ProductScreenshot::class, 'product_id')->get();
 	}

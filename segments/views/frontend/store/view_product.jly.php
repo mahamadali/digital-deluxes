@@ -138,9 +138,9 @@
                         </div>
                         <div class="game-profile-price">
                             <div class="game-profile-price__value">${{ $product->price }} USD</div>
-                            <button class="uk-button uk-button-danger uk-width-1-1" type="button">
+                            <a href="{{ route('frontend.cart.add',[$product->id]) }}" class="uk-button uk-button-danger uk-width-1-1">
                                 <span class="ico_shopping-cart"></span><span>{{ trans('store.buy_now') }}</span>
-                            </button>
+                            </a>
                             @if($product->isInWishlist()):
                             <button class="uk-button uk-button-danger uk-width-1-1 remove_from_fav" data-url="{{ route('frontend.store.remove-from-fav', ['product' => $product->id]) }}" type="button">
                                 <span class="ico_favourites"></span><span>{{ trans('store.remove_from_wishlist') }}</span>

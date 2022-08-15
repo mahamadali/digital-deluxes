@@ -107,9 +107,10 @@ function isNumber(evt) {
 
 
 $(document).on('keyup keypress blur change', '.quantity', function(e) {
-    doCalc();
     e.preventDefault();
     $('#page-preloader').show();
+	var obj = $(this);
+	var qty = $(this).val();
     $.ajax({
         url : $(this).data('url'),
         type : 'POST',
@@ -119,8 +120,16 @@ $(document).on('keyup keypress blur change', '.quantity', function(e) {
         },
         dataType: 'json',
         success: function(response) {
+			if(response.status == 200) {
+				toastr.success(response.message);
+				doCalc();
+			} else {
+				toastr.error(response.message);
+				$(obj).val(qty-1);
+				doCalc();
+			}
             $('#page-preloader').hide();
-            toastr.success(response.message);
+            
         },
         error: function() {
             $('#page-preloader').hide();

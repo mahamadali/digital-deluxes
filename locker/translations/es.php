@@ -9,6 +9,7 @@
             'logout' => 'Cerrar sesión',
             'main' => 'Principal',
             'store' => 'Tienda',
+            'orders' => 'Orders',
         ],
 
          'homepage' => [

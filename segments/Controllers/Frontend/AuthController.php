@@ -7,6 +7,7 @@ use Bones\Request;
 use Bones\Session;
 use Mail\WelcomeEmail;
 use Jolly\Engine;
+use Models\Role;
 use Models\User;
 
 class AuthController

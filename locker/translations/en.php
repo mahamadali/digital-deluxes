@@ -9,6 +9,7 @@
             'logout' => 'Logout',
             'main' => 'Main',
             'store' => 'Store',
+            'orders' => 'Orders',
         ],
 
         'homepage' => [
@@ -27,6 +28,10 @@
 
          'wishlist' => [
             'my_wishlists' => 'My Wishlits',
+        ],
+
+        'orders' => [
+            'title' => 'My Orders',
         ],
 
          'store' => [

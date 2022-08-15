@@ -14,6 +14,7 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
   Router::bunch('/profile', ['as' => 'profile.'], function () {
     Router::get('/', [WelcomeController::class, 'Profile'])->name('index');
     Router::post('/update', [WelcomeController::class, 'update'])->name('update');
+    Router::get('/orders', [WelcomeController::class, 'orders'])->name('orders');
   });
 
 
@@ -43,5 +44,7 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
     Router::any('/check', [PaymentController::class, 'check'])->name('check');
     Router::get('/success/{order}', [PaymentController::class, 'success'])->name('success');
     Router::any('/notify', [PaymentController::class, 'notify'])->name('notify');
+    Router::any('/kg_order_complete', [PaymentController::class, 'kg_order_complete'])->name('kg_order_complete');
+    Router::any('/kg_order_status', [PaymentController::class, 'kg_order_status'])->name('kg_order_status');
   });
 });

@@ -96,6 +96,13 @@ class WelcomeController
 			'wishlists' => user()->wishlists
 		]);
 	}
+
+	public function orders(Request $request) {
+		dd(user()->orders);
+		return render('frontend/orders', [
+			'orders' => user()->orders
+		]);
+	}
     
     
 }

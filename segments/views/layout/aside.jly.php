@@ -5,6 +5,7 @@
             <li class="uk-nav-header">{{ trans('menu.account') }}</li>
             <li class="{{ (request()->matchesTo('/profile')) ? 'uk-active' : '' }}"><a href="{{ route('frontend.profile.index') }}"><i class="ico_profile"></i><span>{{ trans('menu.profile') }}</span></a></li>
             <li class="{{ (request()->matchesTo('/wishlist')) ? 'uk-active' : '' }}"><a href="{{ route('frontend.wishlist') }}"><i class="ico_favourites"></i><span>{{ trans('menu.wishlist') }}</span></a></li>
+            <li class="{{ (request()->matchesTo('/profile/orders')) ? 'uk-active' : '' }}"><a href="{{ route('frontend.profile.orders') }}"><i class="ico_shopping-cart"></i><span>{{ trans('menu.orders') }}</span></a></li>
             <li><a href="{{ route('frontend.logout') }}"><i class="ico_arrow-circle-left"></i><span>{{ trans('menu.logout') }}</span></a></li>
             <!-- <li><a href="05_favourites.html"><i class="ico_favourites"></i><span>Favourites</span><span class="count">15</span></a></li>
             <li><a href="06_chats.html"><i class="ico_chats"></i><span>Chats</span></a></li>

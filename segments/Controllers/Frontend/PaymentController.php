@@ -2,8 +2,11 @@
 
 namespace Controllers\Frontend;
 
+use Bones\Alert;
 use Bones\Request;
+use Mail\KeysEmail;
 use Models\Cart;
+use Models\GameKey;
 use Models\Order;
 use Models\OrderItem;
 use Models\Product;
@@ -64,59 +67,76 @@ class PaymentController
 
     public function notify(Request $request)
 	{
-        $raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1660393395-39735","created_at":"2022-08-13T12:23:15.380Z","finalized_at":"2022-08-13T12:23:15.000Z","amount_in_cents":376390,"reference":"Yp089nQZh4gV","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"BANCOLOMBIA_TRANSFER","payment_method":{"type":"BANCOLOMBIA_TRANSFER","extra":{"async_payment_url":"https://sandbox.wompi.co/v1/payment_methods/redirect/bancolombia_transfer?transferCode=L80DMNBxFJJyka3d-approved","external_identifier":"L80DMNBxFJJyka3d-approved"},"user_type":"PERSON","sandbox_status":"APPROVED","payment_description":"Pago a digitaldeluxes, ref: Yp089nQZh4gV"},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"http://localhost/digital-deluxes/payment/check","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"4423423","full_name":"Akbar Husen","phone_number":"+57784545454454545","legal_id_type":"CC"},"billing_data":null}},"sent_at":"2022-08-13T12:23:15.598Z","timestamp":1660393395,"signature":{"checksum":"cf1446f28f6198a34c1723f9f7668832e6c2d569e50594b8073ccf2f991da44e","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
+        $raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1660564629-64416","created_at":"2022-08-15T11:57:09.637Z","finalized_at":"2022-08-15T11:57:09.000Z","amount_in_cents":1734000,"reference":"PDXC4PJWSTWX","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"CARD","payment_method":{"type":"CARD","extra":{"bin":"424242","name":"VISA-4242","brand":"VISA","exp_year":"34","exp_month":"10","last_four":"4242","card_holder":"4242 4242 4242 4242","external_identifier":"JWp1eAWtZz","processor_response_code":"00"},"token":"tok_test_21271_970b76Bf236E79E5b9d189DEd014d28E","installments":1},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"http://localhost/digital-deluxes/payment/check","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"4322323232","full_name":"Akbar Husen","phone_number":"+57784545454454545","legal_id_type":"CC"},"billing_data":{"legal_id_type":"CC","legal_id":"4322323232"}}},"sent_at":"2022-08-15T11:57:09.989Z","timestamp":1660564629,"signature":{"checksum":"0716badf00b4e673d9716d176d6a299bc3ad27d86a95b2b01818c2914a1bfd9a","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
         // $raw_post_data = file_get_contents('php://input'); 
         file_put_contents('ipn.txt', $raw_post_data);
 
         $data = json_decode($raw_post_data);
-        
+
         if(isset($data->event)) {
             $transaction = $data->data->transaction;
             $order = Order::where('transaction_id', $transaction->id)->first();
             $order->status = $transaction->status;
             $order->updated_at = $transaction->finalized_at;
-            $order->save();
-        }
+            $order = $order->save();
 
-        $orderProducts = OrderItem::where('order_id', $order->id)->get();
+            $orderProducts = OrderItem::where('order_id', $order->id)->get();
         
-        $products = [];
-        foreach($orderProducts as $orderProduct) {
-
-            $keyTypeResponse = $this->fetchKeyType($orderProduct);
-            dd($keyTypeResponse);
-            $products[] = [
-                'productId' => $orderProduct->product_id,
-                'qty' => $orderProduct->product_qty,
-                'price' => $orderProduct->product_price,
-                'name' => $orderProduct->product_name,
-                // 'keyType' => 
+            $products = [];
+            foreach($orderProducts as $orderProduct) {
+                // $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
+                // $keyTypeResponse = $this->fetchKeyType($orderProduct);
+                // $keyTypeResponse = json_decode($keyTypeResponse);
+                // $offerId = $this->fetchOfferId($keyTypeResponse);
+                // $offer = json_decode($offerId);
+                $products[] = (object) [
+                    'kinguinId' => $orderProduct->product->kinguinId,
+                    'qty' => $orderProduct->product_qty,
+                    'name' => $orderProduct->product_name,
+                    'price' => $orderProduct->product_price,
+                    // 'keyType' => 'text',
+                    // 'offerId' => $offerId,
+                ];
+            }
+            
+            // $orderExternalId = $this->orderExternalId($keyTypeResponse);
+            // $orderExternalId = json_decode($orderExternalId);
+            $params = (object) [
+                'products' => $products,
+                'orderExternalId' => $order->reference
             ];
+
+            // dd(json_decode("{\"products\":[{\"kinguinId\":1949,\"qty\":1,\"name\":\"Counter-Strike: Source Steam CD Key\",\"price\":5.79}]}"));
+
+            // dd($params);
+
+            // Generated by curl-to-PHP: http://incarnate.github.io/curl-to-php/
+            $ch = curl_init();
+
+            curl_setopt($ch, CURLOPT_URL, setting('kinguin.endpoint').'/v1/order');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+
+            $headers = array();
+            $headers[] = 'X-Api-Key: '.setting('kinguin.api_key');
+            $headers[] = 'Content-Type: application/json';
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+                echo 'Error:' . curl_error($ch);
+            }
+            curl_close($ch);
+
+            $orderData = json_decode($result);
+
+            $order->kg_orderid = $orderData->orderId;
+            $order->save();
+                
+            // Order placed on kinguin
+            die(204);
         }
-
-
-        $params = [
-            'products' => $products
-        ];
-
-        // Generated by curl-to-PHP: http://incarnate.github.io/curl-to-php/
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, setting('kinguin.endpoint').'/v2/order');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
-
-        $headers = array();
-        $headers[] = 'X-Api-Key: '.setting('kinguin.api_key');
-        $headers[] = 'Content-Type: application/json';
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $result = curl_exec($ch);
-        if (curl_errno($ch)) {
-            echo 'Error:' . curl_error($ch);
-        }
-        curl_close($ch);
     }
 
     public function fetchKeyType($orderProduct) {
@@ -133,6 +153,152 @@ class PaymentController
         $headers = array();
         $headers[] = 'X-Api-Key: '.setting('kinguin.api_key');
         $headers[] = 'Content-Type: application/json';
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        curl_close($ch);
+        return $result;
+    }
+
+    public function fetchOfferId($keyTypeResponse) {
+        
+        $kinguinId = $keyTypeResponse->products[0]->kinguinId;
+        $offerId = $keyTypeResponse->products[0]->offerId;
+        $qty = $keyTypeResponse->products[0]->qty;
+        $name = $keyTypeResponse->products[0]->name;
+        $price = $keyTypeResponse->products[0]->price;
+        
+        // Generated by curl-to-PHP: http://incarnate.github.io/curl-to-php/
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, setting('kinguin.endpoint').'/v1/order');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"products\":[{\"kinguinId\":".$kinguinId.",\"qty\":".$qty.",\"name\":\"".$name."\",\"price\":".$price.",\"offerId\":\"".$offerId."\"}]}");
+
+        $headers = array();
+        $headers[] = 'X-Api-Key: '.setting('kinguin.api_key');
+        $headers[] = 'Content-Type: application/json';
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        curl_close($ch);
+        return $result;
+    }
+
+    public function orderExternalId($keyTypeResponse) {
+        
+        $kinguinId = $keyTypeResponse->products[0]->kinguinId;
+        $qty = $keyTypeResponse->products[0]->qty;
+        $name = $keyTypeResponse->products[0]->name;
+        $price = $keyTypeResponse->products[0]->price;
+        
+        // Generated by curl-to-PHP: http://incarnate.github.io/curl-to-php/
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, setting('kinguin.endpoint').'/v1/order');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"products\":[{\"kinguinId\":".$kinguinId.",\"qty\":".$qty.",\"name\":\"".$name."\",\"price\":".$price."}],\"orderExternalId\":\"".strtoupper(random_strings(13))."\"}");
+
+        $headers = array();
+        $headers[] = 'X-Api-Key: '.setting('kinguin.api_key');
+        $headers[] = 'Content-Type: application/json';
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        curl_close($ch);
+
+        return $result;
+    }
+
+    public function dispatchOrder($orderId) {
+
+        // Generated by curl-to-PHP: http://incarnate.github.io/curl-to-php/
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, setting('kinguin.endpoint').'/v1/order/dispatch');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"orderId\": \"".$orderId."\"}");
+
+        $headers = array();
+        $headers[] = 'X-Api-Key: '.setting('kinguin.api_key');
+        $headers[] = 'Content-Type: application/json';
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        curl_close($ch);
+        return $result;
+    }
+
+    public function kg_order_status() {
+        $raw_post_data = '{"orderId":"EEI5BK3OQNL","orderExternalId":"PDXC4PJWSTWX","status":"completed","updatedAt":"2022-08-15T11:58:32.275+00:00"}';
+        $data = json_decode($raw_post_data);
+        $status = $data->status;
+        $order = Order::where('kg_orderid', $data->orderId)->first();
+        $order->kg_order_status = $data->status;
+        $order->updated_at = $data->updatedAt;
+        $order->save();
+    }
+
+    public function kg_order_complete() {
+        $raw_post_data = '{"orderId":"EEI5BK3OQNL","orderExternalId":"PDXC4PJWSTWX","updatedAt":"2022-08-15T11:58:32.261+00:00"}';
+        $data = json_decode($raw_post_data);
+        $dispatch_data = $this->dispatchOrder($data->orderId);
+        $dispatch_data = json_decode($dispatch_data);
+        $order = Order::where('kg_orderid', $data->orderId)->first();
+        
+        $order->kg_order_status = 'completed';
+        $order->updated_at = $data->updatedAt;
+        $order->dispatchId = $dispatch_data->dispatchId;
+        $order = $order->save();
+        
+        $loadKeys = $this->loadKeys($dispatch_data->dispatchId);
+        $loadKeys = json_decode($loadKeys);
+        
+        if(!empty($loadKeys)) {
+            foreach($loadKeys as $loadKey) {
+                $product = Product::where('productId', $loadKey->productId)->first();
+                $game_key = new GameKey();
+                $game_key->order_id = $order->id;
+                $game_key->product_id = $product->id;
+                $game_key->serial = $loadKey->serial;
+                $game_key->type = $loadKey->type;
+                $game_key->name = $loadKey->name;
+                $game_key->kinguinId = $loadKey->kinguinId;
+                $game_key->offerId = $loadKey->offerId;
+                $game_key->save();
+            }
+            $order = Order::find($order->id);
+            Alert::as(new KeysEmail($order))->notify();
+        }
+        
+    }
+
+    public function loadKeys($dispatch_id) {
+        // Generated by curl-to-PHP: http://incarnate.github.io/curl-to-php/
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, setting('kinguin.endpoint').'/v1/order/dispatch/keys?dispatchId='.$dispatch_id);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+
+        $headers = array();
+        $headers[] = 'X-Api-Key: '.setting('kinguin.api_key');
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         $result = curl_exec($ch);
