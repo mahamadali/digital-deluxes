@@ -173,7 +173,9 @@ class ProductController
 	}
 
 	public function productUpdate() {
-		$raw_post_data = '{"kinguinId":40762,"productId":"5c9b6ccc2539a4e8f17dda5c","qty":63,"textQty":63,"price":9.51,"cheapestOfferId":["61f176260995060001d8b1ba"],"updatedAt":"2022-08-15T11:58:30.959+00:00"}';
+		// $raw_post_data = '{"kinguinId":40762,"productId":"5c9b6ccc2539a4e8f17dda5c","qty":63,"textQty":63,"price":9.51,"cheapestOfferId":["61f176260995060001d8b1ba"],"updatedAt":"2022-08-15T11:58:30.959+00:00"}';
+		$raw_post_data = file_get_contents('php://input'); 
+        file_put_contents('product-update.txt', $raw_post_data);
 		$data = json_decode($raw_post_data);
 		$product = Product::where('productId', $data->productId)->first();
 		$product->qty = $data->qty;

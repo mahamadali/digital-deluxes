@@ -67,8 +67,8 @@ class PaymentController
 
     public function notify(Request $request)
 	{
-        $raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1660564629-64416","created_at":"2022-08-15T11:57:09.637Z","finalized_at":"2022-08-15T11:57:09.000Z","amount_in_cents":1734000,"reference":"PDXC4PJWSTWX","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"CARD","payment_method":{"type":"CARD","extra":{"bin":"424242","name":"VISA-4242","brand":"VISA","exp_year":"34","exp_month":"10","last_four":"4242","card_holder":"4242 4242 4242 4242","external_identifier":"JWp1eAWtZz","processor_response_code":"00"},"token":"tok_test_21271_970b76Bf236E79E5b9d189DEd014d28E","installments":1},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"http://localhost/digital-deluxes/payment/check","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"4322323232","full_name":"Akbar Husen","phone_number":"+57784545454454545","legal_id_type":"CC"},"billing_data":{"legal_id_type":"CC","legal_id":"4322323232"}}},"sent_at":"2022-08-15T11:57:09.989Z","timestamp":1660564629,"signature":{"checksum":"0716badf00b4e673d9716d176d6a299bc3ad27d86a95b2b01818c2914a1bfd9a","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
-        // $raw_post_data = file_get_contents('php://input'); 
+        //$raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1660564629-64416","created_at":"2022-08-15T11:57:09.637Z","finalized_at":"2022-08-15T11:57:09.000Z","amount_in_cents":1734000,"reference":"PDXC4PJWSTWX","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"CARD","payment_method":{"type":"CARD","extra":{"bin":"424242","name":"VISA-4242","brand":"VISA","exp_year":"34","exp_month":"10","last_four":"4242","card_holder":"4242 4242 4242 4242","external_identifier":"JWp1eAWtZz","processor_response_code":"00"},"token":"tok_test_21271_970b76Bf236E79E5b9d189DEd014d28E","installments":1},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"http://localhost/digital-deluxes/payment/check","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"4322323232","full_name":"Akbar Husen","phone_number":"+57784545454454545","legal_id_type":"CC"},"billing_data":{"legal_id_type":"CC","legal_id":"4322323232"}}},"sent_at":"2022-08-15T11:57:09.989Z","timestamp":1660564629,"signature":{"checksum":"0716badf00b4e673d9716d176d6a299bc3ad27d86a95b2b01818c2914a1bfd9a","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
+        $raw_post_data = file_get_contents('php://input'); 
         file_put_contents('ipn.txt', $raw_post_data);
 
         $data = json_decode($raw_post_data);
@@ -245,7 +245,9 @@ class PaymentController
     }
 
     public function kg_order_status() {
-        $raw_post_data = '{"orderId":"EEI5BK3OQNL","orderExternalId":"PDXC4PJWSTWX","status":"completed","updatedAt":"2022-08-15T11:58:32.275+00:00"}';
+        //$raw_post_data = '{"orderId":"EEI5BK3OQNL","orderExternalId":"PDXC4PJWSTWX","status":"completed","updatedAt":"2022-08-15T11:58:32.275+00:00"}';
+        $raw_post_data = file_get_contents('php://input'); 
+        file_put_contents('order-status.txt', $raw_post_data);
         $data = json_decode($raw_post_data);
         $status = $data->status;
         $order = Order::where('kg_orderid', $data->orderId)->first();
@@ -255,7 +257,9 @@ class PaymentController
     }
 
     public function kg_order_complete() {
-        $raw_post_data = '{"orderId":"EEI5BK3OQNL","orderExternalId":"PDXC4PJWSTWX","updatedAt":"2022-08-15T11:58:32.261+00:00"}';
+        // $raw_post_data = '{"orderId":"EEI5BK3OQNL","orderExternalId":"PDXC4PJWSTWX","updatedAt":"2022-08-15T11:58:32.261+00:00"}';
+        $raw_post_data = file_get_contents('php://input'); 
+        file_put_contents('order-complete.txt', $raw_post_data);
         $data = json_decode($raw_post_data);
         $dispatch_data = $this->dispatchOrder($data->orderId);
         $dispatch_data = json_decode($dispatch_data);
