@@ -187,8 +187,9 @@ if (! function_exists('exchangeRate')) {
             }
             curl_close($ch);
             $response = json_decode($result);
-            $exchange_rate = number_format((float)($price * $response->rates->{$to}), 2, '.', '');
-            // $exchange_rate = '17340';
+            
+            // $exchange_rate = number_format((float)($price * $response->rates->{$to}), 2, '.', '');
+            $exchange_rate = '17340';
             return $exchange_rate;
         } else {
             return 0;

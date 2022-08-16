@@ -10,7 +10,7 @@
                     <h3 class="uk-text-lead">{{ trans('orders.title') }}</h3>
                 </div>
             </div>
-
+            <div class="game-card__box">
             <table class="uk-table">
                 <thead>
                     <tr>
@@ -39,6 +39,7 @@
             @endforeach
             </tbody>
             </table>
+            </div>
         </div>
     </div>
 </main>
