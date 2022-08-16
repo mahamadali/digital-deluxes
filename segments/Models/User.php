@@ -10,7 +10,7 @@ use Models\Cart;
 
 class User extends Model
 {
-	use TrashMask;
+	// use TrashMask;
 
 	protected $table = 'users';
 	protected $attaches = ['full_name'];
