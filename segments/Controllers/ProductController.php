@@ -184,5 +184,15 @@ class ProductController
 		$product->updated_at = $data->updatedAt;
 		$product->cheapestOfferId = json_encode($data->cheapestOfferId);
 		$product->save();
+
+		ob_start();
+
+		header("HTTP/1.1 204 NO CONTENT");
+
+		header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
+		header("Pragma: no-cache"); // HTTP 1.0.
+		header("Expires: 0"); // Proxies.
+
+		ob_end_flush(); //now the headers are sent
 	}
 }

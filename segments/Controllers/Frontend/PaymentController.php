@@ -254,6 +254,16 @@ class PaymentController
         $order->kg_order_status = $data->status;
         $order->updated_at = $data->updatedAt;
         $order->save();
+
+        ob_start();
+
+        header("HTTP/1.1 204 NO CONTENT");
+
+        header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
+        header("Pragma: no-cache"); // HTTP 1.0.
+        header("Expires: 0"); // Proxies.
+
+        ob_end_flush(); //now the headers are sent
     }
 
     public function kg_order_complete() {
@@ -289,6 +299,16 @@ class PaymentController
             $order = Order::find($order->id);
             Alert::as(new KeysEmail($order))->notify();
         }
+
+        ob_start();
+
+        header("HTTP/1.1 204 NO CONTENT");
+
+        header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
+        header("Pragma: no-cache"); // HTTP 1.0.
+        header("Expires: 0"); // Proxies.
+
+        ob_end_flush(); //now the headers are sent
         
     }
 
