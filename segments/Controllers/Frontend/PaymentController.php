@@ -120,7 +120,7 @@ class PaymentController
                 $orderItem->save();
             }
 
-            Cart::where('user_id',auth()->id)->delete();
+            Cart::where('user_id',$user->id)->delete();
 
             $orderProducts = OrderItem::where('order_id', $order->id)->get();
         

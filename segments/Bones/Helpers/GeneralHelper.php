@@ -132,20 +132,20 @@ if (! function_exists('currentPageFullURL')) {
 }
 
 if (! function_exists('cartItems')) {
-    function cartItems()
+    function cartItems($userId = '')
     {
-        $cart_details  = Cart::where('user_id',auth()->id)->orderBy('id')->get();
+        if(empty($userId)) {
+            $userId = auth()->id;
+        }
+        $cart_details  = Cart::where('user_id',$userId)->orderBy('id')->get();
         return $cart_details;
     }
 }
 
 if (! function_exists('cartTotal')) {
-    function cartTotal($userId = '')
+    function cartTotal()
     {
-        if(empty($userId)) {
-            $userId = auth()->id;
-        }
-        $cart_details  = Cart::where('user_id', $userId)->orderBy('id')->get();
+        $cart_details  = Cart::where('user_id', auth()->id)->orderBy('id')->get();
         $total = 0;
         foreach($cart_details as $cart) {
             $total += $cart->product_price * $cart->product_qty;
