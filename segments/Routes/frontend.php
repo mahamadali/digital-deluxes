@@ -5,6 +5,7 @@ use Controllers\WelcomeController;
 use Controllers\Frontend\StoreController;
 use Controllers\Frontend\CartController;
 use Controllers\Frontend\PaymentController;
+use Controllers\Frontend\OrderController;
 
 Router::get('/', [WelcomeController::class, 'index'])->name('home')->barrier('is-front-auth');
 
@@ -14,10 +15,14 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
   Router::bunch('/profile', ['as' => 'profile.'], function () {
     Router::get('/', [WelcomeController::class, 'Profile'])->name('index');
     Router::post('/update', [WelcomeController::class, 'update'])->name('update');
-    Router::get('/orders', [WelcomeController::class, 'orders'])->name('orders');
   });
 
-
+  Router::bunch('/orders', ['as' => 'orders.'], function () {
+    Router::get('/', [OrderController::class, 'index'])->name('index');
+    Router::bunch('/{order}', ['as' => ''], function () {
+      Router::get('/view', [OrderController::class, 'view'])->name('view');
+    });
+  });
 
 
   Router::bunch('/cart', ['as' => 'cart.'], function () {
