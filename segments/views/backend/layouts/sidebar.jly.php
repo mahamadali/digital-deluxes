@@ -15,6 +15,13 @@
         </a>
       </li>
 
+      <li class="nav-item {{ (request()->matchesTo('/admin/products/*')) ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.products.index') }}">
+          <i class="ti-list menu-icon"></i>
+          <span class="menu-title">Products</span>
+        </a>
+      </li>
+
       <li class="nav-item {{ (request()->matchesTo('/admin/orders/*')) ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.orders.index') }}">
           <i class="ti-shopping-cart menu-icon"></i>

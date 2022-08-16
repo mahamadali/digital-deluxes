@@ -8,6 +8,7 @@ use Controllers\AuthController;
 use Barriers\Admin\IsAuthenticated;
 use Controllers\Backend\SettingController;
 use Controllers\Backend\OrderController;
+use Controllers\Backend\ProductController;
 
 
 Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]], function() {
@@ -15,6 +16,13 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 	Router::bunch('/users', ['as' => 'users.'], function() {
 		Router::get('/list', [ UserController::class, 'index' ])->name('list');
 		Router::get('/view/{user}', [ UserController::class, 'view' ])->name('view');
+	});
+
+	Router::bunch('/products', ['as' => 'products.'], function () {
+		Router::get('/', [ProductController::class, 'index'])->name('index');
+		Router::bunch('/{product}', ['as' => ''], function () {
+			Router::get('/view', [ProductController::class, 'view'])->name('view');
+		});
 	});
 
 	Router::bunch('/orders', ['as' => 'orders.'], function () {
