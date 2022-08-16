@@ -244,7 +244,7 @@ class PaymentController
         return $result;
     }
 
-    public function kg_order_status() {
+    public function kg_order_status(Request $request) {
         //$raw_post_data = '{"orderId":"EEI5BK3OQNL","orderExternalId":"PDXC4PJWSTWX","status":"completed","updatedAt":"2022-08-15T11:58:32.275+00:00"}';
         $raw_post_data = file_get_contents('php://input'); 
         file_put_contents('order-status.txt', $raw_post_data);
@@ -264,9 +264,10 @@ class PaymentController
         header("Expires: 0"); // Proxies.
 
         ob_end_flush(); //now the headers are sent
+        exit;
     }
 
-    public function kg_order_complete() {
+    public function kg_order_complete(Request $request) {
         // $raw_post_data = '{"orderId":"EEI5BK3OQNL","orderExternalId":"PDXC4PJWSTWX","updatedAt":"2022-08-15T11:58:32.261+00:00"}';
         $raw_post_data = file_get_contents('php://input'); 
         file_put_contents('order-complete.txt', $raw_post_data);
@@ -309,6 +310,7 @@ class PaymentController
         header("Expires: 0"); // Proxies.
 
         ob_end_flush(); //now the headers are sent
+        exit;
         
     }
 
