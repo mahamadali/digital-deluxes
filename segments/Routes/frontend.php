@@ -45,11 +45,11 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
   });
 
   Router::bunch('/payment', ['as' => 'payment.'], function () {
-    Router::get('/', [PaymentController::class, 'index'])->name('store');
-    Router::any('/check', [PaymentController::class, 'check'])->name('check');
-    Router::get('/success/{order}', [PaymentController::class, 'success'])->name('success');
-    Router::any('/notify', [PaymentController::class, 'notify'])->name('notify');
-    Router::any('/kg_order_complete', [PaymentController::class, 'kg_order_complete'])->name('kg_order_complete');
-    Router::any('/kg_order_status', [PaymentController::class, 'kg_order_status'])->name('kg_order_status');
+    Router::get('/', [PaymentController::class, 'index'])->name('store')->withOutBarrier('is-front-auth');
+    Router::any('/check', [PaymentController::class, 'check'])->name('check')->withOutBarrier('is-front-auth');
+    Router::get('/success/{order}', [PaymentController::class, 'success'])->name('success')->withOutBarrier('is-front-auth');
+    Router::any('/notify', [PaymentController::class, 'notify'])->name('notify')->withOutBarrier('is-front-auth');
+    Router::any('/kg_order_complete', [PaymentController::class, 'kg_order_complete'])->name('kg_order_complete')->withOutBarrier('is-front-auth');
+    Router::any('/kg_order_status', [PaymentController::class, 'kg_order_status'])->name('kg_order_status')->withOutBarrier('is-front-auth');
   });
 });
