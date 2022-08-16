@@ -10,6 +10,7 @@ use Models\GameKey;
 use Models\Order;
 use Models\OrderItem;
 use Models\Product;
+use Models\User;
 
 class PaymentController
 {
@@ -52,52 +53,51 @@ class PaymentController
         //     }
         // }
 
-        $order = new Order();
-        $order->transaction_id = $transactionId;
-        $order->user_id = auth()->id;
-        $order = $order->save();
+        // $order = new Order();
+        // $order->transaction_id = $transactionId;
+        // $order->user_id = auth()->id;
+        // $order = $order->save();
 
-        $cartItems = cartItems();
-        foreach($cartItems as $item) {
-            $orderItem = new OrderItem();
-            $orderItem->order_id = $order->id;
-            $orderItem->product_id = $item->product_id;
-            $orderItem->product_name = $item->product_name;
-            $orderItem->product_price = $item->product_price;
-            $orderItem->product_qty = $item->product_qty;
-            $orderItem->save();
-        }
+        // $cartItems = cartItems();
+        // foreach($cartItems as $item) {
+        //     $orderItem = new OrderItem();
+        //     $orderItem->order_id = $order->id;
+        //     $orderItem->product_id = $item->product_id;
+        //     $orderItem->product_name = $item->product_name;
+        //     $orderItem->product_price = $item->product_price;
+        //     $orderItem->product_qty = $item->product_qty;
+        //     $orderItem->save();
+        // }
 
-        Cart::where('user_id',auth()->id)->delete();
+        // Cart::where('user_id',auth()->id)->delete();
         
-        return redirect(route('frontend.payment.success', ['order' => $order->id]))->go();
+        return redirect(route('frontend.payment.success'))->go();
 
 	}
 
-    public function success(Request $request, Order $order)
+    public function success(Request $request)
 	{
-        return render('frontend/payment/success', [
-			'order' => $order
-		]);
+        return render('frontend/payment/success');
     }
 
     public function notify(Request $request)
 	{
-        //$raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1660564629-64416","created_at":"2022-08-15T11:57:09.637Z","finalized_at":"2022-08-15T11:57:09.000Z","amount_in_cents":1734000,"reference":"PDXC4PJWSTWX","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"CARD","payment_method":{"type":"CARD","extra":{"bin":"424242","name":"VISA-4242","brand":"VISA","exp_year":"34","exp_month":"10","last_four":"4242","card_holder":"4242 4242 4242 4242","external_identifier":"JWp1eAWtZz","processor_response_code":"00"},"token":"tok_test_21271_970b76Bf236E79E5b9d189DEd014d28E","installments":1},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"http://localhost/digital-deluxes/payment/check","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"4322323232","full_name":"Akbar Husen","phone_number":"+57784545454454545","legal_id_type":"CC"},"billing_data":{"legal_id_type":"CC","legal_id":"4322323232"}}},"sent_at":"2022-08-15T11:57:09.989Z","timestamp":1660564629,"signature":{"checksum":"0716badf00b4e673d9716d176d6a299bc3ad27d86a95b2b01818c2914a1bfd9a","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
+        // $raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1660656381-58355","created_at":"2022-08-16T13:26:21.889Z","finalized_at":"2022-08-16T13:26:22.000Z","amount_in_cents":4048203,"reference":"BWHH04DNRXCK","customer_email":"manknojiya121@gmail.com","currency":"COP","payment_method_type":"BANCOLOMBIA_TRANSFER","payment_method":{"type":"BANCOLOMBIA_TRANSFER","extra":{"async_payment_url":"https://sandbox.wompi.co/v1/payment_methods/redirect/bancolombia_transfer?transferCode=U7yeST3tPZ5PXWDR-approved","external_identifier":"U7yeST3tPZ5PXWDR-approved"},"user_type":"PERSON","sandbox_status":"APPROVED","payment_description":"Pago a digitaldeluxes, ref: BWHH04DNRXCK"},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"http://dev.wisencode.com/digital-deluxes/payment/check","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"23242343","full_name":"Mohamad Ali","phone_number":"+57784545454454545","legal_id_type":"CC"},"billing_data":null}},"sent_at":"2022-08-16T13:26:24.351Z","timestamp":1660656384,"signature":{"checksum":"759592ed5a50fa5d760bfd58e7201b0c46f61ce721612bac7d067403d546caac","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
         $raw_post_data = file_get_contents('php://input'); 
         file_put_contents('ipn.txt', $raw_post_data);
 
         $data = json_decode($raw_post_data);
-
+        
         if(isset($data->event)) {
+            $user = User::where('email', $data->data->transaction->customer_email)->first();
             $transaction = $data->data->transaction;
-            $order = Order::where('transaction_id', $transaction->id)->first();
-            $order->status = $transaction->status;
-            $order->updated_at = $transaction->finalized_at;
+            // $order = Order::where('transaction_id', $transaction->id)->first();
+            // $order->status = $transaction->status;
+            // $order->updated_at = $transaction->finalized_at;
             // $order = $order->save();
 
             $result = $transaction;
-            // $order = new Order();
+            $order = new Order();
             $order->reference = $result->reference;
             $order->transaction_id = $result->id;
             $order->payment_method_type = $result->payment_method_type;
@@ -106,8 +106,21 @@ class PaymentController
             $order->status_message = $result->status_message;
             $order->currency = $result->currency;
             $order->amount_in_cents = $result->amount_in_cents;
-            $order->user_id = auth()->id;
+            $order->user_id = $user->id;
             $order = $order->save();
+
+            $cartItems = cartItems($user->id);
+            foreach($cartItems as $item) {
+                $orderItem = new OrderItem();
+                $orderItem->order_id = $order->id;
+                $orderItem->product_id = $item->product_id;
+                $orderItem->product_name = $item->product_name;
+                $orderItem->product_price = $item->product_price;
+                $orderItem->product_qty = $item->product_qty;
+                $orderItem->save();
+            }
+
+            Cart::where('user_id',auth()->id)->delete();
 
             $orderProducts = OrderItem::where('order_id', $order->id)->get();
         

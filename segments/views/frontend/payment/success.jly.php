@@ -12,7 +12,7 @@
             </div>
             <div class="game-card --horizontal favourites-game">
                 <div class="game-card__box" style="flex-direction: column;padding:50px;">
-                        <a style="font-size: 20px;">Thanks you for placing order (#{{ $order->id }}). You will receive an email for your games serial keys.</a>
+                        <a style="font-size: 20px;">Thanks you for placing order. You will receive an email for your games serial keys.</a>
                         <div class="game-card__genre"></div>
                         <br><br>
                         <div class="game-card__bottom">

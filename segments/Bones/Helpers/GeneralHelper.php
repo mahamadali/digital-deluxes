@@ -140,9 +140,12 @@ if (! function_exists('cartItems')) {
 }
 
 if (! function_exists('cartTotal')) {
-    function cartTotal()
+    function cartTotal($userId = '')
     {
-        $cart_details  = Cart::where('user_id',auth()->id)->orderBy('id')->get();
+        if(empty($userId)) {
+            $userId = auth()->id;
+        }
+        $cart_details  = Cart::where('user_id', $userId)->orderBy('id')->get();
         $total = 0;
         foreach($cart_details as $cart) {
             $total += $cart->product_price * $cart->product_qty;
