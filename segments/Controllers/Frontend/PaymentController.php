@@ -22,34 +22,50 @@ class PaymentController
     public function check(Request $request)
 	{
         $transactionId = $request->id;
-        $api_endpoint = 'https://'.setting('wompi.payment_type').'.wompi.co/v1/transactions/'.$transactionId;
-        $response = file_get_contents($api_endpoint);
-        $data = json_decode($response);
+        // $api_endpoint = 'https://'.setting('wompi.payment_type').'.wompi.co/v1/transactions/'.$transactionId;
+        // $response = file_get_contents($api_endpoint);
+        // $data = json_decode($response);
         
-        if(isset($data->data)) {
-            $result = $data->data;
-            $order = new Order();
-            $order->reference = $result->reference;
-            $order->transaction_id = $result->id;
-            $order->payment_method_type = $result->payment_method_type;
-            $order->payment_method = json_encode($result->payment_method);
-            $order->status = $result->status;
-            $order->status_message = $result->status_message;
-            $order->currency = $result->currency;
-            $order->amount_in_cents = $result->amount_in_cents;
-            $order->user_id = auth()->id;
-            $order = $order->save();
+        // if(isset($data->data)) {
+        //     $result = $data->data;
+        //     $order = new Order();
+        //     // $order->reference = $result->reference;
+        //     $order->transaction_id = $transactionId;
+        //     // $order->payment_method_type = $result->payment_method_type;
+        //     // $order->payment_method = json_encode($result->payment_method);
+        //     // $order->status = $result->status;
+        //     // $order->status_message = $result->status_message;
+        //     // $order->currency = $result->currency;
+        //     // $order->amount_in_cents = $result->amount_in_cents;
+        //     $order->user_id = auth()->id;
+        //     $order = $order->save();
 
-            $cartItems = cartItems();
-            foreach($cartItems as $item) {
-                $orderItem = new OrderItem();
-                $orderItem->order_id = $order->id;
-                $orderItem->product_id = $item->product_id;
-                $orderItem->product_name = $item->product_name;
-                $orderItem->product_price = $item->product_price;
-                $orderItem->product_qty = $item->product_qty;
-                $orderItem->save();
-            }
+        //     $cartItems = cartItems();
+        //     foreach($cartItems as $item) {
+        //         $orderItem = new OrderItem();
+        //         $orderItem->order_id = $order->id;
+        //         $orderItem->product_id = $item->product_id;
+        //         $orderItem->product_name = $item->product_name;
+        //         $orderItem->product_price = $item->product_price;
+        //         $orderItem->product_qty = $item->product_qty;
+        //         $orderItem->save();
+        //     }
+        // }
+
+        $order = new Order();
+        $order->transaction_id = $transactionId;
+        $order->user_id = auth()->id;
+        $order = $order->save();
+
+        $cartItems = cartItems();
+        foreach($cartItems as $item) {
+            $orderItem = new OrderItem();
+            $orderItem->order_id = $order->id;
+            $orderItem->product_id = $item->product_id;
+            $orderItem->product_name = $item->product_name;
+            $orderItem->product_price = $item->product_price;
+            $orderItem->product_qty = $item->product_qty;
+            $orderItem->save();
         }
 
         Cart::where('user_id',auth()->id)->delete();
@@ -78,6 +94,19 @@ class PaymentController
             $order = Order::where('transaction_id', $transaction->id)->first();
             $order->status = $transaction->status;
             $order->updated_at = $transaction->finalized_at;
+            // $order = $order->save();
+
+            $result = $transaction;
+            // $order = new Order();
+            $order->reference = $result->reference;
+            $order->transaction_id = $result->id;
+            $order->payment_method_type = $result->payment_method_type;
+            $order->payment_method = json_encode($result->payment_method);
+            $order->status = $result->status;
+            $order->status_message = $result->status_message;
+            $order->currency = $result->currency;
+            $order->amount_in_cents = $result->amount_in_cents;
+            $order->user_id = auth()->id;
             $order = $order->save();
 
             $orderProducts = OrderItem::where('order_id', $order->id)->get();
