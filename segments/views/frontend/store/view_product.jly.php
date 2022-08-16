@@ -1,11 +1,15 @@
 @extends('app')
 
 @block("title") {{ setting('app.title', 'Ali Rocks!') }} @endblock
+
+@block('styles')
 <style>
     .grey_text{
         color:#767676;
     }
 </style>
+@endblock
+
 @block("content")
 <main class="page-main">
                 <ul class="uk-breadcrumb">
@@ -137,7 +141,7 @@
                             
                         </div>
                         <div class="game-profile-price">
-                            <div class="game-profile-price__value">${{ $product->price }} USD</div>
+                            <div class="game-profile-price__value">€{{ $product->price }} EUR</div>
                             <a href="{{ route('frontend.cart.add',[$product->id]) }}" class="uk-button uk-button-danger uk-width-1-1">
                                 <span class="ico_shopping-cart"></span><span>{{ trans('store.buy_now') }}</span>
                             </a>

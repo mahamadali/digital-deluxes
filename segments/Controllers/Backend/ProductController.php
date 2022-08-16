@@ -3,23 +3,22 @@
 namespace Controllers\Backend;
 
 use Bones\Request;
-use Models\City;
-use Models\Order;
+use Models\Product;
 
 class ProductController
 {
 	public function index(Request $request) {
 		
-        $orders = Order::orderBy('id')->get();
-		return render('backend/orders/index', [
-			'orders' => $orders
+        $products = Product::orderBy('id')->get();
+		return render('backend/products/index', [
+			'products' => $products
 		]);
 	}
 
-    public function view(Request $request, Order $order) {
+    public function view(Request $request, Product $product) {
 		
-		return render('backend/orders/view', [
-			'order' => $order
+		return render('backend/products/view', [
+			'product' => $product
 		]);
 	}
 }
