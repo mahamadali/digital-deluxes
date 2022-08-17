@@ -22,7 +22,7 @@ class PaymentController
 
     public function check(Request $request)
 	{
-        $transactionId = $request->id;
+        // $transactionId = $request->id;
         // $api_endpoint = 'https://'.setting('wompi.payment_type').'.wompi.co/v1/transactions/'.$transactionId;
         // $response = file_get_contents($api_endpoint);
         // $data = json_decode($response);
