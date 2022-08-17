@@ -30,7 +30,7 @@
 
             <div class="game-card --horizontal favourites-game">
                 <div class="game-card__box">
-                    <div class="game-card__info">
+                    <div class="game-card__info" style="width: 100%;">
                         <a class="game-card__title" href="#">Order Info</a>
                          
                         <div class="game-card__bottom">
@@ -63,7 +63,7 @@
 
             <div class="game-card --horizontal favourites-game">
                 <div class="game-card__box">
-                    <div class="game-card__info">
+                    <div class="game-card__info" style="width: 100%;">
                         <a class="game-card__title" href="#"> Kinguin Info</a>
                          
                         <div class="game-card__bottom">
