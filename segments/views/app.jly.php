@@ -71,36 +71,45 @@
         var cartTotal = '{{ exchangeRate(cartTotal(), "EUR", "COP") }}';
         
         if(cartTotal > 0) {
-            var checkout = new WidgetCheckout({
-            currency: 'COP',
-            amountInCents: '{{ exchangeRate(cartTotal(), "EUR", "COP") * 100 }}',
-            reference: '{{ strtoupper(random_strings(12)) }}',
-            publicKey: '{{ setting("wompi.PUB_KEY") }}',
-            redirectUrl: '{{ setting("wompi.REDIRECT_URL") }}', // Opcional
-            customerData: { // Opcional
-                email:'{{ user()->email }}',
-                fullName: '{{ user()->first_name." ".user()->last_name }}',
-                phoneNumber: '{{ user()->phone }}',
-                phoneNumberPrefix: '+{{ user()->country_code }}',
-                legalId: '{{ user()->id }}',
-                legalIdType: 'CC'
+            var user_phone = '{{ user()->phone }}';
+            if(user_phone != '') {
+                var checkout = new WidgetCheckout({
+                currency: 'COP',
+                amountInCents: '{{ exchangeRate(cartTotal(), "EUR", "COP") * 100 }}',
+                reference: '{{ strtoupper(random_strings(12)) }}',
+                publicKey: '{{ setting("wompi.PUB_KEY") }}',
+                redirectUrl: '{{ setting("wompi.REDIRECT_URL") }}', // Opcional
+                customerData: { // Opcional
+                    email:'{{ user()->email }}',
+                    fullName: '{{ user()->first_name." ".user()->last_name }}',
+                    phoneNumber: '{{ user()->phone }}',
+                    phoneNumberPrefix: '+{{ user()->country_code }}',
+                    legalId: '{{ user()->id }}',
+                    legalIdType: 'CC'
+                }
+                });
             }
-            });
         }
 
         $('.checkout-btn').on('click', function() {
-            checkout.open(function ( result ) {
-            var transaction = result.transaction
-            console.log('Transaction ID: ', transaction.id)
-            console.log('Transaction object: ', transaction)
-            $('#page-preloader').show();
-            if(transaction.status == "APPROVED") {
-                window.location.href = transaction.redirectUrl+"?id="+transaction.id;
+            var user_phone = '{{ user()->phone }}';
+            if(user_phone == '') {
+                toastr.error('Please enter your phone in your profile to make payment');
+                return false;
             } else {
-                $('#page-preloader').hide();
-                toastr.error(transaction.statusMessage);
+                checkout.open(function ( result ) {
+                var transaction = result.transaction
+                console.log('Transaction ID: ', transaction.id)
+                console.log('Transaction object: ', transaction)
+                $('#page-preloader').show();
+                if(transaction.status == "APPROVED") {
+                    window.location.href = transaction.redirectUrl+"?id="+transaction.id;
+                } else {
+                    $('#page-preloader').hide();
+                    toastr.error(transaction.statusMessage);
+                }
+                });
             }
-            });
         });
 
         $( function() {

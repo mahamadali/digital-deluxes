@@ -51,7 +51,7 @@
                         </div>
                         <div class="game-card__bottom">
                             <div class="game-card__rating-and-price">
-                                <div class="order-info-label">Total: <span>${{ $order->order_total() }} </span></div>
+                                <div class="order-info-label">Total: <span>€{{ $order->order_total() }} </span></div>
                             </div>
                             <div class="game-card__rating-and-price">
                                 <div class="order-info-label">Created At: <span>{{ date('M d, Y, H:i', strtotime($order->created_at)) }} </span></div>
@@ -106,7 +106,7 @@
                                     <tr>
                                         <th>{{ $item->product_id }}</th>
                                         <th>{{ $item->product_name }}</th>
-                                        <th>${{ $item->product_price }}</th>
+                                        <th>€{{ $item->product_price }}</th>
                                         <th>{{ $item->product_qty }}</th>
                                     </tr>
                                 @endforeach
