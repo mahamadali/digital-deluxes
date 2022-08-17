@@ -15,7 +15,7 @@
                         <div class="swiper-slide">
                             <div class="recommend-slide">
                                 <div class="tour-slide__box">
-                                    <a href=""><img src="{{ $product->coverImageOriginal }}" alt="banner" style="height: 400px;width: 100%;object-fit: cover;"></a>
+                                    <a href="{{ url('store/view/'.$product->id) }}"><img src="{{ $product->coverImageOriginal }}" alt="banner" style="height: 400px;width: 100%;object-fit: cover;"></a>
                                 </div>
                             </div>
                         </div>

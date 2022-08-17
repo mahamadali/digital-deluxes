@@ -40,6 +40,7 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 
 Router::get('/language/{lang}', function(Request $request, $lang) {
 	session()->setLanguage($lang);
-});
+	return redirect()->back();
+})->name('set-lang');
 
 Router::get('/logout', [ AuthController::class, 'logout' ])->name('auth.logout');

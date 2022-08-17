@@ -1409,7 +1409,7 @@ a:hover {
     -ms-flex-pack: center;
     -webkit-box-align: center;
     -ms-flex-align: center;
-    -webkit-box-shadow: 0px 30px 70px rgb(0 0 0 / 10%);
+    /* -webkit-box-shadow: 0px 30px 70px rgb(0 0 0 / 10%); */
     display: -webkit-inline-box;
     display: -ms-inline-flexbox;
     display: inline-flex;
@@ -1418,7 +1418,7 @@ a:hover {
     padding: 7px 18px;
     border-radius: 6px;
     background-color: #fff;
-    box-shadow: 0px 30px 70px rgb(0 0 0 / 10%);
+    /* box-shadow: 0px 30px 70px rgb(0 0 0 / 10%); */
     color: #000000;
     font-size: 11px;
     font-style: normal;
@@ -1584,6 +1584,23 @@ a:hover {
     margin-right: 0;
 }
 
+.page-header__action .uk-subnav {
+    margin-left: 0;
+    margin-top: 29px;
+}
+
+
+.page-header__action .uk-nav li > a {
+    display: flex;
+    align-items: center;
+    column-gap: 0.25em;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 13px;
+    color: #222;
+    opacity: 0.8;
+}
+
 .action-btn {
     -webkit-box-pack: center;
     -ms-flex-pack: center;
@@ -1640,6 +1657,15 @@ a:hover {
     justify-content: center;
     width: 32px;
     height: 32px;
+    margin-right: 10px;
+}
+
+.page-header__content .uk-subnav-pill > * > :first-child {
+    padding: 5px 10px;
+    background: 0 0;
+    color: #222;
+    font-weight: 500;
+    font-size: 12px;
 }
 
 .uk-modal-dialog {
@@ -4741,6 +4767,14 @@ body.dark-theme #modal-help ul li {
         margin-right: 15px;
     }
 
+    .page-header__action .nav-lang {
+        margin-right: 33px;
+    }
+
+    .page-header__action .nav-user-options {
+        display: none;
+    }
+
     .sidebar {
         padding: 20px 20px 20px 0;
     }
@@ -6030,3 +6064,16 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     text-indent: 100%;
     white-space: nowrap;
   }
+
+  .ui-widget.ui-widget-content {
+      padding: 10px;
+  }
+
+  .ui-menu .ui-menu-item {
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgb(216, 216, 216);
+  }
+
+  /* .ui-menu .ui-menu-item:hover {
+    background-color: #a0c4eb;
+  } */

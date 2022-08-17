@@ -42,6 +42,7 @@ class WelcomeController
     public function update(Request $request)
 	{
 		$validator = $request->validate([
+			'email' => 'required|unique:users,email,'.auth()->id,
 			'first_name' => 'required|min:2|max:18',
 			'last_name' => 'required|min:2|max:18',
             'password' => ['eqt:confirm_password'],
@@ -49,10 +50,10 @@ class WelcomeController
 		]);
 
 		if ($validator->hasError()) {
-            return redirect()->withFlashError(implode('<br>', $validator->errors()))->with('old', $request->all())->back();
+			return redirect()->withFlashError(implode('<br>', $validator->errors()))->with('old', $request->all())->back();
         }
 
-		$userData = $request->getOnly(['first_name', 'last_name',  'password','phone','profile_image']);
+		$userData = $request->getOnly(['first_name', 'last_name',  'password','phone','profile_image', 'country_code', 'age', 'address']);
 
 		$logoPath = null;
 		if ($request->hasFile('profile_image')) {

@@ -17,7 +17,13 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
+    <style>
+        .iti--separate-dial-code
+        {
+            width: 100% !important;
+        }
+    </style>
 
 </head>
 
@@ -76,7 +82,7 @@
 					  	        {{ prevent_csrf() }}
                                 <div class="uk-margin"><input class="uk-input" type="text" name="first_name" placeholder="Enter First Name"></div>
                                 <div class="uk-margin"><input class="uk-input" type="text" name="last_name" placeholder="Enter Last Name"></div>
-                                <div class="uk-margin"><input class="uk-input" type="text" name="phone" placeholder="Enter Phone Number"></div>
+                                <div class="uk-margin"><input type="hidden" name="country_code" id="country_code" value=""><input class="uk-input" type="text" name="phone" id="phone" placeholder="Enter Phone Number"></div>
                                 <div class="uk-margin"><input class="uk-input" type="email" name="email" placeholder="Enter Email"></div>
                                 <div class="uk-margin"><input class="uk-input" type="password" name="password" placeholder="Password"></div>
                                 <div class="uk-margin"><button class="uk-button uk-button-danger uk-width-1-1" type="submit">Register</button></div>
@@ -94,6 +100,7 @@
     <script src="{{ url('assets/frontend/js/libs.js') }}"></script>
     <script src="{{ url('assets/frontend/js/main.js') }}"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+    <script src="{{ url('assets/js/js-intlTelInput.min.js') }}"></script>
 
     <script>
          $("form[name='register']").validate({
@@ -155,6 +162,33 @@
                 });
                 
                 }
+            });
+
+            function getIp(callback) {
+            fetch("https://ipinfo.io/json?token=ee9dceccd60e6f", {
+                headers: { Accept: "application/json" },
+            })
+                .then((resp) => resp.json())
+                .catch(() => {
+                return {
+                    country: "us",
+                };
+                })
+                .then((resp) => callback(resp.country));
+            }
+
+            var phoneInputField = document.querySelector("#phone");
+            const phoneInput = window.intlTelInput(phoneInputField, {
+                initialCountry: "auto",
+                separateDialCode: true,
+                geoIpLookup:getIp,
+                autoPlaceholder: "aggressive",
+                nationalMode: true,
+                utilsScript: "{{ url('assets/js/utils.js') }}",
+            });
+
+            phoneInputField.addEventListener("countrychange",function() {
+            $('#country_code').val(phoneInput.getSelectedCountryData()['dialCode']);
             });
     </script>    
 

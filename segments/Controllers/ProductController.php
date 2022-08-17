@@ -196,4 +196,51 @@ class ProductController
 		ob_end_flush(); //now the headers are sent
 		exit;
 	}
+
+	public function search(Request $request) {
+		$products = Product::whereLike('name', "%".$request->term."%")->orWhereLike('platform', "%".$request->term."%")->orWhereLike('description', "%".$request->term."%")->select('coverImage', 'id', 'name', 'qty', 'price', 'platform')->get();
+
+		$output = array();
+		if(count($products) > 0)
+		{
+		foreach($products as $product)
+		{
+		$html = "<table style='width:100%;'>";
+		$html .= "<tr>";
+		$html .= "<td width='70'>";
+		$html .= '<img src="'.$product->coverImage.'" width="50" />';
+		$html .= "</td>";
+		$html .= "<td>";
+		$html .= "<table>";
+		$html .= "<tr>";
+		$html .= "<td>";
+		$html .= $product->name;
+		$html .= "</td>";
+		$html .= "</tr>";
+		$html .= "<tr>";
+		$html .= "<td>";
+		$html .= $product->platform;
+		$html .= "</td>";
+		$html .= "</tr>";
+		$html .= "</table>";
+		$html .= "</td>";
+		$html .= "</tr>";
+		$html .= "</table>";
+		$temp_array = array();
+		$temp_array['id'] = $product->id;
+		$temp_array['value'] = $product->name;
+		$temp_array['label'] = $html;
+		$output[] = $temp_array;
+		}
+		}
+		else
+		{
+		$temp_array['id'] = '';
+		$output['value'] = '';
+		$output['label'] = 'No Record Found';
+		}
+
+		echo json_encode($output);
+		exit;
+	}
 }

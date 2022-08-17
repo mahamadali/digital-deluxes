@@ -16,7 +16,11 @@
                     <li><a href="{{ route('frontend.store.list') }}"><span data-uk-icon="chevron-left"></span><span>{{ trans('store.back_to_store') }}</span></a></li>
                     <li><span>{{ $product->name }}</span></li>
                 </ul>
-                <h3 class="uk-text-lead">{{ $product->name }}</h3>
+                <h3 class="uk-text-lead">{{ $product->name }} 
+                    @if(!empty($product->originalName)):
+                    <small>({{ $product->originalName }})</small>
+                    @endif
+                </h3>
                 <div class="uk-grid uk-grid-small" data-uk-grid>
                     <div class="uk-width-2-3@s">
                         <div class="gallery">
@@ -63,6 +67,65 @@
                                 <div class="swiper-pagination"></div>
                             </div>
                         </div>
+
+                        <div class="game-profile-card" style="margin-top: 50px;">
+                            <div class="game-profile-card__title">
+                                <b>{{ trans('store.activation_details') }}:</b>
+                                <p>{{ $product->activationDetails }}</p>
+                            </div>
+                        </div>
+
+                        @if(!empty($product->systemRequirements())):
+                        <div class="game-profile-card" style="margin-top: 50px;">
+                            <div class="game-profile-card__title">
+                                <b>{{ trans('store.system_requirements') }}:</b>
+                                <p>
+                                <ul class="game-profile-card__list">
+                                    <li>
+                                        @foreach($product->systemRequirements() as $system_requirement):
+                                        <div>
+                                            <b class="grey_text">{{ $system_requirement->system }}</b>
+                                            <br>
+                                            {{ $system_requirement->requirement ? implode(', ',json_decode($system_requirement->requirement)) : 'N/A' }}
+                                        </div>
+                                        @endforeach
+                                    </li>
+                                </ul>
+                                </p>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if(!empty($product->languages)):
+                        <div class="game-profile-card" style="margin-top: 50px;">
+                            <div class="game-profile-card__title">
+                                <b>{{ trans('store.languages') }}:</b>
+                                <p>
+                                    <ul class="game-profile-card__type">
+                                        @foreach(json_decode($product->languages) as $language):
+                                            <li><span>{{ $language }}</span></li>
+                                        @endforeach    
+                                    </ul>
+                                </p>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if(!empty($product->tags)):
+                        <div class="game-profile-card" style="margin-top: 50px;">
+                            <div class="game-profile-card__title">
+                                <b>{{ trans('store.tags') }}:</b>
+                                <p>
+                                    <ul class="game-profile-card__type">
+                                        @foreach(json_decode($product->tags) as $tag):
+                                            <li><span>{{ $tag }}</span></li>
+                                        @endforeach    
+                                    </ul>
+                                </p>
+                            </div>
+                        </div>
+                        @endif
+
                     </div>
                     <div class="uk-width-1-3@s">
                         <div class="game-profile-card">
@@ -74,8 +137,16 @@
                                     <div class="game-card__rating"><span>4.7</span><i class="ico_star"></i><span class="rating-vote">(433)</span></div>
                                 </li> -->
                                 <li>
+                                    <div></div>
+                                    <div class="game-card__rating"><span>{{ $product->qty }} left in stock</span></div>
+                                </li>
+                                <li>
+                                    <div>{{ trans('store.regionalLimitations') }}:</div>
+                                    <div>{{ $product->regionalLimitations }}</div>
+                                </li>
+                                <li>
                                     <div>{{ trans('store.release_date') }}:</div>
-                                    <div>{{ $product->releaseDate ? date("d M,Y", strtotime($product->releaseDate)) : 'N/A' }}</div>
+                                    <div>{{ $product->releaseDate ? date("d M, Y", strtotime($product->releaseDate)) : 'N/A' }}</div>
                                 </li>
                                 <li>
                                     <div>{{ trans('store.developer') }}:</div>
@@ -102,42 +173,9 @@
                                     <div>{{ trans('store.platforms') }}:</div>
                                     <div>{{ $product->platform }}</div>
                                 </li>
-
-                                <li>
-                                    <div><b>{{ trans('store.activation_details') }}:</b></div>
-                                 
-                                </li>
-
-                                <li>
-                                    <div></div>
-                                    <div>{{ $product->activationDetails }}</div>
-                                </li>
-                                
-
                                
                             </ul>
                             
-                            @if(!empty($product->systemRequirements())):
-                            <div><b class="grey_text">{{ trans('store.system_requirements') }}:</b></div>
-
-                            <ul class="game-profile-card__type">
-                                <li>
-                                    @foreach($product->systemRequirements() as $system_requirement):
-                                    <div><b>{{ $system_requirement->system }}</b></div>
-                                    <div>{{ $system_requirement->requirement ? implode(', ',json_decode($system_requirement->requirement)) : 'N/A' }}</div>
-                                    @endforeach
-                                </li>
-                            </ul>
-                            @endif
-
-                            <ul class="game-profile-card__type">
-                                @if(!empty($product->tags)):
-                                    @foreach(json_decode($product->tags) as $tag):
-                                        <li><span>{{ $tag }}</span></li>
-                                    @endforeach    
-                                @endif
-                            </ul>
-
                             
                         </div>
                         <div class="game-profile-price">

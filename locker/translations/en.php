@@ -51,6 +51,9 @@
             'buy_now' => 'Buy Now',
             'remove_from_wishlist' => 'Remove From Wishlist',
             'add_to_wishlist' => 'Add to Wishlist',
+            'regionalLimitations' => 'Limitation Region',
+            'languages' => 'Languages',
+            'tags' => 'Tags'
         ],
 
          'cart' => [

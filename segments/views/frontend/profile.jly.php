@@ -9,6 +9,10 @@
     .alert-danger{
         color:red;
     }
+    .iti--separate-dial-code
+    {
+        width: 100% !important;
+    }
 </style>
 @block("content")
 <main class="page-main">
@@ -38,21 +42,6 @@
                                 <h3 class="uk-text-lead">{{ trans('profile.edit_profile') }}</h3>
                             </div>
                             <div class="widjet__body">
-                                <form method="post" action="{{ route('frontend.profile.update') }}"  enctype="multipart/form-data">
-                                {{ prevent_csrf() }}
-                                <div class="uk-margin"><input type="text" class="uk-input" name="first_name" placeholder="First Name" value="{{ $user->first_name }}"></div>
-                                <div class="uk-margin"><input type="text" class="uk-input" name="last_name" placeholder="Last Name" value="{{ $user->last_name }}"></div>
-                                <div class="uk-margin"><input type="text" class="uk-input" name="phone" placeholder="Phone Number" value="{{ $user->phone }}"></div>
-                                <div class="uk-margin"><input type="password" class="uk-input" name="password" placeholder="Password"></div>
-                                <div class="uk-margin"><input type="password" class="uk-input" name="confirm_password" placeholder="Confirm Password"></div>
-                                <div class="uk-margin">
-                                    {{ trans('profile.upload_profile_image') }}: 
-                                    <input type="file" class="uk-input-file" name="profile_image">
-                                    
-                                </div>
-                                <div class="uk-margin"><button class="uk-button uk-button-danger uk-width-1-1" type="submit">{{ trans('profile.save') }}</button></div>
-                                </form>
-
                                 @if (session()->hasFlash('error')):
                                 <div class="alert-danger">
                                     <span>{{ session()->flash('error') }}</span>
@@ -64,10 +53,60 @@
                                     <span>{{ session()->flash('success') }}</span>
                                 </div>
                                 @endif
+                                <form method="post" action="{{ route('frontend.profile.update') }}"  enctype="multipart/form-data">
+                                {{ prevent_csrf() }}
+                                <div class="uk-margin"><input type="email" class="uk-input" name="email" placeholder="Email" value="{{ $user->email }}"></div>
+                                <div class="uk-margin"><input type="text" class="uk-input" name="first_name" placeholder="First Name" value="{{ $user->first_name }}"></div>
+                                <div class="uk-margin"><input type="text" class="uk-input" name="last_name" placeholder="Last Name" value="{{ $user->last_name }}"></div>
+                                <div class="uk-margin"><input type="hidden" name="country_code" id="country_code" value="{{ $user->country_code }}"><input type="text" class="uk-input" name="phone" id="phone" placeholder="Phone Number" value="{{ $user->phone }}"></div>
+                                <div class="uk-margin"><input type="text" class="uk-input" name="age" placeholder="Age" value="{{ $user->age }}"></div>
+                                <div class="uk-margin"><input type="text" class="uk-input" name="address" placeholder="Address" value="{{ $user->address }}"></div>
+                                <div class="uk-margin"><input type="password" class="uk-input" name="password" placeholder="Password"></div>
+                                <div class="uk-margin"><input type="password" class="uk-input" name="confirm_password" placeholder="Confirm Password"></div>
+                                <div class="uk-margin">
+                                    {{ trans('profile.upload_profile_image') }}: 
+                                    <input type="file" class="uk-input-file" name="profile_image">
+                                    
+                                </div>
+                                <div class="uk-margin"><button class="uk-button uk-button-danger uk-width-1-1" type="submit">{{ trans('profile.save') }}</button></div>
+                                </form>
                             </div>
                         </div>
                        
                     </div>
                 </div>
             </main>
+@endblock
+
+@block("scripts")
+<script>
+function getIp(callback) {
+  fetch("https://ipinfo.io/json?token=ee9dceccd60e6f", {
+    headers: { Accept: "application/json" },
+  })
+    .then((resp) => resp.json())
+    .catch(() => {
+      return {
+        country: "us",
+      };
+    })
+    .then((resp) => callback(resp.country));
+}
+
+var phoneInputField = document.querySelector("#phone");
+const phoneInput = window.intlTelInput(phoneInputField, {
+    initialCountry: "auto",
+    separateDialCode: true,
+    geoIpLookup:getIp,
+    autoPlaceholder: "aggressive",
+    nationalMode: true,
+    utilsScript: "{{ url('assets/js/utils.js') }}",
+});
+
+phoneInputField.addEventListener("countrychange",function() {
+  $('#country_code').val(phoneInput.getSelectedCountryData()['dialCode']);
+});
+
+phoneInput.setNumber("+<?php echo $user->country_code." ".$user->phone; ?>");
+</script>
 @endblock

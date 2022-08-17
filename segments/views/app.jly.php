@@ -16,6 +16,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
         @plot('styles')
     </head>
     <body class="page-home">
@@ -62,6 +64,8 @@
         <script src="{{ url('assets/frontend/js/general-func.js') }}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
         <script type="text/javascript" src="https://checkout.wompi.co/widget.js"></script>
+        <script src="{{ url('assets/js/js-intlTelInput.min.js') }}"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 
         <script>
         var cartTotal = '{{ exchangeRate(cartTotal(), "EUR", "COP") }}';
@@ -77,7 +81,7 @@
                 email:'{{ user()->email }}',
                 fullName: '{{ user()->first_name." ".user()->last_name }}',
                 phoneNumber: '{{ user()->phone }}',
-                phoneNumberPrefix: '+1',
+                phoneNumberPrefix: '+{{ user()->country_code }}',
                 legalId: '{{ user()->id }}',
                 legalIdType: 'CC'
             }
@@ -97,7 +101,29 @@
                 toastr.error(transaction.statusMessage);
             }
             });
-        })
+        });
+
+        $( function() {
+            
+            $('.search__input input[type="search"]').autocomplete({
+                source: "{{ route('api.search-product') }}",
+                minLength: 1,
+                select: function( event, ui ) {
+                    if(typeof ui.item.id != 'undefined') {
+                        window.location.href = "{{ url('store/view') }}/"+ui.item.id;
+                    } else {
+                        setTimeout(function() {
+                            $('.search__input input[type="search"]').val('');
+                        }, 500)
+                    }
+                },
+            }).data('ui-autocomplete')._renderItem = function(ul, item){
+                return $("<li class='ui-autocomplete-row'></li>")
+                    .data("item.autocomplete", item)
+                    .append(item.label)
+                    .appendTo(ul);
+                };;
+        } );
         </script>
         @plot('scripts')
         @include('layout/alert')

@@ -93,6 +93,7 @@ class AuthController
 		$user->first_name = $request->first_name;
 		$user->last_name = $request->last_name;
 		$user->email = $request->email;
+		$user->country_code = $request->country_code;
 		$user->phone = $request->phone;
 		$user->password = md5($request->password);
 		$user->role_id = Role::where('name', 'user')->first()->id;

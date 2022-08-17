@@ -47,6 +47,9 @@
             'buy_now' => 'Comprar ahora',
             'remove_from_wishlist' => 'Eliminar de la lista de deseos',
             'add_to_wishlist' => 'Añadir a la lista de deseos',
+            'regionalLimitations' => 'Limitation Region',
+            'languages' => 'Languages',
+            'tags' => 'Tags'
         ],
 
          'cart' => [

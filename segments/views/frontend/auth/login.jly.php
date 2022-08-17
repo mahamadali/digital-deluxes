@@ -79,7 +79,7 @@
                                 <div class="uk-margin"><input class="uk-input" type="email" name="email" placeholder="Email" required></div>
                                 <div class="uk-margin"><input class="uk-input" type="password" name="password" placeholder="Password" required></div>
                                 <div class="uk-margin"><button class="uk-button uk-button-danger uk-width-1-1" type="submit">Log In</button></div>
-                                <div class="uk-margin uk-text-center"><a href="01_login-in.html">Forgotten password?</a></div>
+                                <!-- <div class="uk-margin uk-text-center"><a href="01_login-in.html">Forgotten password?</a></div> -->
                                 <hr>
                                 <div class="uk-text-center"><span>Don’t have an account?</span><a class="uk-margin-small-left" href="{{ url('sign-up') }}">Register</a></div>
                             </form>
