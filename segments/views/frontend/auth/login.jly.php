@@ -60,13 +60,13 @@
                 </div>
                 <div>
                     <div class="form-login">
-                        <!-- <div class="form-login__social">
+                        <div class="form-login__social">
                             <ul class="social">
-                                <li><a href="http://www.google.com"><img src="{{ url('assets/frontend/img/google.svg') }}" alt="google"></a></li>
-                                <li><a href="http://www.facebook.com"><img src="{{ url('assets/frontend/img/facebook.svg') }}" alt="facebook"></a></li>
-                                <li><a href="http://www.twitter.com"><img src="{{ url('assets/frontend/img/twitter.svg') }}" alt="twitter"></a></li>
+                                <li><a href="{{ $google_login_url }}"><img src="{{ url('assets/frontend/img/google.svg') }}" alt="google"></a></li>
+                                <!-- <li><a href="http://www.facebook.com"><img src="{{ url('assets/frontend/img/facebook.svg') }}" alt="facebook"></a></li>
+                                <li><a href="http://www.twitter.com"><img src="{{ url('assets/frontend/img/twitter.svg') }}" alt="twitter"></a></li> -->
                             </ul>
-                        </div> -->
+                        </div>
                         <div class="form-login__box">
                         @if (session()->hasFlash('error')):
                             <div class="alert alert-danger">
