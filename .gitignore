@@ -7,3 +7,9 @@ settings/google.php
 settings/wompi.php
 settings/kinguin.php
 compiler/builds/
+ipn.txt
+order-status.txt
+order-complete.txt
+product-update.txt
+error_log
+assets/uploads/
