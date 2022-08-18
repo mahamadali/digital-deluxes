@@ -22,4 +22,5 @@ Router::bunch('/', ['as' => 'frontend.auth.', 'barrier' => ['is-front-not-auth']
 
 Router::bunch('/callback', ['as' => 'callback.'], function () {
 	Router::get('/google', [frontAuth::class, 'index'])->name('googlecallback');
+	Router::get('/facebook', [frontAuth::class, 'facebookcallback'])->name('facebookcallback');
 });

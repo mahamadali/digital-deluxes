@@ -63,8 +63,8 @@
                         <div class="form-login__social">
                             <ul class="social">
                                 <li><a href="{{ $google_login_url }}"><img src="{{ url('assets/frontend/img/google.svg') }}" alt="google"></a></li>
-                                <!-- <li><a href="http://www.facebook.com"><img src="{{ url('assets/frontend/img/facebook.svg') }}" alt="facebook"></a></li>
-                                <li><a href="http://www.twitter.com"><img src="{{ url('assets/frontend/img/twitter.svg') }}" alt="twitter"></a></li> -->
+                                <li><a href="{{ $fb_loginurl }}"><img src="{{ url('assets/frontend/img/facebook.svg') }}" alt="facebook"></a></li>
+                                <!-- <li><a href="http://www.twitter.com"><img src="{{ url('assets/frontend/img/twitter.svg') }}" alt="twitter"></a></li> -->
                             </ul>
                         </div>
                         <div class="form-login__box">

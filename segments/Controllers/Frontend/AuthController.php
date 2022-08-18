@@ -11,11 +11,31 @@ use Models\Role;
 use Models\User;
 use Google_Client;
 use Google_Service_Oauth2;
+// Include required libraries
+use Facebook\Facebook;
+use Facebook\Exceptions\FacebookResponseException;
+use Facebook\Exceptions\FacebookSDKException;
 
 class AuthController
 {
 	public function index(Request $request)
 	{
+
+		// Call Facebook API
+		$fb = new Facebook(array(
+			'app_id' => setting('facebook.app_id'),
+			'app_secret' => setting('facebook.app_secret'),
+			'default_graph_version' => 'v3.2',
+		));
+
+		// Get redirect login helper
+		$helper = $fb->getRedirectLoginHelper();
+
+		// Get login url
+		$permissions = ['email']; // Optional permissions
+		$fb_loginURL = $helper->getLoginUrl(setting('facebook.redirect_url'), $permissions);
+
+
 		// init configuration
 		$clientID = setting('google.client_id');
 		$clientSecret = setting('google.client_secret');;
@@ -71,7 +91,7 @@ class AuthController
 		} else {
 			$google_login_url = $client->createAuthUrl();
 		}
-		return render('frontend/auth/login', ['google_login_url' =>  $google_login_url]);
+		return render('frontend/auth/login', ['google_login_url' =>  $google_login_url, 'fb_loginurl' => htmlspecialchars($fb_loginURL)]);
 	}
 
 	public function checkLogin(Request $request)
@@ -165,6 +185,88 @@ class AuthController
 				'message' => 'Registration success!'
 			]);
 
+	}
+
+	public function facebookcallback() {
+
+		// Call Facebook API
+		$fb = new Facebook(array(
+			'app_id' => setting('facebook.app_id'),
+			'app_secret' => setting('facebook.app_secret'),
+			'default_graph_version' => 'v3.2',
+		));
+
+		// Get redirect login helper
+		$helper = $fb->getRedirectLoginHelper();
+
+		$accessToken = $helper->getAccessToken();
+			
+		// OAuth 2.0 client handler helps to manage access tokens
+		$oAuth2Client = $fb->getOAuth2Client();
+		
+		// Exchanges a short-lived access token for a long-lived one
+		$longLivedAccessToken = $oAuth2Client->getLongLivedAccessToken($accessToken);
+		
+		
+		// Set default access token to be used in script
+		$fb->setDefaultAccessToken($longLivedAccessToken);
+		
+		
+		// Getting user's profile info from Facebook
+		try {
+			$graphResponse = $fb->get('/me?fields=name,first_name,last_name,email,link,gender,picture');
+			$fbUser = $graphResponse->getGraphUser();
+		} catch(FacebookResponseException $e) {
+			echo 'Graph returned an error: ' . $e->getMessage();
+			session_destroy();
+			// Redirect user back to app login page
+			header("Location: ./");
+			exit;
+		} catch(FacebookSDKException $e) {
+			echo 'Facebook SDK returned an error: ' . $e->getMessage();
+			exit;
+		}
+		
+		// Getting user's profile data
+		$fbUserData = array();
+		$fbUserData['oauth_uid']  = !empty($fbUser['id'])?$fbUser['id']:'';
+		$fbUserData['first_name'] = !empty($fbUser['first_name'])?$fbUser['first_name']:'';
+		$fbUserData['last_name']  = !empty($fbUser['last_name'])?$fbUser['last_name']:'';
+		$fbUserData['email']      = !empty($fbUser['email'])?$fbUser['email']:'';
+		$fbUserData['gender']     = !empty($fbUser['gender'])?$fbUser['gender']:'';
+		$fbUserData['picture']    = !empty($fbUser['picture']['url'])?$fbUser['picture']['url']:'';
+		$fbUserData['link']       = !empty($fbUser['link'])?$fbUser['link']:'';
+		
+		// Insert or update user data to the database
+		$fbUserData['oauth_provider'] = 'facebook';
+		
+		$user = User::where('email', $fbUserData['email'])->first();
+		if(empty($user)) {
+
+			$img = '';
+			if(!empty($fbUserData['picture'])) {
+				// Remote image URL
+				$url = $fbUserData['picture'];
+
+				// Image path
+				$img = 'assets/uploads/user-logos/'.time().'.png';
+
+				// Save image 
+				file_put_contents($img, file_get_contents($url));
+			}
+
+			$user = new User();
+			$user->first_name = $fbUserData['first_name'];
+			$user->last_name = $fbUserData['last_name'];
+			$user->email = $fbUserData['email'];
+			$user->profile_image = $img;
+			$user->role_id = Role::where('name', 'user')->first()->id;
+			$user = $user->save();
+		}
+
+		session()->setLanguage('en');
+		Session::set('auth', $user);
+		return $this->redirectAfterLogin($user);
 	}
 
 }
