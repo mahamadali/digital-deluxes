@@ -170,6 +170,7 @@ class PaymentController
                 echo 'Error:' . curl_error($ch);
             }
             curl_close($ch);
+            file_put_contents('create-order.txt', $result);
 
             $orderData = json_decode($result);
 
