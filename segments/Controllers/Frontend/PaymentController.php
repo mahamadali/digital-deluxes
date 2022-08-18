@@ -323,25 +323,28 @@ class PaymentController
         $order->updated_at = $data->updatedAt;
         $order->dispatchId = $dispatch_data->dispatchId;
         $order = $order->save();
-        
-        $loadKeys = $this->loadKeys($dispatch_data->dispatchId);
-        $loadKeys = json_decode($loadKeys);
-        
-        if(!empty($loadKeys)) {
-            foreach($loadKeys as $loadKey) {
-                $product = Product::where('productId', $loadKey->productId)->first();
-                $game_key = new GameKey();
-                $game_key->order_id = $order->id;
-                $game_key->product_id = $product->id;
-                $game_key->serial = $loadKey->serial;
-                $game_key->type = $loadKey->type;
-                $game_key->name = $loadKey->name;
-                $game_key->kinguinId = $loadKey->kinguinId;
-                $game_key->offerId = $loadKey->offerId;
-                $game_key->save();
+
+        $game_key_available = GameKey::where('order_id', $order->id)->first();
+        if(empty($game_key_available)) {
+            $loadKeys = $this->loadKeys($dispatch_data->dispatchId);
+            $loadKeys = json_decode($loadKeys);
+            
+            if(!empty($loadKeys)) {
+                foreach($loadKeys as $loadKey) {
+                    $product = Product::where('productId', $loadKey->productId)->first();
+                    $game_key = new GameKey();
+                    $game_key->order_id = $order->id;
+                    $game_key->product_id = $product->id;
+                    $game_key->serial = $loadKey->serial;
+                    $game_key->type = $loadKey->type;
+                    $game_key->name = $loadKey->name;
+                    $game_key->kinguinId = $loadKey->kinguinId;
+                    $game_key->offerId = $loadKey->offerId;
+                    $game_key->save();
+                }
+                $order = Order::find($order->id);
+                Alert::as(new KeysEmail($order))->notify();
             }
-            $order = Order::find($order->id);
-            Alert::as(new KeysEmail($order))->notify();
         }
 
         ob_start();
