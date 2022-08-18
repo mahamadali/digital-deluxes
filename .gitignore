@@ -4,6 +4,7 @@ settings/app.php
 settings/database.php
 settings/alert.php
 settings/google.php
+settings/facebook.php
 settings/wompi.php
 settings/kinguin.php
 compiler/builds/
