@@ -5,6 +5,7 @@ use Google\Service\AdExchangeBuyerII\Price;
 use Models\User;
 use Models\Cart;
 use Models\PriceProfit;
+use Models\Setting;
 
 if (! function_exists('generateOTP')) {
     /**
@@ -313,5 +314,13 @@ if (! function_exists('getProfitCommission')) {
 
         $commission = ($profit_prices->profit_perc * $price) / 100;
         return number_format($commission, 2);
+    }
+}
+
+if (! function_exists('admin')) {
+    function admin()
+    {
+        $admin = Setting::where('`key`', 'receive_email_alerts_at')->first();
+        return $admin;
     }
 }

@@ -5,6 +5,7 @@ namespace Controllers\Frontend;
 use Bones\Alert;
 use Bones\Request;
 use Mail\KeysEmail;
+use Mail\NewOrderAdminEmail;
 use Models\Cart;
 use Models\GameKey;
 use Models\Order;
@@ -346,6 +347,7 @@ class PaymentController
                 }
                 $order = Order::find($order->id);
                 Alert::as(new KeysEmail($order))->notify();
+                Alert::as(new NewOrderAdminEmail($order))->notify();
             }
         }
 
