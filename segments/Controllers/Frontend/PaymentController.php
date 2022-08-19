@@ -117,7 +117,7 @@ class PaymentController
                 $orderItem->product_id = $item->product_id;
                 $orderItem->product_name = $item->product_name;
                 $orderItem->product_price = $item->product_price;
-                $orderItem->product_price_profit = getProfitPrice($item->product_price);
+                $orderItem->product_price_profit = getProfitCommission($item->product()->price);
                 $orderItem->product_qty = $item->product_qty;
                 $orderItem->save();
             }

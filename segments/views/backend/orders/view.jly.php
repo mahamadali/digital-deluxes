@@ -95,7 +95,7 @@
                                 <td>ID</td>
                                 <td>Name</td>
                                 <td>Price</td>
-                                <td>Price with Commission</td>
+                                <td>Commission</td>
                                 <td>Qty</td>
                             </tr>
                         </thead>

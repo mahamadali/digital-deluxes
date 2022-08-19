@@ -153,7 +153,7 @@ if (! function_exists('cartTotal')) {
         $cart_details  = Cart::where('user_id', $userId)->orderBy('id')->get();
         $total = 0;
         foreach($cart_details as $cart) {
-            $total += getProfitPrice($cart->product_price) * $cart->product_qty;
+            $total += $cart->product_price * $cart->product_qty;
         }
         return $total;
     }
@@ -297,5 +297,21 @@ if (! function_exists('getProfitPrice')) {
         $commission = ($profit_prices->profit_perc * $price) / 100;
         $profit_price = $price + $commission;
         return number_format($profit_price, 2);
+    }
+}
+
+if (! function_exists('getProfitCommission')) {
+    function getProfitCommission($price)
+    {
+        if(!empty($priceProfit = PriceProfit::selectSet(['max(min_price) as maximum_price', 'profit_perc'])->orderBy('id')->first())) {
+            if($priceProfit->maximum_price <= $price) {
+                $profit_prices = $priceProfit;
+            } else {
+                $profit_prices = PriceProfit::where('max_price', (float) $price, '>=')->first();
+            }
+        }
+
+        $commission = ($profit_prices->profit_perc * $price) / 100;
+        return number_format($commission, 2);
     }
 }
