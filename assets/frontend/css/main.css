@@ -6077,3 +6077,37 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
   /* .ui-menu .ui-menu-item:hover {
     background-color: #a0c4eb;
   } */
+
+  .country_restriction_success_text {
+    text-align: center;display: block;color: #4fae82;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.31;
+    transition: all 0.25s linear;
+  }
+
+  .country_restriction_success_text .ico_tick-circle{
+    position: relative;
+    top: 7px;
+    font-size: 24px;
+   }
+
+   .country_restriction_danger_text {
+    text-align: center;display: block;color: #F46119;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.31;
+    transition: all 0.25s linear;
+  }
+
+  .country_restriction_danger_text .ico_close-circle{
+    position: relative;
+    top: 7px;
+    font-size: 24px;
+   }
+
+   .YOUR_COUNTRY {
+       font-weight: bold;
+   }

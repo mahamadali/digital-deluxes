@@ -129,8 +129,11 @@
                     </div>
                     <div class="uk-width-1-3@s">
                         <div class="game-profile-price">
+                            <div class="country_restriction_success_text" style="display: none;"><i class="ico_tick-circle"></i> Can be activated in: <span class="YOUR_COUNTRY"></span></div>
+                            <div class="country_restriction_danger_text" style="display: none;"><i class="ico_close-circle"></i> Cannot be activated in: <span class="YOUR_COUNTRY"></span></div>
+                            <hr>
                             <div class="game-profile-price__value">€{{ $product->price }} EUR</div>
-                            <a href="{{ route('frontend.cart.add',[$product->id]) }}" class="uk-button uk-button-danger uk-width-1-1">
+                            <a href="{{ route('frontend.cart.add',[$product->id]) }}" class="uk-button uk-button-danger uk-width-1-1 buy-now-btn">
                                 <span class="ico_shopping-cart"></span><span>{{ trans('store.buy_now') }}</span>
                             </a>
                             @if($product->isInWishlist()):
@@ -237,5 +240,42 @@
             });
         });
     });
+
+    
+    fetch("https://ipinfo.io/json?token=ee9dceccd60e6f", {
+        headers: { Accept: "application/json" },
+    })
+        .then((resp) => resp.json())
+        .catch(() => {
+        return {
+            country: "us",
+        };
+        })
+        .then((resp) => handleIp(resp));
+
+        function handleIp(ipdata) {
+            var restriction_countries = '<?php echo $product->regionalLimitations ?>';
+            console.log(restriction_countries);
+            var country = ipdata.country;
+            const regionNames = new Intl.DisplayNames(
+                ['en'], {type: 'region'}
+                );
+            if(restriction_countries == 'Region free') {
+                $('.country_restriction_success_text').show();
+                $('.country_restriction_danger_text').hide();
+                $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(regionNames.of(country));
+            } else {
+                if(regionNames.of(country) == restriction_countries) {
+                    $('.country_restriction_success_text').hide();
+                    $('.country_restriction_danger_text').show();
+                    $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(regionNames.of(country))
+                } else {
+                    $('.country_restriction_success_text').show();
+                    $('.country_restriction_danger_text').hide();
+                    $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(regionNames.of(country))
+                }
+            }
+            
+        }
 </script>
 @endblock
