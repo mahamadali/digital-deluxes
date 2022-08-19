@@ -35,6 +35,8 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 	Router::bunch('/settings', ['as' => 'settings.'], function() {
 		Router::get('/list', [ SettingController::class, 'index' ])->name('list');
 		Router::post('/update', [ SettingController::class, 'update' ])->name('update');
+		Router::get('/price-profits', [ SettingController::class, 'priceProfits' ])->name('price-profits');
+		Router::post('/profits-update', [ SettingController::class, 'profitUpdate' ])->name('profit.update');
 	});
 });
 

@@ -106,6 +106,7 @@ class PaymentController
             $order->status_message = $result->status_message;
             $order->currency = $result->currency;
             $order->amount_in_cents = $result->amount_in_cents;
+            $order->order_amount = cartTotal($user->id);
             $order->user_id = $user->id;
             $order = $order->save();
 
@@ -116,6 +117,7 @@ class PaymentController
                 $orderItem->product_id = $item->product_id;
                 $orderItem->product_name = $item->product_name;
                 $orderItem->product_price = $item->product_price;
+                $orderItem->product_price_profit = getProfitPrice($item->product_price);
                 $orderItem->product_qty = $item->product_qty;
                 $orderItem->save();
             }

@@ -29,11 +29,25 @@
         </a>
       </li>
 
-      <li class="nav-item {{ (request()->matchesTo('/admin/settings/*')) ? 'active' : '' }}">
+      <!-- <li class="nav-item {{ (request()->matchesTo('/admin/settings/*')) ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.settings.list') }}">
           <i class="ti-settings menu-icon"></i>
           <span class="menu-title">Settings</span>
         </a>
+      </li> -->
+
+      <li class="nav-item {{ (Bones\Str::contains(request()->currentPage(), '/admin/settings/')) ? 'active' : '' }}">
+        <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+          <i class="icon-head menu-icon"></i>
+          <span class="menu-title">Settings</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse {{ (Bones\Str::contains(request()->currentPage(), '/admin/settings/')) ? 'show' : '' }}" id="auth">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"> <a class="nav-link" href="{{ route('admin.settings.price-profits') }}"> Price Profits </a></li>
+            <li class="nav-item"> <a class="nav-link" href="{{ route('admin.settings.list') }}"> Configurations </a></li>
+          </ul>
+        </div>
       </li>
 
     @endif 

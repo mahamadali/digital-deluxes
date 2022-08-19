@@ -95,6 +95,7 @@
                                 <td>ID</td>
                                 <td>Name</td>
                                 <td>Price</td>
+                                <td>Price with Commission</td>
                                 <td>Qty</td>
                             </tr>
                         </thead>
@@ -104,6 +105,7 @@
                                 <th>{{ $item->product_id }}</th>
                                 <th>{{ $item->product_name }}</th>
                                 <th>${{ $item->product_price }}</th>
+                                <th>${{ $item->product_price_profit }}</th>
                                 <th>{{ $item->product_qty }}</th>
                             </tr>
                         @endforeach

@@ -1,8 +1,10 @@
 <?php
 
 use Bones\Str;
+use Google\Service\AdExchangeBuyerII\Price;
 use Models\User;
 use Models\Cart;
+use Models\PriceProfit;
 
 if (! function_exists('generateOTP')) {
     /**
@@ -143,12 +145,15 @@ if (! function_exists('cartItems')) {
 }
 
 if (! function_exists('cartTotal')) {
-    function cartTotal()
+    function cartTotal($userId = '')
     {
-        $cart_details  = Cart::where('user_id', auth()->id)->orderBy('id')->get();
+        if(empty($userId)) {
+            $userId = auth()->id;
+        }
+        $cart_details  = Cart::where('user_id', $userId)->orderBy('id')->get();
         $total = 0;
         foreach($cart_details as $cart) {
-            $total += $cart->product_price * $cart->product_qty;
+            $total += getProfitPrice($cart->product_price) * $cart->product_qty;
         }
         return $total;
     }
@@ -276,4 +281,21 @@ function getKinguinBalance() {
     curl_close($ch);
     return json_decode($result);
 
+}
+
+if (! function_exists('getProfitPrice')) {
+    function getProfitPrice($price)
+    {
+        if(!empty($priceProfit = PriceProfit::selectSet(['max(min_price) as maximum_price', 'profit_perc'])->orderBy('id')->first())) {
+            if($priceProfit->maximum_price <= $price) {
+                $profit_prices = $priceProfit;
+            } else {
+                $profit_prices = PriceProfit::where('max_price', (float) $price, '>=')->first();
+            }
+        }
+
+        $commission = ($profit_prices->profit_perc * $price) / 100;
+        $profit_price = $price + $commission;
+        return number_format($profit_price, 2);
+    }
 }

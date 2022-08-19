@@ -12,6 +12,7 @@ use Models\ProductVideo;
 class Product extends Model
 {
     protected $table = 'products';
+	protected $attach = ['price'];
 
     public function offers(){
 		return $this->hasMany(ProductOffer::class, 'product_id')->get();
@@ -40,5 +41,11 @@ class Product extends Model
 			return true;
 		}
 		return false;
+	}
+	
+	public function getPriceProperty() {
+		$price = $this->price;
+		$profitPrice = getProfitPrice($price);
+		return $profitPrice;
 	}
 }

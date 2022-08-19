@@ -40,7 +40,7 @@ class StoreController
 
 		$product_limit = 12;
         $products = $products->paginate($product_limit, $page);
-
+		
         return render('frontend/store/index', [
 			'products' => $products,
 			'product_limit' => $product_limit
