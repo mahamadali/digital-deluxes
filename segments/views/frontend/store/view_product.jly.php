@@ -128,6 +128,23 @@
 
                     </div>
                     <div class="uk-width-1-3@s">
+                        <div class="game-profile-price">
+                            <div class="game-profile-price__value">€{{ $product->price }} EUR</div>
+                            <a href="{{ route('frontend.cart.add',[$product->id]) }}" class="uk-button uk-button-danger uk-width-1-1">
+                                <span class="ico_shopping-cart"></span><span>{{ trans('store.buy_now') }}</span>
+                            </a>
+                            @if($product->isInWishlist()):
+                            <button class="uk-button uk-button-danger uk-width-1-1 remove_from_fav" data-url="{{ route('frontend.store.remove-from-fav', ['product' => $product->id]) }}" type="button">
+                                <span class="ico_favourites"></span><span>{{ trans('store.remove_from_wishlist') }}</span>
+                            </button>
+                            @else
+                            <button class="uk-button uk-button-primary uk-width-1-1 add_to_fav" data-url="{{ route('frontend.store.add-to-fav', ['product' => $product->id]) }}" type="button">
+                                <span class="ico_favourites"></span><span>{{ trans('store.add_to_wishlist') }}</span>
+                            </button>
+                            @endif
+                            <div id="messages"></div>
+                        </div>
+                        
                         <div class="game-profile-card">
                             <div class="game-profile-card__media"><img src="{{ $product->coverImageOriginal }}" alt="game-profile-card"></div>
                             <div class="game-profile-card__intro"><span>{{ $product->description ? $product->description : 'N/A' }}</span></div>
@@ -177,22 +194,6 @@
                             </ul>
                             
                             
-                        </div>
-                        <div class="game-profile-price">
-                            <div class="game-profile-price__value">€{{ $product->price }} EUR</div>
-                            <a href="{{ route('frontend.cart.add',[$product->id]) }}" class="uk-button uk-button-danger uk-width-1-1">
-                                <span class="ico_shopping-cart"></span><span>{{ trans('store.buy_now') }}</span>
-                            </a>
-                            @if($product->isInWishlist()):
-                            <button class="uk-button uk-button-danger uk-width-1-1 remove_from_fav" data-url="{{ route('frontend.store.remove-from-fav', ['product' => $product->id]) }}" type="button">
-                                <span class="ico_favourites"></span><span>{{ trans('store.remove_from_wishlist') }}</span>
-                            </button>
-                            @else
-                            <button class="uk-button uk-button-primary uk-width-1-1 add_to_fav" data-url="{{ route('frontend.store.add-to-fav', ['product' => $product->id]) }}" type="button">
-                                <span class="ico_favourites"></span><span>{{ trans('store.add_to_wishlist') }}</span>
-                            </button>
-                            @endif
-                            <div id="messages"></div>
                         </div>
                     </div>
                 </div>
