@@ -6,7 +6,7 @@
 			<div style="color:#000000;direction:ltr;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:15px;font-weight:400;letter-spacing:0px;line-height:120%;text-align:left;mso-line-height-alt:18px;">
 				<h5>Hey Admin! </h5>
 				<p style="margin: 0;">User {{ $order->user->full_name }} (#{{ $order->user->id }}) has purchased game serial keys on our platform!.</p>
-				<p>Below is your game keys details.</p>
+				<p>Below is the game keys details.</p>
 			</div>
 		</td>
 	</tr>
