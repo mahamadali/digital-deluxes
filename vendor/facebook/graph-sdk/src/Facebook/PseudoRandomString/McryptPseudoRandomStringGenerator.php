@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016 Facebook, Inc.
+ * Copyright 2017 Facebook, Inc.
  *
  * You are hereby granted a non-exclusive, worldwide, royalty-free license to
  * use, copy, modify, and distribute this software in source code or binary
@@ -54,8 +54,7 @@ class McryptPseudoRandomStringGenerator implements PseudoRandomStringGeneratorIn
     {
         $this->validateLength($length);
 
-        //$binaryString = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
-        $binaryString = random_bytes($length);
+        $binaryString = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
 
         if ($binaryString === false) {
             throw new FacebookSDKException(

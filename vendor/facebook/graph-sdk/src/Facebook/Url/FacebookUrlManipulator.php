@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016 Facebook, Inc.
+ * Copyright 2017 Facebook, Inc.
  *
  * You are hereby granted a non-exclusive, worldwide, royalty-free license to
  * use, copy, modify, and distribute this software in source code or binary
@@ -53,7 +53,7 @@ class FacebookUrlManipulator
             }
 
             if (count($params) > 0) {
-                $query = '?' . http_build_query($params, '', '&');
+                $query = '?' . http_build_query($params, null, '&');
             }
         }
 
@@ -81,7 +81,7 @@ class FacebookUrlManipulator
         }
 
         if (strpos($url, '?') === false) {
-            return $url . '?' . http_build_query($newParams, '', '&');
+            return $url . '?' . http_build_query($newParams, null, '&');
         }
 
         list($path, $query) = explode('?', $url, 2);
@@ -94,7 +94,7 @@ class FacebookUrlManipulator
         // Sort for a predicable order
         ksort($newParams);
 
-        return $path . '?' . http_build_query($newParams, '', '&');
+        return $path . '?' . http_build_query($newParams, null, '&');
     }
 
     /**

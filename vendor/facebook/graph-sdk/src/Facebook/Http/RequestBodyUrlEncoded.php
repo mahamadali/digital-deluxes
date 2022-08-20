@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016 Facebook, Inc.
+ * Copyright 2017 Facebook, Inc.
  *
  * You are hereby granted a non-exclusive, worldwide, royalty-free license to
  * use, copy, modify, and distribute this software in source code or binary
@@ -50,6 +50,6 @@ class RequestBodyUrlEncoded implements RequestBodyInterface
      */
     public function getBody()
     {
-        return http_build_query($this->params, '', '&');
+        return http_build_query($this->params, null, '&');
     }
 }

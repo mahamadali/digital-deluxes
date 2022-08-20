@@ -63,6 +63,7 @@ class AuthController
 		$nameExplode = explode(" ", $name);
 		
 		$user = User::where('email', $email)->first();
+		
 		if(empty($user)) {
 
 			// Remote image URL
@@ -118,6 +119,10 @@ class AuthController
 	}
 
 	public function redirectAfterLogin($user) {
+		if($user->status == 'Deactivate') {
+			Session::remove('auth');
+			return redirect()->to(route('frontend.auth.login'))->withFlashError('Your account has been suspended!')->go();
+		}
 		$role = $user->role->name ?? '';
 		switch ($role) {
 			case 'admin':
@@ -241,6 +246,7 @@ class AuthController
 		$fbUserData['oauth_provider'] = 'facebook';
 		
 		$user = User::where('email', $fbUserData['email'])->first();
+		
 		if(empty($user)) {
 
 			$img = '';

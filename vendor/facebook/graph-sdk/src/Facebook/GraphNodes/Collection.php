@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016 Facebook, Inc.
+ * Copyright 2017 Facebook, Inc.
  *
  * You are hereby granted a non-exclusive, worldwide, royalty-free license to
  * use, copy, modify, and distribute this software in source code or binary
@@ -162,7 +162,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      *
      * @return int
      */
-    public function count(): int
+    public function count()
     {
         return count($this->items);
     }
@@ -172,9 +172,9 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      *
      * @return ArrayIterator
      */
-    public function getIterator(): \Traversable
+    public function getIterator()
     {
-        return new \ArrayIterator($this->items);
+        return new ArrayIterator($this->items);
     }
 
     /**
@@ -184,7 +184,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      *
      * @return bool
      */
-    public function offsetExists($key): bool
+    public function offsetExists($key)
     {
         return array_key_exists($key, $this->items);
     }
@@ -196,7 +196,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      *
      * @return mixed
      */
-    public function offsetGet($key): mixed
+    public function offsetGet($key)
     {
         return $this->items[$key];
     }
@@ -209,7 +209,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      *
      * @return void
      */
-    public function offsetSet($key, $value): void
+    public function offsetSet($key, $value)
     {
         if (is_null($key)) {
             $this->items[] = $value;
@@ -225,7 +225,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      *
      * @return void
      */
-    public function offsetUnset($key): void
+    public function offsetUnset($key)
     {
         unset($this->items[$key]);
     }

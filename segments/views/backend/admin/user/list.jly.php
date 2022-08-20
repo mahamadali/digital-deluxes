@@ -9,22 +9,19 @@
 @block("content")
 
 <div class="row">
-  <div class="col-md-12">
-    <div class="card card-inverse-light-with-black-text flatten-border">
-      <div class="card-header">
+  <div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
         <div class="row">
           <div class="col-md-2">
             <h6>Members</h6>
           </div>
         </div>
-      </div>
-      <div class="card-body">
-
-
         <div class="table-responsive">
           <table id="user-listing" class="table no-footer">
             <thead>
               <tr>
+                <th>Profile</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Create At</th>
@@ -36,6 +33,7 @@
               @if ($totalUsers > 0):
               @foreach ($users as $user):
               <tr>
+                <td><img src="{{ url($user->profile_image) }}" height="50"></td>
                 <td>{{ $user->full_name }}</td>
                 <td>{{ $user->email }}</td>
 
@@ -44,6 +42,9 @@
                 <td>
                   <a href="{{ url('admin/users/view/'.$user->id) }}" class="btn btn-sm btn-success">
                     <span><i class="ti-eye"></i></span>
+                  </a>
+                  <a href="{{ url('admin/users/edit/'.$user->id) }}" class="btn btn-sm btn-success">
+                    <span><i class="ti-pencil"></i></span>
                   </a>
                 </td>
               </tr>

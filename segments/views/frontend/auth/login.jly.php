@@ -18,6 +18,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
 
+    <style>
+        .alert-danger {
+            color: red;
+            border: 1px solid;
+            padding: 10px;
+        }
+    </style>
 
 </head>
 
