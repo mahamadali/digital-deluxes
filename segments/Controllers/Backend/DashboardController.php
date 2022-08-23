@@ -2,6 +2,7 @@
 
 namespace Controllers\Backend;
 
+use Bones\Database;
 use Bones\Request;
 use Models\User;
 use Models\City;
@@ -19,9 +20,9 @@ class DashboardController
 			return $query->where('name', 'user');
 		})->get());
 
-		$products = count(Product::get());
-
-		$orders = count(Order::get());
+		$products = Database::rawQueryOne('SELECT count(id) as total_products FROM `products`')->total_products;
+		
+		$orders = Database::rawQueryOne('SELECT count(id) as total_orders FROM `orders`')->total_orders;
 
 		return render('backend/admin/dashboard', [
 			'total_users' => $total_users,
