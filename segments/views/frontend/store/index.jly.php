@@ -77,77 +77,13 @@
             </div>
         </div>
         @endforeach
-
-        
-
-        @php
-
-        $limit = $product_limit;
-        $total_pages = $products__pagination->totalPages;
-        $last       = $products__pagination->totalPages;
-        $page = !empty($_GET['page']) ? $_GET['page'] : 1;
-        $pn = $page;
-        $start      = ( ( $pn - $limit ) > 0 ) ? $pn - $limit : 1;
-        $end        = ( ( $pn + $limit ) < $last ) ? $pn + $limit : $last;
-
-        if($start == $end) {
-          $pagination = '';
-        }
-        else
-        {
-          if(isPageWithQueryString()) {
-              $jointAs = currentPageFullURL(['store','page']).'&';
-          } else {
-              $jointAs = '?';
-          }
-          $pagination = '<div class="text-center">';
-          $pagination.= '<ul class="pagination pagination-sm mt-2" style="display: inline-block;">';
-          $class      = ( $pn == 1 ) ? "disabled" : "";
-          $pagination       .= '<li class="' . $class . '">';
-          if($class != 'disabled') {
-            $pagination       .= '<li class="' . $class . '"><a href="'.$jointAs.'page=' . ( $pn - 1 ) . '">&laquo;</a></li>';
-          } else {
-            $pagination .= '<a href="Javascript:void(0);">&laquo;</a>'; 
-          }
-          $pagination       .= '</li>';
-        
-        
-          if ( $start > 1 ) {
-            $pagination   .= '<li><a href="'.$jointAs.'page=1">1</a></li>';
-            $pagination   .= '<li class="disabled"><span>...</span></li>';
-          }
-        
-          for ( $i = $start ; $i <= $end; $i++ ) {
-            $class  = ( $pn == $i ) ? "active" : "";
-            $pagination   .= '<li class="' . $class . '"><a href="'.$jointAs.'page=' . $i . '">' . $i . '</a></li>';
-          }
-        
-          if ( $end < $last ) {
-            $pagination   .= '<li class="disabled"><span>...</span></li>';
-            $pagination   .= '<li><a href="'.$jointAs.'page=' . $last . '">' . $last . '</a></li>';
-          }
-        
-          $class      = ( $pn == $last ) ? "disabled" : "";
-          $pagination       .= '<li class="' . $class . '">';
-          if($class != 'disabled') {
-            $pagination .= '<a href="'.$jointAs.'page=' . ( $pn + 1 ) . '">&raquo;</a>'; 
-          } else {
-            $pagination .= '<a href="Javascript:void(0);">&raquo;</a>'; 
-          }
-          $pagination       .= '</li>';
-          $pagination       .= '</ul>';
-          $pagination .= '</div>';
-        }
-        
-
-        @endphp
-
-
     </div>
 
     <div class="pagination_section">
-        <?php echo $pagination; ?>
+        {{ $products__pagination->addClass('centered pagination-sm mt-2')->links() }}
     </div>
+
+    
    
 </main>
 @endblock
