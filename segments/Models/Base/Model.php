@@ -551,9 +551,28 @@ class Model extends Database
         return $this;
     }
 
-    public function ___paginate($pageLimit = 0, $page = 1, $fields = null)
+    public function ___paginate($pageLimit = 0, $page = 1)
     {
-        return $this->db->paginate($pageLimit, $page, $fields, $this->table);
+        $paginated = $this->db->paginate($pageLimit, $page, $this->columns, $this->table);
+        $wrapped = [];
+        foreach ($paginated as $key => $entry) {
+            if (Str::contains($key, '__pagination')) {
+                $wrapped['__pagination'] = $entry;
+                continue;
+            }
+            $attributes = (is_object($entry)) ? get_object_vars($entry) : array_keys($entry);
+            $modelObj = (new $this->model());
+            $modelObj = $this->build($modelObj, $attributes);
+            $modelObj->setSelfOnly(true);
+            foreach($this->with as $with) {
+                $this->$with = $this->$with();
+                if (!empty($relationalProps = $this->$with->relationalProps) && !empty($this->$with->relationalProps['type'])) {
+                    $modelObj = $this->___buildRelationalData($with, $entry, $modelObj, $relationalProps);
+                }
+            }
+            $wrapped[] = $modelObj;
+        }
+        return $wrapped;
     }
 
     public function ___makeUnique($attr)
