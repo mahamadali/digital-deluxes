@@ -8,7 +8,7 @@ use Models\Product;
 class ProductController
 {
 	public function index(Request $request) {
-		$search = $request->search ?? '';
+		$search = isset($_GET['search']) ? $_GET['search'] : '';
 		if($search) {
 			$products = Product::whereLike('name', '%'.$search.'%')->orderBy('id')->paginate(10);	
 		} else {
