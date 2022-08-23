@@ -2677,9 +2677,10 @@ class Database
         $res = self::withTotalCount()->__getRows(array($offset, $pageLimit), $fields, $table);
         self::$totalPages = ceil(self::$totalCount / $pageLimit);
         $res['__pagination'] = [
-            'totalPages' => self::$totalPages,
-            'currentPage' => $page,
-            'hasNextPage' => $page < self::$totalPages,
+            'total_pages' => self::$totalPages,
+            'current_page' => $page,
+            'per_page' => $pageLimit,
+            'has_next_page' => $page < self::$totalPages
         ];
         return $res;
     }

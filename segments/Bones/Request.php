@@ -217,7 +217,7 @@ class Request extends Validation
      */
     public static function matchesTo($pattern)
     {
-        $currentPage = self::currentPage();
+        $currentPage = URL::removeQuery(self::currentPage());
 
         if ((empty($currentPage) || $currentPage == '/') && $pattern == '/') return true;
 

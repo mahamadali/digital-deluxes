@@ -4,6 +4,7 @@ namespace Models\Base;
 
 use Bones\Database;
 use Bones\Str;
+use Contributors\Particles\Pagination;
 use JollyException\BadMethodException;
 use JollyException\DatabaseException;
 use Models\Traits\Relation;
@@ -551,13 +552,14 @@ class Model extends Database
         return $this;
     }
 
-    public function ___paginate($pageLimit = 0, $page = 1)
+    public function ___paginate($page_limit = 0, $query_param = 'page')
     {
-        $paginated = $this->db->paginate($pageLimit, $page, $this->columns, $this->table);
+        $page = (!empty(request()->get($query_param))) ? request()->get($query_param) : 1;
+        $paginated = $this->db->paginate($page_limit, $page, $this->columns, $this->table);
         $wrapped = [];
         foreach ($paginated as $key => $entry) {
             if (Str::contains($key, '__pagination')) {
-                $wrapped['__pagination'] = $entry;
+                $wrapped[$key] = new Pagination($entry, $query_param);
                 continue;
             }
             $attributes = (is_object($entry)) ? get_object_vars($entry) : array_keys($entry);

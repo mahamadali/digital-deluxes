@@ -16,6 +16,13 @@
           <h4 class="card-title">Products</h4>
         </div>
       </div>
+      <div class="row">
+        <div class="col-md-4">
+          <form>
+          <input type="search" name="search" class="form-control" placeholder="Type and press enter to search" value="{{ isset($_GET['search']) ? $_GET['search'] : '' }}">
+          </form>
+        </div>
+      </div>
       <div class="table-responsive">
         <table id="product-listing" class="table">
           <thead>
@@ -41,6 +48,7 @@
                 @endforeach
           </tbody>
         </table>
+        {{ $products__pagination->links() }}
       </div>
       </div>
     </div>
@@ -52,19 +60,19 @@
 @block("scripts")
 <script>
   $(document).ready(function() {
-    var table = $('#product-listing').DataTable({
-      order: [0, 'desc'],
-      lengthChange: false,
-      buttons: [{
-        extend: 'csv',
-        exportOptions: {
-          columns: [0, 1, 2, 3, 4]
-        }
-      }]
-    });
+    // var table = $('#product-listing').DataTable({
+    //   order: [0, 'desc'],
+    //   lengthChange: false,
+    //   buttons: [{
+    //     extend: 'csv',
+    //     exportOptions: {
+    //       columns: [0, 1, 2, 3, 4]
+    //     }
+    //   }]
+    // });
 
-    table.buttons().container()
-      .appendTo('#product-listing_wrapper .col-md-6:eq(0)');
+    // table.buttons().container()
+    //   .appendTo('#product-listing_wrapper .col-md-6:eq(0)');
   });
 </script>
 @endblock

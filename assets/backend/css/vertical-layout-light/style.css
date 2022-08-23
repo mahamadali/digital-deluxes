@@ -30656,3 +30656,46 @@ td.actions button, td.actions a {
     width: auto;
   }
 }
+
+ul.pagination {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+ul.pagination.centered {
+    text-align: center;
+}
+
+ul.pagination li {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 5px;
+    border: 1px solid black;
+    color: #000000;
+}
+
+ul.pagination li.active {
+    background-color: indigo;
+}
+
+ul.pagination li.disabled {
+    background-color: #dddddd;
+}
+
+ul.pagination li a {
+    text-decoration: none;
+    color: #000000;
+}
+
+ul.pagination li.disabled a {
+    cursor: none;
+}
+
+ul.pagination li.active a {
+    color: #ffffff;
+}
+
+ul.pagination li.nav {
+    font-size: small;
+}

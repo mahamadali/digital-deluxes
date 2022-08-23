@@ -8,8 +8,13 @@ use Models\Product;
 class ProductController
 {
 	public function index(Request $request) {
-		
-        $products = Product::orderBy('id')->get();
+		$search = $request->search ?? '';
+		if($search) {
+			$products = Product::whereLike('name', '%'.$search.'%')->orderBy('id')->paginate(10);	
+		} else {
+			$products = Product::orderBy('id')->paginate(10);
+		}
+        
 		return render('backend/products/index', [
 			'products' => $products
 		]);

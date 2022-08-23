@@ -125,7 +125,8 @@ class Router
             return false;
         }
         
-        $route = trim($route, '/');
+        $routeSegments = explode('?', $route);
+        $route = trim($routeSegments[0], '/');
         Session::appendSetReserved('latest_routes', $route);
         self::clearSavedRoutes();
         if (empty(self::$routes[$route])) {
