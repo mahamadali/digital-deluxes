@@ -86,7 +86,7 @@
                                         <div>
                                             <b class="grey_text">{{ $system_requirement->system }}</b>
                                             <br>
-                                            {{ $system_requirement->requirement ? implode(', ',json_decode($system_requirement->requirement)) : 'N/A' }}
+                                            {{ $system_requirement->requirement ? implode(', ',json_decode($system_requirement->requirement)) : '' }}
                                         </div>
                                         @endforeach
                                     </li>
@@ -150,7 +150,7 @@
                         
                         <div class="game-profile-card">
                             <div class="game-profile-card__media"><img src="{{ $product->coverImageOriginal }}" alt="game-profile-card"></div>
-                            <div class="game-profile-card__intro"><span>{{ $product->description ? $product->description : 'N/A' }}</span></div>
+                            <div class="game-profile-card__intro"><span>{{ $product->description ? $product->description : '' }}</span></div>
                             <ul class="game-profile-card__list">
                                 <!-- <li>
                                     <div>Reviews:</div>
@@ -166,27 +166,27 @@
                                 </li>
                                 <li>
                                     <div>{{ trans('store.release_date') }}:</div>
-                                    <div>{{ $product->releaseDate ? date("d M, Y", strtotime($product->releaseDate)) : 'N/A' }}</div>
+                                    <div>{{ $product->releaseDate ? date("d M, Y", strtotime($product->releaseDate)) : '' }}</div>
                                 </li>
                                 <li>
                                     <div>{{ trans('store.developer') }}:</div>
-                                    <div>{{ $product->developers ? implode(', ',json_decode($product->developers)) : 'N/A' }}</div>
+                                    <div>{{ $product->developers ? implode(', ',json_decode($product->developers)) : '' }}</div>
                                 </li>
 
                                 <li>
                                     <div>{{ trans('store.publisher') }}:</div>
-                                    <div>{{ $product->publishers ? implode(', ',json_decode($product->publishers)) : 'N/A' }}</div>
+                                    <div>{{ $product->publishers ? implode(', ',json_decode($product->publishers)) : '' }}</div>
                                 </li>
 
 
                                 <li>
                                     <div>{{ trans('store.genres') }}:</div>
-                                    <div>{{ $product->genres ? implode(', ',json_decode($product->genres)) : 'N/A' }}</div>
+                                    <div>{{ $product->genres ? implode(', ',json_decode($product->genres)) : '' }}</div>
                                 </li>
 
                                 <!-- <li>
                                     <div>{{ trans('store.merchant_name') }}:</div>
-                                    <div>{{ $product->merchantName ? implode(', ',json_decode($product->merchantName)) : 'N/A' }}</div>
+                                    <div>{{ $product->merchantName ? implode(', ',json_decode($product->merchantName)) : '' }}</div>
                                 </li> -->
 
                                 <li>
@@ -254,8 +254,8 @@
         .then((resp) => handleIp(resp));
 
         function handleIp(ipdata) {
+            console.log(ipdata);
             var restriction_countries = '<?php echo $product->regionalLimitations ?>';
-            console.log(restriction_countries);
             var country = ipdata.country;
             const regionNames = new Intl.DisplayNames(
                 ['en'], {type: 'region'}
