@@ -10,6 +10,7 @@
             'main' => 'Main',
             'store' => 'Store',
             'orders' => 'Orders',
+            'login' => 'Login',
         ],
 
         'homepage' => [

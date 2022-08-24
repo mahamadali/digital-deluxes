@@ -61,7 +61,7 @@
                 </div>
             </div>
 
-            <div class="game-card --horizontal favourites-game">
+            <!-- <div class="game-card --horizontal favourites-game">
                 <div class="game-card__box">
                     <div class="game-card__info" style="width: 100%;">
                         <a class="game-card__title" href="#"> Kinguin Info</a>
@@ -84,7 +84,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <div class="game-card --horizontal favourites-game">
                 <div class="game-card__box">

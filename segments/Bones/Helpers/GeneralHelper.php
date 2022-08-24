@@ -137,6 +137,9 @@ if (! function_exists('currentPageFullURL')) {
 if (! function_exists('cartItems')) {
     function cartItems($userId = '')
     {
+        if(empty(auth()->id)) {
+            return [];
+        }
         if(empty($userId)) {
             $userId = auth()->id;
         }
@@ -148,6 +151,9 @@ if (! function_exists('cartItems')) {
 if (! function_exists('cartTotal')) {
     function cartTotal($userId = '')
     {
+        if(empty(auth()->id)) {
+            return 0;
+        }
         if(empty($userId)) {
             $userId = auth()->id;
         }

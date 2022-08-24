@@ -6111,3 +6111,10 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
    .YOUR_COUNTRY {
        font-weight: bold;
    }
+
+   .login-btn {
+    border: 1px solid #f46119 !important;
+    color: #f46119 !important;
+    border-radius: 0px 10px !important;
+    padding: 10px 30px !important;
+   }

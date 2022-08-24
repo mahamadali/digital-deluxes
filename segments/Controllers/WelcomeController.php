@@ -4,6 +4,7 @@ namespace Controllers;
 
 use Bones\Request;
 use Bones\Session;
+use Models\Country;
 use Models\Product;
 use Models\User;
 
@@ -34,8 +35,10 @@ class WelcomeController
 
     public function Profile(Request $request) {
         $user = User::where('id', auth()->id)->first();
+		$countries = Country::get();
         return render('frontend/profile', [
-			'user' => $user
+			'user' => $user,
+			'countries' => $countries
 		]);
 	}
 
@@ -47,13 +50,16 @@ class WelcomeController
 			'last_name' => 'required|min:2|max:18',
             'password' => ['eqt:confirm_password'],
 			'phone' => 'required|min:10|max:20',
+			'country' => 'required',
+			'national_identification_id' => 'required',
+			'city' => 'required'
 		]);
 
 		if ($validator->hasError()) {
 			return redirect()->withFlashError(implode('<br>', $validator->errors()))->with('old', $request->all())->back();
         }
 
-		$userData = $request->getOnly(['first_name', 'last_name',  'password','phone','profile_image', 'country_code', 'age', 'address']);
+		$userData = $request->getOnly(['first_name', 'last_name',  'password','phone','profile_image', 'country_code', 'age', 'address', 'national_identification_id', 'country', 'city']);
 
 		$logoPath = null;
 		if ($request->hasFile('profile_image')) {

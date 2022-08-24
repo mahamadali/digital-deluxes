@@ -60,7 +60,9 @@
         <main class="page-first-screen">
             <div class="uk-grid uk-grid-small uk-child-width-1-2@s uk-flex-middle uk-width-1-1" data-uk-grid>
                 <div class="">
-                    <img src="{{ url('assets/img/2.png') }}" alt="logo" class="animation-navspinv">
+                    <a href="{{ route('frontend.home') }}">
+                        <img src="{{ url('assets/img/2.png') }}" alt="logo" class="animation-navspinv">
+                    </a>
                     <!-- <span>{ { setting('app.title') } }</span>
                     <br> -->
                     <h1>Join now and play mighty games!</h1>

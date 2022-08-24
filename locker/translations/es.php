@@ -10,6 +10,7 @@
             'main' => 'Principal',
             'store' => 'Tienda',
             'orders' => 'Orders',
+            'login' => 'Acceso',
         ],
 
          'homepage' => [

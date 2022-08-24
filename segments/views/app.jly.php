@@ -22,7 +22,7 @@
     </head>
     <body class="page-home">
         
-        <a class="action-btn floating-cart-widget" id="cd-cart-trigger" href="Javascript:void(0);" class="floating-cart-widget"><i class="ico_shopping-cart"></i><span class="animation-ripple-delay1">{{ count(auth()->cart_items()) }}</span></a>
+        <a class="action-btn floating-cart-widget" id="cd-cart-trigger" href="Javascript:void(0);" class="floating-cart-widget"><i class="ico_shopping-cart"></i><span class="animation-ripple-delay1">{{ !empty(auth()) ? count(auth()->cart_items()) : 0 }}</span></a>
         <!-- <input id="toggle" type="checkbox"> -->
         <script type="text/javascript">
             document.getElementById("toggle").addEventListener("click", function() {
@@ -71,7 +71,7 @@
         var cartTotal = '{{ exchangeRate(cartTotal(), "EUR", "COP") }}';
         
         if(cartTotal > 0) {
-            var user_phone = '{{ user()->phone }}';
+            var user_phone = '{{ !empty(auth()) ? user()->phone : "" }}';
             if(user_phone != '') {
                 var checkout = new WidgetCheckout({
                 currency: 'COP',
@@ -80,11 +80,11 @@
                 publicKey: '{{ setting("wompi.PUB_KEY") }}',
                 redirectUrl: '{{ setting("wompi.REDIRECT_URL") }}', // Opcional
                 customerData: { // Opcional
-                    email:'{{ user()->email }}',
-                    fullName: '{{ user()->first_name." ".user()->last_name }}',
-                    phoneNumber: '{{ user()->phone }}',
-                    phoneNumberPrefix: '+{{ user()->country_code }}',
-                    legalId: '{{ user()->id }}',
+                    email:'{{ !empty(auth()) ? user()->email : "" }}',
+                    fullName: '{{ !empty(auth()) ? user()->first_name." ".user()->last_name : "" }}',
+                    phoneNumber: '{{ !empty(auth()) ? user()->phone : "" }}',
+                    phoneNumberPrefix: '+{{ !empty(auth()) ? user()->country_code : "" }}',
+                    legalId: '{{ !empty(auth()) ? user()->id : 0 }}',
                     legalIdType: 'CC'
                 }
                 });
@@ -92,7 +92,7 @@
         }
 
         $('.checkout-btn').on('click', function() {
-            var user_phone = '{{ user()->phone }}';
+            var user_phone = '{{ !empty(auth()) ? user()->phone : "" }}';
             if(user_phone == '') {
                 toastr.error('Please enter your phone in your profile to make payment');
                 return false;

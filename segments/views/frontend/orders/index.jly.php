@@ -15,7 +15,6 @@
                 <thead>
                     <tr>
                         <td>Order #</td>
-                        <td>Kinguin Order #</td>
                         <td>Transaction #</td>
                         <td>Amount</td>
                         <td>Status</td>
@@ -27,7 +26,6 @@
             @foreach($orders as $order):
                 <tr>
                     <td>{{ $order->id }}</td>
-                    <td>{{ $order->kg_orderid }}</td>
                     <td>{{ $order->transaction_id }}</td>
                     <td>${{ $order->order_total() }}</td>
                     <td>{{ $order->status }}</td>

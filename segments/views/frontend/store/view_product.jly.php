@@ -136,7 +136,7 @@
                             <a href="{{ route('frontend.cart.add',[$product->id]) }}" class="uk-button uk-button-danger uk-width-1-1 buy-now-btn">
                                 <span class="ico_shopping-cart"></span><span>{{ trans('store.buy_now') }}</span>
                             </a>
-                            @if($product->isInWishlist()):
+                            @if(!empty(auth()) && $product->isInWishlist()):
                             <button class="uk-button uk-button-danger uk-width-1-1 remove_from_fav" data-url="{{ route('frontend.store.remove-from-fav', ['product' => $product->id]) }}" type="button">
                                 <span class="ico_favourites"></span><span>{{ trans('store.remove_from_wishlist') }}</span>
                             </button>
@@ -219,6 +219,9 @@
                     $('#messages').html('<p align="center" style="color:green;">'+response.message+'</p>');
                     $(obj).after('<button class="uk-button uk-button-danger uk-width-1-1 remove_from_fav" data-url="{{ route('frontend.store.remove-from-fav', ['product' => $product->id]) }}" type="button"><span class="ico_favourites"></span><span>Remove from Wishlist</span></button>');
                     $(obj).remove();
+                },
+                error: function() {
+                    toastr.error('Please login!');
                 }
             });
         });
@@ -241,38 +244,45 @@
         });
     });
 
-    
-    fetch("https://ipinfo.io/json?token=ee9dceccd60e6f", {
-        headers: { Accept: "application/json" },
-    })
-        .then((resp) => resp.json())
-        .catch(() => {
-        return {
-            country: "us",
-        };
-        })
-        .then((resp) => handleIp(resp));
+    var loggedInUser = '<?php echo !empty(auth()) ? user()->id : '' ?? "" ?>';
 
-        function handleIp(ipdata) {
-            console.log(ipdata);
+    if(loggedInUser == '') {
+        toastr.error('Please login to check product is available for your country or not');
+    } else {
+        var user_country = '<?php echo !empty(auth()) ? user()->country->country_name : "" ?? "" ?>';
+        if(loggedInUser == '') {
+            toastr.error('Please update your profile to check product is available for your country or not');
+        } else {
+            handleIp(user_country);
+        }
+    }
+    
+    // fetch("https://ipinfo.io/json?token=ee9dceccd60e6f", {
+    //     headers: { Accept: "application/json" },
+    // })
+    //     .then((resp) => resp.json())
+    //     .catch(() => {
+    //     return {
+    //         country: "us",
+    //     };
+    //     })
+    //     .then((resp) => handleIp(resp));
+
+        function handleIp(country) {
             var restriction_countries = '<?php echo $product->regionalLimitations ?>';
-            var country = ipdata.country;
-            const regionNames = new Intl.DisplayNames(
-                ['en'], {type: 'region'}
-                );
             if(restriction_countries == 'Region free') {
                 $('.country_restriction_success_text').show();
                 $('.country_restriction_danger_text').hide();
-                $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(regionNames.of(country));
+                $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country);
             } else {
-                if(regionNames.of(country) == restriction_countries) {
+                if(country == restriction_countries) {
                     $('.country_restriction_success_text').hide();
                     $('.country_restriction_danger_text').show();
-                    $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(regionNames.of(country))
+                    $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(country)
                 } else {
                     $('.country_restriction_success_text').show();
                     $('.country_restriction_danger_text').hide();
-                    $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(regionNames.of(country))
+                    $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country)
                 }
             }
             

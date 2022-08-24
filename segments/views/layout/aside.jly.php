@@ -6,7 +6,11 @@
             <li class="{{ (request()->matchesTo('/profile')) ? 'uk-active' : '' }}"><a href="{{ route('frontend.profile.index') }}"><i class="ico_profile"></i><span>{{ trans('menu.profile') }}</span></a></li>
             <li class="{{ (request()->matchesTo('/wishlist')) ? 'uk-active' : '' }}"><a href="{{ route('frontend.wishlist') }}"><i class="ico_favourites"></i><span>{{ trans('menu.wishlist') }}</span></a></li>
             <li class="{{ (request()->matchesTo('/orders')) ? 'uk-active' : '' }}"><a href="{{ route('frontend.orders.index') }}"><i class="ico_shopping-cart"></i><span>{{ trans('menu.orders') }}</span></a></li>
+            @if(!empty(auth())):
             <li><a href="{{ route('frontend.logout') }}"><i class="ico_arrow-circle-left"></i><span>{{ trans('menu.logout') }}</span></a></li>
+            @else
+            <li><a href="{{ route('frontend.auth.login') }}"><i class="ico_arrow-circle-left"></i><span>{{ trans('menu.login') }}</span></a></li>
+            @endif
             <!-- <li><a href="05_favourites.html"><i class="ico_favourites"></i><span>Favourites</span><span class="count">15</span></a></li>
             <li><a href="06_chats.html"><i class="ico_chats"></i><span>Chats</span></a></li>
             <li><a href="07_friends.html"><i class="ico_friends"></i><span>Friends</span></a></li>

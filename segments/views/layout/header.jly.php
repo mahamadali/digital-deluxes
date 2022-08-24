@@ -40,20 +40,20 @@
                   </div>
                </li>
             </ul>
-               <!-- <a class="action-btn" href="{{ route('frontend.cart.index') }}"><i class="ico_shopping-cart"></i><span class="animation-ripple-delay1">{{ count(auth()->cart_items()) }}</span></a> -->
-               <!-- <a class="action-btn" href="07_friends.html"><i class="ico_notification"></i><span class="animation-ripple-delay2"></span></a> -->
                
 
                <ul class="uk-subnav uk-subnav-pill nav-user-options" uk-margin="">
                   <li class="uk-first-column">
-                     <a href="#" aria-expanded="false">
+
+                     @if(!empty(auth()->id)):
+                        <a href="#" aria-expanded="false">
                            @if(!empty(user()->profile_image)):
                               <img src="{{ url(user()->profile_image) }}" alt="profile" class="profile">
                            @else
                            <img src="{{ url('assets/frontend/img/profile.png') }}" alt="profile" class="profile">
                            @endif
                            <span class="nav-user_name">Hi, {{ user()->fullName }}</span>
-                           <span uk-icon="icon: triangle-down" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 7 15 7 10 12"></polygon></svg></span></a>
+                           <span uk-icon="icon: triangle-down" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
                            <div uk-dropdown="mode: click" class="uk-dropdown uk-dropdown-bottom-right" style="left: -54.9876px; top: 42px;">
                                  <ul class="uk-nav uk-dropdown-nav">
                                     <li><a href="{{ route('frontend.profile.index') }}">My Account</a></li>
@@ -61,6 +61,11 @@
                                     <li><a href="{{ route('frontend.logout') }}">Log Out</a></li>
                                  </ul>
                            </div>
+                        </a>
+                     @else
+                        <a href="{{ route('frontend.auth.login') }}" class="login-btn" aria-expanded="false">Login</a>
+                     @endif
+                     
                   </li>
                </ul>
             </div>
