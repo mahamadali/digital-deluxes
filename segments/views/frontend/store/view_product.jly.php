@@ -184,10 +184,10 @@
                                     <div>{{ $product->genres ? implode(', ',json_decode($product->genres)) : 'N/A' }}</div>
                                 </li>
 
-                                <li>
+                                <!-- <li>
                                     <div>{{ trans('store.merchant_name') }}:</div>
                                     <div>{{ $product->merchantName ? implode(', ',json_decode($product->merchantName)) : 'N/A' }}</div>
-                                </li>
+                                </li> -->
 
                                 <li>
                                     <div>{{ trans('store.platforms') }}:</div>
