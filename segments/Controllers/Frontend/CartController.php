@@ -51,7 +51,7 @@ class CartController
 			
 		}
 
-		return redirect()->withFlashSuccess('Add To Cart added successfully!')->with('old', $request->all())->back();
+		return redirect()->withFlashSuccess('Item added into cart successfully!')->with('old', $request->all())->back();
 	}
 
 	public function removeToCart(Request $request,$cart_id)
