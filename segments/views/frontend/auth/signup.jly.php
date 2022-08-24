@@ -99,7 +99,7 @@
 
     <script src="{{ url('assets/frontend/js/libs.js') }}"></script>
     <script src="{{ url('assets/frontend/js/main.js') }}"></script>
-    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+    <script src="{{ url('assets/frontend/js/jquery.validate.min.js') }}"></script>
     <script src="{{ url('assets/js/js-intlTelInput.min.js') }}"></script>
 
     <script>
