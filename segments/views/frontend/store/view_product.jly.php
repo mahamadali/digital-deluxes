@@ -259,27 +259,26 @@
     }
 
     function checkWithIP() {
-        fetch("https://ip-api.io/json/<?php echo getUserIP(); ?>", {
+        $.getJSON("https://api.ipify.org/?format=json", function(e) {
+            
+            fetch("https://ip-api.io/json/"+e.ip, {
                 headers: { Accept: "application/json" },
             })
-                .then((resp) => {
-                    if(resp.status == 404) {
-                        toastr.error('Please add your country in your profile')
-                    } else {
-                        resp.json();
-                    }
-                } 
-                )
+                .then((resp) => resp.json())
                 .catch(() => {
                 return {
                     country: "us",
                 };
                 })
-                .then((resp) => handleIp(resp.country_name));
+                .then((resp) => {
+                    console.log(resp);
+                    handleIp(resp.country_name);
+                });
+        });
+        
     }
-    
-    
 
+    
         function handleIp(country) {
             var restriction_countries = '<?php echo $product->regionalLimitations ?>';
             if(restriction_countries == 'Region free') {
