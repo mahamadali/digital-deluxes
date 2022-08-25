@@ -334,7 +334,7 @@ if (! function_exists('admin')) {
 if (! function_exists('getUserIP')) {
     function getUserIP() {
         $ipaddress = '';
-        $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+        $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
         return $ipaddress;
     }
 }
