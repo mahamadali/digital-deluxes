@@ -252,22 +252,29 @@
         var user_country = '<?php echo !empty(auth()->country_info) ? user()->country_info->country_name : "" ?? "" ?>';
         
         if(user_country.length == 0) {
-            toastr.error('Please update your profile to check product is available for your country or not');
+            fetch("https://ip-api.io/json/<?php echo getUserIP(); ?>", {
+                headers: { Accept: "application/json" },
+            })
+                .then((resp) => {
+                    if(resp.status == 404) {
+                        toastr.error('Please add your country in your profile')
+                    } else {
+                        resp.json();
+                    }
+                } 
+                )
+                .catch(() => {
+                return {
+                    country: "us",
+                };
+                })
+                .then((resp) => handleIp(resp.country_name));
         } else {
             handleIp(user_country);
         }
     }
     
-    // fetch("https://ipinfo.io/json?token=ee9dceccd60e6f", {
-    //     headers: { Accept: "application/json" },
-    // })
-    //     .then((resp) => resp.json())
-    //     .catch(() => {
-    //     return {
-    //         country: "us",
-    //     };
-    //     })
-    //     .then((resp) => handleIp(resp));
+    
 
         function handleIp(country) {
             var restriction_countries = '<?php echo $product->regionalLimitations ?>';
