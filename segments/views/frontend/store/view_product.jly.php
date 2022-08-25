@@ -299,7 +299,7 @@
                         }
                         counter++;
                         if(total_countries == counter) {
-                            if(allowCountry == 1) {
+                            if(allowCountry == 0) {
                                 $('.country_restriction_success_text').hide();
                                 $('.country_restriction_danger_text').show();
                                 $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(country)
