@@ -247,12 +247,19 @@
     var loggedInUser = '<?php echo !empty(auth()) ? user()->id : '' ?? "" ?>';
 
     if(loggedInUser == '') {
-        toastr.error('Please login to check product is available for your country or not');
+        checkWithIP();
     } else {
         var user_country = '<?php echo !empty(auth()->country_info) ? user()->country_info->country_name : "" ?? "" ?>';
         
         if(user_country.length == 0) {
-            fetch("https://ip-api.io/json/<?php echo getUserIP(); ?>", {
+            checkWithIP();
+        } else {
+            handleIp(user_country);
+        }
+    }
+
+    function checkWithIP() {
+        fetch("https://ip-api.io/json/<?php echo getUserIP(); ?>", {
                 headers: { Accept: "application/json" },
             })
                 .then((resp) => {
@@ -269,9 +276,6 @@
                 };
                 })
                 .then((resp) => handleIp(resp.country_name));
-        } else {
-            handleIp(user_country);
-        }
     }
     
     
