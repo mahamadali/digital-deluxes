@@ -14,7 +14,7 @@ class User extends Model
 
 	protected $table = 'users';
 	protected $attaches = ['full_name'];
-	protected $with = ['role', 'wishlists', 'orders', 'country'];
+	protected $with = ['role', 'wishlists', 'orders', 'country_info'];
 
 	protected $defaults = [];
 
@@ -41,7 +41,7 @@ class User extends Model
 		return $this->hasMany(Order::class, 'user_id')->without('user')->orderBy('id');
 	}
 
-	public function country(){
+	public function country_info(){
 		return $this->parallelTo(Country::class, 'country');
 	}
 	

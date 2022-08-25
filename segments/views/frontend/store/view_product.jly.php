@@ -249,8 +249,9 @@
     if(loggedInUser == '') {
         toastr.error('Please login to check product is available for your country or not');
     } else {
-        var user_country = '<?php echo !empty(auth()) ? user()->country->country_name : "" ?? "" ?>';
-        if(loggedInUser == '') {
+        var user_country = '<?php echo !empty(auth()->country_info) ? user()->country_info->country_name : "" ?? "" ?>';
+        
+        if(user_country.length == 0) {
             toastr.error('Please update your profile to check product is available for your country or not');
         } else {
             handleIp(user_country);
