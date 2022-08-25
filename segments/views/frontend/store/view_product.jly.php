@@ -282,7 +282,7 @@
         function handleIp(country, code) {
             var restriction_countries = '<?php echo $product->regionalLimitations ?>';
             
-            if(restriction_countries == 'Region free') {
+            if(restriction_countries == 'Region free' || restriction_countries == 'Rest of the world') {
                 $('.country_restriction_success_text').show();
                 $('.country_restriction_danger_text').hide();
                 $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country);
@@ -291,25 +291,37 @@
                 
                 $.getJSON("{{ route('api.region-countries') }}?region="+restriction_countries, function(e) {
                     var total_countries = Object.keys(e.data).length;
-                    var counter = 0;
-                    $.each(e.data, function (i) {
-                        
-                        if(code == i) {
-                            allowCountry = 1;
-                        }
-                        counter++;
-                        if(total_countries == counter) {
-                            if(allowCountry == 0) {
-                                $('.country_restriction_success_text').hide();
-                                $('.country_restriction_danger_text').show();
-                                $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(country)
-                            } else {
-                                $('.country_restriction_success_text').show();
-                                $('.country_restriction_danger_text').hide();
-                                $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country)
+                    if(total_countries > 0) {
+                        var counter = 0;
+                        $.each(e.data, function (i) {
+                            
+                            if(code == i) {
+                                allowCountry = 1;
                             }
+                            counter++;
+                            if(total_countries == counter) {
+                                if(allowCountry == 0) {
+                                    $('.country_restriction_success_text').hide();
+                                    $('.country_restriction_danger_text').show();
+                                    $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(country)
+                                } else {
+                                    $('.country_restriction_success_text').show();
+                                    $('.country_restriction_danger_text').hide();
+                                    $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country)
+                                }
+                            }
+                        });
+                    } else {
+                        if(restriction_countries == country) {
+                            $('.country_restriction_success_text').show();
+                            $('.country_restriction_danger_text').hide();
+                            $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country)
+                        } else {
+                            $('.country_restriction_success_text').hide();
+                            $('.country_restriction_danger_text').show();
+                            $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(country)
                         }
-                    });
+                    }
                 });
             }
             
