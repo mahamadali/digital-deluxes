@@ -250,11 +250,12 @@
         checkWithIP();
     } else {
         var user_country = '<?php echo !empty(auth()->country_info) ? user()->country_info->country_name : "" ?? "" ?>';
+        var country_code = '<?php echo !empty(auth()->country_info) ? user()->country_info->country_code : "" ?? "" ?>';
         
         if(user_country.length == 0) {
             checkWithIP();
         } else {
-            handleIp(user_country);
+            handleIp(user_country, country_code);
         }
     }
 
@@ -272,14 +273,14 @@
                 })
                 .then((resp) => {
                     console.log(resp);
-                    handleIp(resp.country_name);
+                    handleIp(resp.country_name, resp.country_code);
                 });
         });
         
     }
 
     
-        function handleIp(country) {
+        function handleIp(country, code) {
             var restriction_countries = '<?php echo $product->regionalLimitations ?>';
             
             if(restriction_countries == 'Region free') {
@@ -288,9 +289,9 @@
                 $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country);
             } else {
                 var allowCountry = 0;
-                $.getJSON("https://api.first.org/data/v1/countries?region="+restriction_countries+"&pretty=true", function(e) {
+                $.getJSON("{{ route('api.region-countries') }}?region="+restriction_countries, function(e) {
                     $(e.data).each(function(index, value) {
-                        if(country == value[index].country) {
+                        if(code == value) {
                             allowCountry == 1;
                         }
                     });

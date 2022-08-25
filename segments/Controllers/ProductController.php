@@ -308,4 +308,9 @@ class ProductController
 		echo $count. " products images updated";
 		exit();
 	}
+
+	public function regionCountries(Request $request) {
+		$region = $request->region;
+		return getRegionCountries($region);
+	}
 }

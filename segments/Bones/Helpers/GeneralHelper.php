@@ -338,3 +338,10 @@ if (! function_exists('getUserIP')) {
         return $ipaddress;
     }
 }
+
+if (! function_exists('getRegionCountries')) {
+    function getRegionCountries($region) {
+        $data = file_get_contents('https://api.first.org/data/v1/countries?region='.$region.'&pretty=true');
+        return $data;
+    }
+}
