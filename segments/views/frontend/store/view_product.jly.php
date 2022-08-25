@@ -281,11 +281,11 @@
     
         function handleIp(country, code) {
             var restriction_countries = '<?php echo $product->regionalLimitations ?>';
-            if(restriction_countries == 'Region free' || restriction_countries == 'Rest of the world') {
-                $('.country_restriction_success_text').show();
-                $('.country_restriction_danger_text').hide();
-                $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country);
-            } else {
+            // if(restriction_countries == 'region free' || restriction_countries == 'Rest of the world') {
+            //     $('.country_restriction_success_text').show();
+            //     $('.country_restriction_danger_text').hide();
+            //     $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country);
+            // } else {
                 var allowCountry = 0;
                 
                 $.getJSON("{{ route('api.region-countries') }}?region="+restriction_countries, function(e) {
@@ -322,7 +322,7 @@
                         }
                     }
                 });
-            }
+            // }
             
         }
 </script>
