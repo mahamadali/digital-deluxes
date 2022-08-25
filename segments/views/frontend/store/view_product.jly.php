@@ -272,7 +272,6 @@
                 };
                 })
                 .then((resp) => {
-                    console.log(resp);
                     handleIp(resp.country_name, resp.country_code);
                 });
         });
@@ -289,22 +288,29 @@
                 $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country);
             } else {
                 var allowCountry = 0;
+                
                 $.getJSON("{{ route('api.region-countries') }}?region="+restriction_countries, function(e) {
-                    $(e.data).each(function(index, value) {
-                        if(code == value) {
-                            allowCountry == 1;
+                    var total_countries = Object.keys(e.data).length;
+                    var counter = 0;
+                    $.each(e.data, function (i) {
+                        
+                        if(code == i) {
+                            allowCountry = 1;
+                        }
+                        counter++;
+                        if(total_countries == counter) {
+                            if(allowCountry == 1) {
+                                $('.country_restriction_success_text').hide();
+                                $('.country_restriction_danger_text').show();
+                                $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(country)
+                            } else {
+                                $('.country_restriction_success_text').show();
+                                $('.country_restriction_danger_text').hide();
+                                $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country)
+                            }
                         }
                     });
                 });
-                if(allowCountry == 0) {
-                    $('.country_restriction_success_text').hide();
-                    $('.country_restriction_danger_text').show();
-                    $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(country)
-                } else {
-                    $('.country_restriction_success_text').show();
-                    $('.country_restriction_danger_text').hide();
-                    $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country)
-                }
             }
             
         }
