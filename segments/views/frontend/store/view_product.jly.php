@@ -281,12 +281,21 @@
     
         function handleIp(country) {
             var restriction_countries = '<?php echo $product->regionalLimitations ?>';
+            
             if(restriction_countries == 'Region free') {
                 $('.country_restriction_success_text').show();
                 $('.country_restriction_danger_text').hide();
                 $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country);
             } else {
-                if(country == restriction_countries) {
+                var allowCountry = 0;
+                $.getJSON("https://api.first.org/data/v1/countries?region="+restriction_countries+"&pretty=true", function(e) {
+                    $(e.data).each(function(index, value) {
+                        if(country == value[index].country) {
+                            allowCountry == 1;
+                        }
+                    });
+                });
+                if(allowCountry == 0) {
                     $('.country_restriction_success_text').hide();
                     $('.country_restriction_danger_text').show();
                     $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(country)
