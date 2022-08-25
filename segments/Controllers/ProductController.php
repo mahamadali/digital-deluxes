@@ -245,7 +245,7 @@ class ProductController
 	}
 
 	public function syncProductImages(Request $request) {
-		$products = Product::SelectSet(['kinguinId'])->whereNull('coverImage')->limit(200)->get();
+		$products = Product::SelectSet(['kinguinId'])->whereNull('coverImage')->get(200);
 		$count = 0;
 		foreach($products as $product) {
 
