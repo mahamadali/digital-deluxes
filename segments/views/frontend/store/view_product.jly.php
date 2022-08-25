@@ -281,7 +281,6 @@
     
         function handleIp(country, code) {
             var restriction_countries = '<?php echo $product->regionalLimitations ?>';
-            alert(restriction_countries);
             if(restriction_countries == 'Region free' || restriction_countries == 'Rest of the world') {
                 $('.country_restriction_success_text').show();
                 $('.country_restriction_danger_text').hide();
