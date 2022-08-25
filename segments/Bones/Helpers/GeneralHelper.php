@@ -341,7 +341,7 @@ if (! function_exists('getUserIP')) {
 
 if (! function_exists('getRegionCountries')) {
     function getRegionCountries($region) {
-        $data = file_get_contents('https://api.first.org/data/v1/countries?region='.$region.'&pretty=true');
+        $data = file_get_contents('https://api.first.org/data/v1/countries?region='.urlencode($region).'&pretty=true');
         return $data;
     }
 }
