@@ -17,12 +17,16 @@
             <li><a href="08_wallet.html"><i class="ico_wallet"></i><span>Wallet</span></a></li> -->
             <li class="uk-nav-header">{{ trans('menu.main') }}</li>
             <li class="{{ (request()->matchesTo('/store')) ? 'uk-active' : '' }}"><a href="{{ route('frontend.store.list') }}"><i class="ico_store"></i><span>{{ trans('menu.store') }}</span></a></li>
+            <li class="{{ (request()->matchesTo('/blogs')) ? 'uk-active' : '' }}"><a href="{{ route('blogs.index') }}"><i class="ico_edit"></i><span>{{ trans('menu.blogs') }}</span></a></li>
             <!-- <li><a href="11_market.html"><i class="ico_market"></i><span>Market</span></a></li>
             <li><a href="12_streams.html"><i class="ico_streams"></i><span>Streams</span></a></li>
             <li><a href="13_community.html"><i class="ico_community"></i><span>Community</span></a></li> -->
-            <!-- <li class="uk-nav-header">Support</li>
-            <li><a href="#modal-report" data-uk-toggle><i class="ico_report"></i><span>Report</span></a></li>
-            <li><a href="#modal-help" data-uk-toggle><i class="ico_help"></i><span>Help</span></a></li> -->
+            @if(!empty(auth())):
+            <li class="uk-nav-header">Support</li>
+            <li class="{{ (request()->matchesTo('/support-tickets')) ? 'uk-active' : '' }}"><a href="{{ route('frontend.support-tickets.listing') }}"><i class="ico_edit"></i><span>{{ trans('menu.support_tickets') }}</span></a></li>
+            <!-- <li><a href="#modal-report" data-uk-toggle><i class="ico_report"></i><span>Report</span></a></li> -->
+            @endif
+            <!-- <li><a href="#modal-help"><i class="ico_help"></i><span>Help</span></a></li> -->
         </ul>
     </div>
 </aside>

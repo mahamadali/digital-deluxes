@@ -18,7 +18,7 @@
 <main class="page-main">
     <div class="widjet --filters">
         <div class="widjet__head">
-            <h3 class="uk-text-lead">{{ trans('store.game_store') }}</h3>
+            <h3 class="uk-text-lead">{{ trans('store.game_store') }} {{ !empty($category) ? "(".$category.")" : '' }}</h3>
         </div>
         <div class="widjet__body">
         <form>
@@ -32,14 +32,32 @@
                     </div>
                 </div>
 
-                <div class="uk-width-1-3">
+                <div class="uk-width-1-5">
+                    <select class="search-category-input-store" name="category">
+                        <option value="">Choose</option>
+                        @foreach(platforms() as $productPlatform):
+                            <option value="{{ $productPlatform['platform'] }}" {{ (isset($_GET["category"]) && $_GET["category"] == $productPlatform['platform']) ? 'selected' : '' }}>{{ $productPlatform['platform'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="uk-width-1-5">
+                    <select class="search-category-input-store" name="system">
+                        <option value="">Operating system</option>
+                        @foreach($operatingSystems as $operatingSystem):
+                            <option value="{{ $operatingSystem->system }}" {{ (isset($_GET["system"]) && $_GET["system"] == $operatingSystem->system) ? 'selected' : '' }}>{{ $operatingSystem->system }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="uk-width-1-5">
                     <div class="search">
                         <div class="search__input">
                         <input type="text" name="min_price" placeholder="{{ trans('store.min_price') }}" value="{{ $_GET['min_price'] ?? '' }}"></div>
                     </div>
                 </div>
 
-                <div class="uk-width-1-3">
+                <div class="uk-width-1-5">
                     <div class="search">
                         <div class="search__input">
                         <input type="text" name="max_price" placeholder="{{ trans('store.max_price') }}" value="{{ $_GET['max_price'] ?? '' }}"></div>
@@ -47,9 +65,10 @@
                 </div>
 
                 
-                <div class="uk-width-1-3">
+                <div class="uk-width-1-5">
                     <div class="">
-                             <button class="search_btn" type="submit">{{ trans('store.search') }}</button>
+                        <button class="search_btn" type="submit">{{ trans('store.search') }}</button>
+                        <a class="" href="{{ route('frontend.store.list') }}">{{ trans('store.clear') }}</a>
                     </div>
                 </div>
             <div>

@@ -10,7 +10,9 @@
             'main' => 'Main',
             'store' => 'Store',
             'orders' => 'Orders',
+            'blogs' => 'Blogs',
             'login' => 'Login',
+            'support_tickets' => 'Tickets',
         ],
 
         'homepage' => [
@@ -54,7 +56,8 @@
             'add_to_wishlist' => 'Add to Wishlist',
             'regionalLimitations' => 'Limitation Region',
             'languages' => 'Languages',
-            'tags' => 'Tags'
+            'tags' => 'Tags',
+            'clear' => 'Clear'
         ],
 
          'cart' => [

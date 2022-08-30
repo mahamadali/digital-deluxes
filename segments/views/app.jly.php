@@ -59,6 +59,7 @@
         </div>
         @plot('popup')
         @include('frontend/popups')
+        @include('frontend/modals')
         <script src="{{ url('assets/frontend/js/libs.js') }}"></script>
         <script src="{{ url('assets/frontend/js/main.js') }}"></script>
         <script src="{{ url('assets/frontend/js/general-func.js') }}"></script>
@@ -66,6 +67,7 @@
         <script type="text/javascript" src="https://checkout.wompi.co/widget.js"></script>
         <script src="{{ url('assets/js/js-intlTelInput.min.js') }}"></script>
         <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+        <script src="{{ url('assets/frontend/js/jquery.validate.min.js') }}"></script>
 
         <script>
         var cartTotal = '{{ exchangeRate(cartTotal(), "EUR", "COP") }}';
@@ -119,7 +121,7 @@
                 minLength: 1,
                 select: function( event, ui ) {
                     if(typeof ui.item.id != 'undefined') {
-                        window.location.href = "{{ url('store/view') }}/"+ui.item.id;
+                        //window.location.href = "{ { url('store/view') } }/"+ui.item.id;
                     } else {
                         setTimeout(function() {
                             $('.search__input input[type="search"]').val('');
@@ -132,7 +134,62 @@
                     .append(item.label)
                     .appendTo(ul);
                 };;
-        } );
+
+            // $('.search-category-input').on('change', function() {
+            //     window.location.href = '{{ route("frontend.store.list") }}?category='+$(this).val();
+            // });
+
+            $("#support-ticket-form").validate({
+            rules: {
+                title: {
+                    required: true
+                },
+                order_number: {
+                    required: true
+                },
+                details: {
+                    required: true
+                },
+                'attachments[]': {
+                    required: true
+                }
+            },
+            submitHandler: function(form) {
+                $(form).find('button[type="submit"]').html('<i class="fa fa-spinner fa-spin"></i>Processing...');
+                $(form).find('button[type="submit"]').prop('disabled', true);
+                formData = new FormData(form),
+                $.ajax({
+                url : $(form).attr('action'),
+                type : 'POST',
+                data : formData,
+                dataType: 'json',
+                contentType: false, processData: false,
+                success: function(response) {
+
+                    $(form).find('button[type="submit"]').html('Submit');
+                    $(form).find('button[type="submit"]').prop('disabled', false);
+
+                    $('#messages').html('');
+                    if(response.status == 304) {
+                        response.errors.forEach(error => {
+                            $('#messages').append('<p align="center" style="color:red;">'+error+'</p>');
+                        });
+                    }
+
+                    if(response.status == 200) {
+                        $('#messages').append('<p align="center" style="color:green;">'+response.message+'</p>');
+                        form.reset();
+                    }
+                },
+                error: function() {
+                    $(form).find('button[type="submit"]').html('Submit');
+                    $(form).find('button[type="submit"]').prop('disabled', false);
+                }
+                });
+                
+                }
+            });
+        });
         </script>
         @plot('scripts')
         @include('layout/alert')

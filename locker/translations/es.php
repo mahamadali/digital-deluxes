@@ -10,7 +10,9 @@
             'main' => 'Principal',
             'store' => 'Tienda',
             'orders' => 'Orders',
+            'blogs' => 'Blogs',
             'login' => 'Acceso',
+            'support_tickets' => 'Entradas',
         ],
 
          'homepage' => [
@@ -50,7 +52,8 @@
             'add_to_wishlist' => 'Añadir a la lista de deseos',
             'regionalLimitations' => 'Limitation Region',
             'languages' => 'Languages',
-            'tags' => 'Tags'
+            'tags' => 'Tags',
+            'clear' => 'Clara'
         ],
 
          'cart' => [

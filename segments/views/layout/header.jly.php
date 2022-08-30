@@ -5,12 +5,18 @@
             <div class="page-header__logo"><img src="{{ url('assets/img/2.png') }}" alt="logo"><span class="page-header__logo_text">{{ setting('app.title') }}</span></div>
          </div>
          <div class="page-header__content">
-        
+
             <div class="page-header__search wrapper">
-               <form action="{{ route('frontend.store.list') }}">
+               <form method="GET" action="{{ route('frontend.store.list') }}">
                   <div class="search search-input">
+                     <select class="search-category-input" name="category">
+                        <option value="">Choose</option>
+                        @foreach(platforms() as $productPlatform):
+                           <option value="{{ $productPlatform['platform'] }}" {{ (isset($_GET["category"]) && $_GET["category"] == $productPlatform['platform']) ? 'selected' : '' }}>{{ $productPlatform['platform'] }}</option>
+                        @endforeach
+                     </select>
                         <div class="search__input"><i class="ico_search"></i><input type="search" name="name" placeholder="{{ trans('store.search') }}" value="{{ $_GET['name'] ?? '' }}"></div>
-                        <!-- <div class="search__btn"><button type="button"><i class="ico_search"></i></button></div> -->
+                        <div class="search__btn"><button type="submit"><i class="ico_search"></i></button></div>
                   </div>
                </form>     
             </div>

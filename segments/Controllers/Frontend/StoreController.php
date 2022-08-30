@@ -5,7 +5,10 @@ namespace Controllers\Frontend;
 
 use Bones\Request;
 use Bones\Session;
+use Google\Service\VersionHistory\Platform;
+use Models\PlatformLogo;
 use Models\Product;
+use Models\ProductSystemRequirement;
 use Models\UserWishlist;
 
 class StoreController
@@ -19,16 +22,31 @@ class StoreController
 
 		
         $products = Product::orderBy('id','ASC');
-
+		$operatingSystems = ProductSystemRequirement::selectSet(['system'])->groupBy('system')->orderBy('id','ASC')->get();
+		
         $name = $request->get("name") ?? '';
+		$category = $request->get("category") ?? '';
 		$min_price = $request->get("min_price") ?? '';
 		$max_price = $request->get("max_price") ?? '';
+		$system = $request->get("system") ?? '';
 
-        if($name){
-			$products = $products->where('name', '%'.$name.'%', 'LIKE');
+        
+
+		if($system){
+			$productIds = ProductSystemRequirement::where('`system`', $system)->pluck('product_id');
+			$productIds = array_map(function($element) {
+				return $element->product_id;
+			},$productIds);
+            $products = $products->whereIn('id', $productIds);
         }
 
-		
+		if($category){
+			$products = $products->where('platform', '%'.$category.'%', 'LIKE');
+        }
+
+		if($name){
+			$products = $products->where('name', '%'.$name.'%', 'LIKE');
+        }
 
 		if($min_price){
             $products = $products->where('price', (int) $min_price, '>=');
@@ -43,15 +61,19 @@ class StoreController
 		
         return render('frontend/store/index', [
 			'products' => $products,
-			'product_limit' => $product_limit
+			'product_limit' => $product_limit,
+			'category' => $category,
+			'operatingSystems' => $operatingSystems
 		]);
 		
 	}
 
     public function view(Request $request, Product $product)
 	{
+		$platformLogos = PlatformLogo::where('platform', $product->platform)->get();
 		return render('frontend/store/view_product', [
-			'product' => $product
+			'product' => $product,
+			'platformLogos' => $platformLogos
 		]);
 	}
 

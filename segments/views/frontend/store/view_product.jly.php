@@ -7,6 +7,9 @@
     .grey_text{
         color:#767676;
     }
+    .platform-logos {
+        max-height: 40px;
+    }
 </style>
 @endblock
 
@@ -131,6 +134,11 @@
                         <div class="game-profile-price">
                             <div class="country_restriction_success_text" style="display: none;"><i class="ico_tick-circle"></i> Can be activated in: <span class="YOUR_COUNTRY"></span></div>
                             <div class="country_restriction_danger_text" style="display: none;"><i class="ico_close-circle"></i> Cannot be activated in: <span class="YOUR_COUNTRY"></span></div>
+                            <div class="row" style="margin-top: 10px;">
+                                @foreach($platformLogos as $logo):
+                                    <img class="platform-logos" src="{{ url($logo->path) }}">
+                                @endforeach
+                            </div>
                             <hr>
                             <div class="game-profile-price__value">€{{ $product->price }} EUR</div>
                             <a href="{{ route('frontend.cart.add',[$product->id]) }}" class="uk-button uk-button-danger uk-width-1-1 buy-now-btn">

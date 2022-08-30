@@ -6,9 +6,11 @@ use Controllers\Backend\DashboardController;
 use Controllers\Backend\UserController;
 use Controllers\AuthController;
 use Barriers\Admin\IsAuthenticated;
+use Controllers\Backend\BlogController;
 use Controllers\Backend\SettingController;
 use Controllers\Backend\OrderController;
 use Controllers\Backend\ProductController;
+use Controllers\SupportTicketController;
 
 
 Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]], function() {
@@ -39,6 +41,34 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 		Router::post('/update', [ SettingController::class, 'update' ])->name('update');
 		Router::get('/price-profits', [ SettingController::class, 'priceProfits' ])->name('price-profits');
 		Router::post('/profits-update', [ SettingController::class, 'profitUpdate' ])->name('profit.update');
+		Router::bunch('/platform-logos', ['as' => 'platform-logos.'], function() {
+			Router::get('/', [ SettingController::class, 'platformLogos' ])->name('index');
+			Router::post('/platformLogoPost', [ SettingController::class, 'platformLogoPost' ])->name('post');
+			Router::bunch('/{logo}', ['as' => ''], function() {
+				Router::get('/remove', [ SettingController::class, 'platformLogoRemove' ])->name('remove');
+			});
+		});
+	});
+
+	Router::bunch('/blogs', ['as' => 'blogs.'], function () {
+		Router::get('/', [BlogController::class, 'index'])->name('index');
+		Router::get('/create', [BlogController::class, 'create'])->name('create');
+		Router::post('/store', [BlogController::class, 'store'])->name('store');
+		Router::bunch('/{blog}', ['as' => ''], function () {
+			Router::get('/view', [BlogController::class, 'view'])->name('view');
+			Router::get('/edit', [BlogController::class, 'edit'])->name('edit');
+			Router::post('/update', [BlogController::class, 'update'])->name('update');
+			Router::get('/delete', [BlogController::class, 'delete'])->name('delete');
+		});
+	});
+
+	Router::bunch('/support-tickets', ['as' => 'support-tickets.'], function () {
+		Router::get('/', [SupportTicketController::class, 'index'])->name('index');
+		Router::bunch('/{ticket}', ['as' => ''], function () {
+			Router::get('/view', [SupportTicketController::class, 'view'])->name('view');
+			Router::post('/message', [SupportTicketController::class, 'sendMessage'])->name('message');
+			Router::get('/update-status/{status}', [SupportTicketController::class, 'updateStatus'])->name('update-status');
+		});
 	});
 });
 

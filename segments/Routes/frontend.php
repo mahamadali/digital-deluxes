@@ -6,6 +6,8 @@ use Controllers\Frontend\StoreController;
 use Controllers\Frontend\CartController;
 use Controllers\Frontend\PaymentController;
 use Controllers\Frontend\OrderController;
+use Controllers\Frontend\BlogController;
+use Controllers\SupportTicketController;
 
 Router::get('/', [WelcomeController::class, 'index'])->name('home');
 
@@ -23,7 +25,6 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
       Router::get('/view', [OrderController::class, 'view'])->name('view');
     });
   });
-
 
   Router::bunch('/cart', ['as' => 'cart.'], function () {
     Router::get('/', [CartController::class, 'index'])->name('index');
@@ -51,5 +52,24 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
     Router::any('/notify', [PaymentController::class, 'notify'])->name('notify')->withOutBarrier('is-front-auth');
     Router::any('/kg_order_complete', [PaymentController::class, 'kg_order_complete'])->name('kg_order_complete')->withOutBarrier('is-front-auth');
     Router::any('/kg_order_status', [PaymentController::class, 'kg_order_status'])->name('kg_order_status')->withOutBarrier('is-front-auth');
+  });
+
+  Router::bunch('/support-tickets', ['as' => 'support-tickets.'], function () {
+    Router::post('/create', [SupportTicketController::class, 'submit'])->name('submit');
+    Router::get('/', [SupportTicketController::class, 'listing'])->name('listing');
+		Router::bunch('/{ticket}', ['as' => ''], function () {
+			Router::get('/view', [SupportTicketController::class, 'userView'])->name('view');
+			Router::post('/message', [SupportTicketController::class, 'sendMessage'])->name('message');
+			Router::get('/update-status/{status}', [SupportTicketController::class, 'updateStatus'])->name('update-status');
+		});
+  });
+
+});
+
+
+Router::bunch('/blogs', ['as' => 'blogs.'], function () {
+  Router::get('/', [BlogController::class, 'index'])->name('index');
+  Router::bunch('/{blog}', ['as' => ''], function () {
+    Router::get('/view', [BlogController::class, 'view'])->name('view');
   });
 });

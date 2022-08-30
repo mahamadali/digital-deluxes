@@ -5,6 +5,7 @@ use Google\Service\AdExchangeBuyerII\Price;
 use Models\User;
 use Models\Cart;
 use Models\PriceProfit;
+use Models\Product;
 use Models\Setting;
 
 if (! function_exists('generateOTP')) {
@@ -343,5 +344,12 @@ if (! function_exists('getRegionCountries')) {
     function getRegionCountries($region) {
         $data = file_get_contents('https://api.first.org/data/v1/countries?region='.urlencode($region).'&pretty=true');
         return $data;
+    }
+}
+
+if (! function_exists('platforms')) {
+    function platforms() {
+        $products = Product::selectSet(['platform'])->whereNotNull('platform')->groupBY('platform')->getAsArray();
+        return $products;
     }
 }

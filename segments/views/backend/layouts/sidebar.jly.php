@@ -46,8 +46,23 @@
           <ul class="nav flex-column sub-menu">
             <li class="nav-item"> <a class="nav-link" href="{{ route('admin.settings.price-profits') }}"> Price Profits </a></li>
             <li class="nav-item"> <a class="nav-link" href="{{ route('admin.settings.list') }}"> Configurations </a></li>
+            <li class="nav-item"> <a class="nav-link" href="{{ route('admin.settings.platform-logos.index') }}"> Platform Logos </a></li>
           </ul>
         </div>
+      </li>
+
+      <li class="nav-item {{ (request()->matchesTo('/admin/blogs/*')) ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.blogs.index') }}">
+          <i class="ti-list menu-icon"></i>
+          <span class="menu-title">Blogs</span>
+        </a>
+      </li>
+
+      <li class="nav-item {{ (request()->matchesTo('/admin/support-tickets/*')) ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.support-tickets.index') }}">
+          <i class="ti-list menu-icon"></i>
+          <span class="menu-title">Tickets</span>
+        </a>
       </li>
 
     @endif 
