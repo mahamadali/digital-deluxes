@@ -45,7 +45,9 @@
                     <select class="search-category-input-store" name="system">
                         <option value="">Operating system</option>
                         @foreach($operatingSystems as $operatingSystem):
+                            @if(!empty($operatingSystem->system)):
                             <option value="{{ $operatingSystem->system }}" {{ (isset($_GET["system"]) && $_GET["system"] == $operatingSystem->system) ? 'selected' : '' }}>{{ $operatingSystem->system }}</option>
+                            @endif
                         @endforeach
                     </select>
                 </div>

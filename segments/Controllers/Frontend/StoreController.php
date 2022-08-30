@@ -22,7 +22,7 @@ class StoreController
 
 		
         $products = Product::orderBy('id','ASC');
-		$operatingSystems = ProductSystemRequirement::selectSet(['system'])->whereNotNull('system')->groupBy('system')->orderBy('id','ASC')->get();
+		$operatingSystems = ProductSystemRequirement::selectSet(['system'])->groupBy('system')->orderBy('id','ASC')->get();
 		
         $name = $request->get("name") ?? '';
 		$category = $request->get("category") ?? '';
