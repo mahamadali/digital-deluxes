@@ -7,6 +7,7 @@ use Controllers\Frontend\CartController;
 use Controllers\Frontend\PaymentController;
 use Controllers\Frontend\OrderController;
 use Controllers\Frontend\BlogController;
+use Controllers\Frontend\WalletController;
 use Controllers\SupportTicketController;
 
 Router::get('/', [WelcomeController::class, 'index'])->name('home');
@@ -52,6 +53,12 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
     Router::any('/notify', [PaymentController::class, 'notify'])->name('notify')->withOutBarrier('is-front-auth');
     Router::any('/kg_order_complete', [PaymentController::class, 'kg_order_complete'])->name('kg_order_complete')->withOutBarrier('is-front-auth');
     Router::any('/kg_order_status', [PaymentController::class, 'kg_order_status'])->name('kg_order_status')->withOutBarrier('is-front-auth');
+    Router::bunch('/mercadopago', ['as' => 'mercadopago.'], function () {
+      Router::any('/success', [PaymentController::class, 'mercadopago_success'])->name('success')->withOutBarrier('is-front-auth');
+      Router::get('/failure/{payment_method}', [PaymentController::class, 'mercadopago_failure'])->name('failure')->withOutBarrier('is-front-auth');
+      Router::get('/pending/{payment_method}', [PaymentController::class, 'mercadopago_pending'])->name('pending')->withOutBarrier('is-front-auth');
+    });
+    
   });
 
   Router::bunch('/support-tickets', ['as' => 'support-tickets.'], function () {
@@ -62,6 +69,15 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
 			Router::post('/message', [SupportTicketController::class, 'sendMessage'])->name('message');
 			Router::get('/update-status/{status}', [SupportTicketController::class, 'updateStatus'])->name('update-status');
 		});
+  });
+
+  Router::bunch('/wallet', ['as' => 'wallet.'], function () {
+    Router::get('/', [WalletController::class, 'index'])->name('index');
+    Router::bunch('/{payment_method}', ['as' => ''], function () {
+      Router::get('/recharge', [WalletController::class, 'recharge'])->name('recharge');
+      Router::post('/recharge-post', [WalletController::class, 'rechargePost'])->name('recharge.submit');
+      Router::get('/recharge-success', [WalletController::class, 'rechargeSuccess'])->name('recharge.success');
+    });
   });
 
 });

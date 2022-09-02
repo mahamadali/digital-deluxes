@@ -185,28 +185,12 @@ if (! function_exists('exchangeRate')) {
     function exchangeRate($price, $from, $to)
     {
         if(cartTotal() > 0) {
+            if(session()->getCurrency() != 'cop') {
+                $exchange_rate = currencyConverter($from, $to, $price);
+            } else {
+                $exchange_rate = $price;
+            }
             
-            // $ch = curl_init();
-
-            // curl_setopt($ch, CURLOPT_URL, 'https://api.apilayer.com/fixer/latest?base='.$from.'&symbols='.$to);
-            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-
-
-            // $headers = array();
-            // $headers[] = 'Apikey: kb1E3pYgWi3Ua1x2ajWu7ix8YB5lYYuO';
-            // curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-            // $result = curl_exec($ch);
-            // if (curl_errno($ch)) {
-            //     echo 'Error:' . curl_error($ch);
-            // }
-            // curl_close($ch);
-            // $response = json_decode($result);
-            
-            // $exchange_rate = number_format((float)($price * $response->rates->{$to}), 2, '.', '');
-            // $exchange_rate = '17340';
-            $exchange_rate = currencyConverter($from, $to, $price);
             return $exchange_rate;
         } else {
             return 0;
@@ -237,12 +221,12 @@ if (! function_exists('getProduct')) {
     }
 }
 
-function currencyConverter($from_Currency,$to_Currency,$amount) {
-
+function currencyConverter($from_Currency,$to_Currency,$amount, $exchange_rate = true) {
+    
     $apikey = '12e38b423a9544abc8488f2e';
     $req_url = 'https://v6.exchangerate-api.com/v6/'.$apikey.'/latest/'.$from_Currency;
     $response_json = file_get_contents($req_url);
-
+    // dd($response_json);
     // Continuing if we got a result
     if(false !== $response_json) {
 
@@ -256,8 +240,11 @@ function currencyConverter($from_Currency,$to_Currency,$amount) {
 
                 // YOUR APPLICATION CODE HERE, e.g.
                 $base_price = $amount; // Your price in USD
-                $EUR_price = round(($base_price * $response->conversion_rates->{$to_Currency}), 2);
-                return $EUR_price;
+                if($exchange_rate) {
+                    $base_price = round(($base_price * $response->conversion_rates->{$to_Currency}), 2);
+                }
+                
+                return $base_price;
             }
 
         }
@@ -349,7 +336,36 @@ if (! function_exists('getRegionCountries')) {
 
 if (! function_exists('platforms')) {
     function platforms() {
-        $products = Product::selectSet(['platform'])->whereNotNull('platform')->groupBY('platform')->getAsArray();
+        $products = Product::selectSet(['platform'])->whereNotLike('platform', '%Kinguin%')->whereNotNull('platform')->groupBY('platform')->getAsArray();
         return $products;
+    }
+}
+
+if (! function_exists('currencySymbol')) {
+    function currencySymbol() {
+        $currency = session()->getCurrency();
+        switch ($currency) {
+            case 'eur':
+                $symbol = "€";
+                break;
+            case 'cop':
+                $symbol = "$";
+                break;
+            case 'usd':
+                $symbol = "$";
+                break;
+            
+            default:
+                $symbol = "$";
+                break;
+        }
+        return $symbol;
+    }
+}
+
+if (! function_exists('remove_format')) {
+    function remove_format($text) {
+        $text = str_replace(",", "", $text);
+        return $text;
     }
 }

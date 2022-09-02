@@ -24,12 +24,7 @@
         
         <a class="action-btn floating-cart-widget" id="cd-cart-trigger" href="Javascript:void(0);" class="floating-cart-widget"><i class="ico_shopping-cart"></i><span class="animation-ripple-delay1">{{ !empty(auth()) ? count(auth()->cart_items()) : 0 }}</span></a>
         <!-- <input id="toggle" type="checkbox"> -->
-        <script type="text/javascript">
-            document.getElementById("toggle").addEventListener("click", function() {
-                document.getElementsByTagName('body')[0].classList.toggle("dark-theme");
-            });
-
-        </script>
+        
 
 
         <!-- Loader-->
@@ -70,14 +65,17 @@
         <script src="{{ url('assets/frontend/js/jquery.validate.min.js') }}"></script>
 
         <script>
-        var cartTotal = '{{ exchangeRate(cartTotal(), "EUR", "COP") }}';
+        var exchangePrice = '{{ cartTotal() }}';
+        var cartTotal = exchangePrice;
         
         if(cartTotal > 0) {
+            cartTotal = '{{ currencyConverter(strtoupper(session()->getCurrency()), "COP", cartTotal(), false) }}';
+            var amountInCents = (cartTotal * 100).toFixed(0);
             var user_phone = '{{ !empty(auth()) ? user()->phone : "" }}';
             if(user_phone != '') {
                 var checkout = new WidgetCheckout({
                 currency: 'COP',
-                amountInCents: '{{ exchangeRate(cartTotal(), "EUR", "COP") * 100 }}',
+                amountInCents: amountInCents,
                 reference: '{{ strtoupper(random_strings(12)) }}',
                 publicKey: '{{ setting("wompi.PUB_KEY") }}',
                 redirectUrl: '{{ setting("wompi.REDIRECT_URL") }}', // Opcional
@@ -125,6 +123,25 @@
                     } else {
                         setTimeout(function() {
                             $('.search__input input[type="search"]').val('');
+                        }, 500)
+                    }
+                },
+            }).data('ui-autocomplete')._renderItem = function(ul, item){
+                return $("<li class='ui-autocomplete-row'></li>")
+                    .data("item.autocomplete", item)
+                    .append(item.label)
+                    .appendTo(ul);
+                };;
+
+            $('.search__input .search_name').autocomplete({
+                source: "{{ route('api.search-product') }}",
+                minLength: 1,
+                select: function( event, ui ) {
+                    if(typeof ui.item.id != 'undefined') {
+                        //window.location.href = "{ { url('store/view') } }/"+ui.item.id;
+                    } else {
+                        setTimeout(function() {
+                            $('.search__input .search_name').val('');
                         }, 500)
                     }
                 },

@@ -13,6 +13,7 @@
             'blogs' => 'Blogs',
             'login' => 'Login',
             'support_tickets' => 'Tickets',
+            'wallet' => 'Wallet'
         ],
 
         'homepage' => [

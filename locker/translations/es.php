@@ -13,6 +13,7 @@
             'blogs' => 'Blogs',
             'login' => 'Acceso',
             'support_tickets' => 'Entradas',
+            'wallet' => 'Cartera'
         ],
 
          'homepage' => [

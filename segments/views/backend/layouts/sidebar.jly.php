@@ -47,6 +47,7 @@
             <li class="nav-item"> <a class="nav-link" href="{{ route('admin.settings.price-profits') }}"> Price Profits </a></li>
             <li class="nav-item"> <a class="nav-link" href="{{ route('admin.settings.list') }}"> Configurations </a></li>
             <li class="nav-item"> <a class="nav-link" href="{{ route('admin.settings.platform-logos.index') }}"> Platform Logos </a></li>
+            <li class="nav-item"> <a class="nav-link" href="{{ route('admin.settings.payment-methods.index') }}"> Payment methods </a></li>
           </ul>
         </div>
       </li>

@@ -29,7 +29,7 @@ class CartController
 			$cart->user_id = auth()->id;
 			$cart->product_id = $product_id;
 			$cart->product_name = $product->name;
-			$cart->product_price = $product->price;
+			$cart->product_price = remove_format($product->price);
 			$cart->product_qty = 1;
 			$checkItemAvailableInstore = getProduct($product->kinguinId);
 			$kinguinproduct = json_decode($checkItemAvailableInstore);

@@ -8,6 +8,7 @@
             <div class="widjet --filters">
                 <div class="widjet__head">
                     <h3 class="uk-text-lead">{{ trans('menu.support_tickets') }}</h3>
+                    <a href="#modal-report" class="uk-button uk-button-danger" data-uk-toggle><i class="ico_report"></i> <span>Report</span></a>
                 </div>
             </div>
             <div class="game-card__box">

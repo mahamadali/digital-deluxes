@@ -27,7 +27,7 @@
                 <tr>
                     <td>{{ $order->id }}</td>
                     <td>{{ $order->transaction_id }}</td>
-                    <td>${{ $order->order_total() }}</td>
+                    <td>{{ currencySymbol() }}{{ $order->order_total() }}</td>
                     <td>{{ $order->status }}</td>
                     <td>{{ date('M d, Y, H:i', strtotime($order->created_at)) }}</td>
                     <td>

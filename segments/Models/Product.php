@@ -45,7 +45,16 @@ class Product extends Model
 	
 	public function getPriceProperty() {
 		$price = $this->price;
-		$profitPrice = getProfitPrice($price);
+		
+		if(!session()->has('base_price')) {
+			session()->setCurrency('cop');
+			$base_price = currencyConverter('EUR', 'COP', 1);
+			session()->set('base_price', $base_price);
+		}
+		
+		$currenctCurrencyPrice = (float) session()->get('base_price') * $price;
+		
+		$profitPrice = getProfitPrice($currenctCurrencyPrice);
 		return $profitPrice;
 	}
 }

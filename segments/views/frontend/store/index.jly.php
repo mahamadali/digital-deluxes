@@ -22,24 +22,23 @@
         </div>
         <div class="widjet__body">
         <form>
+        <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-3@l uk-child-width-1-2@s uk-flex-middle uk-grid-small" data-uk-grid>
+            <div class="uk-width-1-5">
+                <select class="search-category-input-store" name="category">
+                    <option value="">Choose</option>
+                    @foreach(platforms() as $productPlatform):
+                        <option value="{{ $productPlatform['platform'] }}" {{ (isset($_GET["category"]) && $_GET["category"] == $productPlatform['platform']) ? 'selected' : '' }}>{{ $productPlatform['platform'] }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="uk-width-1-2">
+                <div class="search">
+                    <div class="search__input"><i class="ico_search"></i>
+                    <input type="text" class="search_name" name="name" placeholder="{{ trans('store.search') }}" value="{{ $_GET['name'] ?? '' }}"></div>
+                </div>
+            </div>
+        </div>
             <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-3@l uk-child-width-1-2@s uk-flex-middle uk-grid-small" data-uk-grid>
-
-                
-                <div class="uk-width-1-1">
-                    <div class="search">
-                        <div class="search__input"><i class="ico_search"></i>
-                        <input type="search" name="name" placeholder="{{ trans('store.search') }}" value="{{ $_GET['name'] ?? '' }}"></div>
-                    </div>
-                </div>
-
-                <div class="uk-width-1-5">
-                    <select class="search-category-input-store" name="category">
-                        <option value="">Choose</option>
-                        @foreach(platforms() as $productPlatform):
-                            <option value="{{ $productPlatform['platform'] }}" {{ (isset($_GET["category"]) && $_GET["category"] == $productPlatform['platform']) ? 'selected' : '' }}>{{ $productPlatform['platform'] }}</option>
-                        @endforeach
-                    </select>
-                </div>
 
                 <div class="uk-width-1-5">
                     <select class="search-category-input-store" name="system">
@@ -90,7 +89,7 @@
                     <div class="game-card__info"><a class="game-card__title" href="{{ url('frontend/store/view/'.$product->id) }}"> {{ $product->name }}</a>
                         <div class="game-card__genre">{{ $product->platform }}</div>
                         <div class="game-card__rating-and-price">
-                            <div class="game-card__price"><span>€{{ $product->price }} </span></div>
+                            <div class="game-card__price"><span>{{ currencySymbol() }}{{ $product->price }} </span></div>
                             <div class="game-card__rating add_to_cart" ><a href="{{ route('frontend.cart.add',[$product->id]) }}"><i class="ico_shopping-cart"></i></a></div>
                         </div>
                     </div>

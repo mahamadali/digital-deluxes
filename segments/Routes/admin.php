@@ -10,6 +10,7 @@ use Controllers\Backend\BlogController;
 use Controllers\Backend\SettingController;
 use Controllers\Backend\OrderController;
 use Controllers\Backend\ProductController;
+use Controllers\Backend\PaymentMethodController;
 use Controllers\SupportTicketController;
 
 
@@ -48,6 +49,11 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 				Router::get('/remove', [ SettingController::class, 'platformLogoRemove' ])->name('remove');
 			});
 		});
+
+		Router::bunch('/payment-methods', ['as' => 'payment-methods.'], function() {
+			Router::get('/', [ PaymentMethodController::class, 'index' ])->name('index');
+			Router::post('/change-status', [ PaymentMethodController::class, 'changeStatus' ])->name('change-status');
+		});
 	});
 
 	Router::bunch('/blogs', ['as' => 'blogs.'], function () {
@@ -76,5 +82,12 @@ Router::get('/language/{lang}', function(Request $request, $lang) {
 	session()->setLanguage($lang);
 	return redirect()->back();
 })->name('set-lang');
+
+Router::get('/currency/{currency}', function(Request $request, $currency) {
+	session()->setCurrency($currency);
+	$base_price = currencyConverter('EUR', strtoupper($currency), 1);
+	session()->set('base_price', $base_price);
+	return redirect()->back();
+})->name('set-currency');
 
 Router::get('/logout', [ AuthController::class, 'logout' ])->name('auth.logout');

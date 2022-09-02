@@ -20,7 +20,7 @@
                         <div class="game-card__bottom">
                             <div class="game-card__rating-and-price">
                                 <div class="game-card__rating"><i class="ico_star"></i> <span>3.9</span></div>
-                                <div class="game-card__price"><span>${{ $wishlist->product->price }} </span></div>
+                                <div class="game-card__price"><span>{{ currencySymbol() }}{{ $wishlist->product->price }} </span></div>
                             </div>
                         </div>
                     </div>

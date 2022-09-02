@@ -4,13 +4,16 @@ namespace Controllers\Frontend;
 
 use Bones\Alert;
 use Bones\Request;
+use Google\Service\Adsense\Payment;
 use Mail\KeysEmail;
 use Mail\NewOrderAdminEmail;
 use Models\Cart;
 use Models\GameKey;
 use Models\Order;
 use Models\OrderItem;
+use Models\PaymentMethod;
 use Models\Product;
+use Models\TransactionLog;
 use Models\User;
 
 class PaymentController
@@ -83,11 +86,15 @@ class PaymentController
 
     public function notify(Request $request)
 	{
-        // $raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1660656381-58355","created_at":"2022-08-16T13:26:21.889Z","finalized_at":"2022-08-16T13:26:22.000Z","amount_in_cents":4048203,"reference":"BWHH04DNRXCK","customer_email":"manknojiya121@gmail.com","currency":"COP","payment_method_type":"BANCOLOMBIA_TRANSFER","payment_method":{"type":"BANCOLOMBIA_TRANSFER","extra":{"async_payment_url":"https://sandbox.wompi.co/v1/payment_methods/redirect/bancolombia_transfer?transferCode=U7yeST3tPZ5PXWDR-approved","external_identifier":"U7yeST3tPZ5PXWDR-approved"},"user_type":"PERSON","sandbox_status":"APPROVED","payment_description":"Pago a digitaldeluxes, ref: BWHH04DNRXCK"},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"http://dev.wisencode.com/digital-deluxes/payment/check","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"23242343","full_name":"Mohamad Ali","phone_number":"+57784545454454545","legal_id_type":"CC"},"billing_data":null}},"sent_at":"2022-08-16T13:26:24.351Z","timestamp":1660656384,"signature":{"checksum":"759592ed5a50fa5d760bfd58e7201b0c46f61ce721612bac7d067403d546caac","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
-        $raw_post_data = file_get_contents('php://input'); 
-        file_put_contents('ipn.txt', $raw_post_data);
+        $raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1662032598-63075","created_at":"2022-09-01T11:43:18.179Z","finalized_at":"2022-09-01T11:43:18.631Z","amount_in_cents":4419820,"reference":"VNFGWUI05X8O","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"BANCOLOMBIA_TRANSFER","payment_method":{"type":"BANCOLOMBIA_TRANSFER","extra":{"async_payment_url":"https://sandbox.wompi.co/v1/payment_methods/redirect/bancolombia_transfer?transferCode=mNkJGhlUd7VYjAju-approved","external_identifier":"mNkJGhlUd7VYjAju-approved"},"user_type":"PERSON","sandbox_status":"APPROVED","payment_description":"Pago a digitaldeluxes, ref: VNFGWUI05X8O"},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"https://127.0.0.1/digital-deluxes/wallet/1/recharge-success","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"2424234","full_name":"Akbar Husen","phone_number":"+574234","legal_id_type":"CC"},"billing_data":null}},"sent_at":"2022-09-01T11:43:18.684Z","timestamp":1662032598,"signature":{"checksum":"ab71aa9061fb6d98228b4efca8e57d82a1512789f0b47169e54a2f902a3c7ea9","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
+        // $raw_post_data = file_get_contents('php://input'); 
+        // file_put_contents('ipn.txt', $raw_post_data);
 
         $data = json_decode($raw_post_data);
+        $redirectURLExploded = explode("/", $data->data->transaction->redirect_url);
+        if(end($redirectURLExploded) == 'recharge-success') {
+            exit;
+        }
         
         if(isset($data->event)) {
             $user = User::where('email', $data->data->transaction->customer_email)->first();
@@ -383,6 +390,50 @@ class PaymentController
         }
         curl_close($ch);
         return $result;
+    }
+
+    public function mercadopago_success(Request $request)
+    {
+        // dd($request);
+        // if(!$request->has('status')) {
+        //     return redirect(route('frontend.wallet.recharge', ['payment_method' => $request->dd_payment_method_id]))->withFlashError('Payment failed! Please try again.')->go();
+        // }
+        // if($request->status == 'approved') {
+            $paymentMethod = PaymentMethod::find($request->dd_payment_method_id);
+            $paymentId = $request->payment_id ?? '';
+            \MercadoPago\SDK::setAccessToken(setting('mercadopago.access_token'));
+            $transaction = \MercadoPago\SDK::get("/v1/payments/".$paymentId);
+            
+            $currencyInEur = currencyConverter($paymentMethod->currency, 'EUR', $request->amount);
+            $user = user();
+            $user->wallet_amount = $user->wallet_amount + $currencyInEur;
+            $user->save();
+
+            $transaction = new TransactionLog();
+            $transaction->user_id = auth()->id;
+            $transaction->tx_id = $paymentId;
+            $transaction->currency = $paymentMethod->currency;
+            $transaction->type = 'wallet';
+            $transaction->amount = $request->amount;
+            $transaction->status = 'COMPLETED';
+            $transaction->payment_method = $paymentMethod->title;
+            $transaction->payment_method_id = $paymentMethod->id;
+            $transaction->kind_of_tx = 'CREDIT';
+            $transaction->save();
+            return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashSuccess('$'.$request->amount. ' '.$paymentMethod->currency.' added in your wallet successfully')->go();
+        // } else {
+        //     return redirect(route('frontend.wallet.recharge', ['payment_method' => $request->payment_method_id]))->withFlashError('Payment '.$request->status.'!')->go();
+        // }
+    }
+
+    public function mercadopago_failure(Request $request, PaymentMethod $paymentMethod)
+    {
+        return redirect()->route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id])->withFlashSuccess('Payment failed! Please try again.');
+    }
+
+    public function mercadopago_pending(Request $request, PaymentMethod $paymentMethod)
+    {
+        return redirect()->route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id])->withFlashSuccess('Payment gone into pending. we will add funds in your wallet later.');
     }
     
 }

@@ -146,11 +146,25 @@ function doCalc(){
     $(".widjet-game__info").each(function() {
          price  = $(this).find('.price').html();
          qty  = $(this).find('.quantity').val();
+		 price = price.replace(",","");
          item_total += price * qty;
     });
 
     item_total = parseFloat(item_total).toFixed(2);
-    $('.subtotal_count').html(item_total);
-    $('.total_count').html(item_total);
+    $('.subtotal_count').html(addCommas(item_total));
+    $('.total_count').html(addCommas(item_total));
 
+}
+
+function addCommas(nStr)
+{
+    nStr += '';
+    x = nStr.split('.');
+    x1 = x[0];
+    x2 = x.length > 1 ? '.' + x[1] : '';
+    var rgx = /(\d+)(\d{3})/;
+    while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+    }
+    return x1 + x2;
 }

@@ -30,11 +30,11 @@
 
 <body class="page-login">
 
-    <input id="toggle" type="checkbox">
+    <!-- <input id="toggle" type="checkbox"> -->
     <script type="text/javascript">
-        document.getElementById("toggle").addEventListener("click", function() {
-            document.getElementsByTagName('body')[0].classList.toggle("dark-theme");
-        });
+        // document.getElementById("toggle").addEventListener("click", function() {
+        //     document.getElementsByTagName('body')[0].classList.toggle("dark-theme");
+        // });
 
     </script>
 

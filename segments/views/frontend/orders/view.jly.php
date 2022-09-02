@@ -106,7 +106,7 @@
                                     <tr>
                                         <th>{{ $item->product_id }}</th>
                                         <th>{{ $item->product_name }}</th>
-                                        <th>€{{ $item->product_price }}</th>
+                                        <th>{{ $item->product_price }} {{ $order->currency }}</th>
                                         <th>{{ $item->product_qty }}</th>
                                     </tr>
                                 @endforeach

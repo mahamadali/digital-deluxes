@@ -692,7 +692,7 @@ html #youzify-groups-list .item .item-title a {
 }
 
 #toggle {
-    -webkit-appearance: none;
+    /* -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     -webkit-box-shadow: 2px 2px 7px 0px #00000024;
@@ -700,6 +700,21 @@ html #youzify-groups-list .item .item-title a {
     position: absolute;
     bottom: 20px;
     right: 20px;
+    width: 75px;
+    height: 40px;
+    border-radius: 20px;
+    outline: none;
+    background-color: #F46119;
+    box-shadow: 2px 2px 7px 0px #00000024;
+    cursor: pointer; */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    -webkit-box-shadow: 2px 2px 7px 0px #00000024;
+    z-index: 5;
+    position: relative;
+    top: 20px;
+    left: 0px;
     width: 75px;
     height: 40px;
     border-radius: 20px;
@@ -1526,7 +1541,7 @@ a:hover {
 
 .page-header__logo img {
     /* max-width: 30px; */
-    height: auto;
+    height: 110px;
     margin-right: 12px;
 }
 
@@ -1577,7 +1592,7 @@ a:hover {
 }
 
 .page-header__action > * {
-    margin-right: 24px;
+    margin-right: 0px;
 }
 
 .page-header__action > *:last-child {
@@ -4388,6 +4403,10 @@ body.dark-theme .search__input {
     background: #1A2634;
 }
 
+body.dark-theme .search-category-input {
+    background: #1A2634;
+}
+
 body.dark-theme .search__btn button {
     color: #fff;
 }
@@ -4721,7 +4740,9 @@ body.dark-theme #modal-help ul li {
 
 @media only screen and (max-width: 767px) {
 
-
+    .uk-subnav > * {
+        padding-left: 0px;
+    }
     .logo-big span {
         font-size: 46px;
     }
@@ -6282,4 +6303,49 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     .b-post-full .entry-media {
         position: relative;
         border-bottom: 0;
+    }
+    .uk-subnav {
+        flex-wrap: inherit;
+    }
+
+    .currency-section img {
+        height: 22px;
+    }
+
+    .payment-card__logo img {
+        height: 40px;
+        width: 90px;
+    }
+    .recharge-button {
+        color: white;
+        border: 1px solid;
+        padding: 5px 29px;
+        border-radius: 0px 15px;
+    }
+
+    .recharge-button:hover {
+        background-color: white;
+        color: black;
+        border-color: white;
+    }
+
+    label.error {
+        color: red;
+    }
+
+    .alert-success {
+        color: white;
+        background-color: #00a61b;
+        padding: 10px;
+    }
+
+    .alert-danger {
+        color: white;
+        background-color: red;
+        padding: 10px;
+    }
+
+    .mercadopago-button {
+        width: 100%;
+        visibility: hidden;
     }

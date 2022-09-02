@@ -2,7 +2,10 @@
    <div class="page-header__inner">
          <div class="page-header__sidebar">
             <div class="page-header__menu-btn"><button class="menu-btn ico_menu is-active"></button></div>
-            <div class="page-header__logo"><img src="{{ url('assets/img/2.png') }}" alt="logo"><span class="page-header__logo_text">{{ setting('app.title') }}</span></div>
+            <div class="page-header__logo">
+               <img src="{{ url('assets/img/2.png') }}" alt="logo">
+               <!-- <span class="page-header__logo_text">{{ setting('app.title') }}</span> -->
+            </div>
          </div>
          <div class="page-header__content">
 
@@ -33,15 +36,43 @@
 
                      @if(session()->getLanguage() == 'es'):
                      <img src="{{ url('assets/frontend/img/spain.png') }}" alt="profile" class="profile">
-                     Spain
+                     Español
                      <span uk-icon="icon: triangle-down" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
                      @endif
                   </a>
                   <div uk-dropdown="mode: hover" class="uk-dropdown uk-dropdown-bottom-left" style="left: 50px; top: 42px;">
                      <ul class="uk-nav uk-dropdown-nav">
                            <li><a href="{{ route('set-lang', ['lang' => 'en']) }}"> <img src="{{ url('assets/frontend/img/united-kingdom.png') }}" alt="profile" class="profile">English</a></li>
-                           <li><a href="{{ route('set-lang', ['lang' => 'es']) }}"> <img src="{{ url('assets/frontend/img/spain.png') }}" alt="profile" class="profile">Spain</a></li>
+                           <li><a href="{{ route('set-lang', ['lang' => 'es']) }}"> <img src="{{ url('assets/frontend/img/spain.png') }}" alt="profile" class="profile">Español</a></li>
 
+                     </ul>
+                  </div>
+               </li>
+
+               <li class="uk-first-column currency-section">
+                  <a href="#" aria-expanded="false">
+                     @if(session()->getCurrency() == 'cop' || session()->getCurrency() == ''):
+                     <img src="{{ url('assets/frontend/img/cop-flag.png') }}" alt="profile" class="profile">
+                     COP
+                     <span uk-icon="icon: triangle-down" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
+                     @endif
+                     @if(session()->getCurrency() == 'eur'):
+                     <img src="{{ url('assets/frontend/img/eur-flag.png') }}" alt="profile" class="profile">
+                     EUR
+                     <span uk-icon="icon: triangle-down" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
+                     @endif
+
+                     @if(session()->getCurrency() == 'usd'):
+                     <img src="{{ url('assets/frontend/img/usd-flag.png') }}" alt="profile" class="profile">
+                     USD
+                     <span uk-icon="icon: triangle-down" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
+                     @endif
+                  </a>
+                  <div uk-dropdown="mode: hover" class="uk-dropdown uk-dropdown-bottom-left" style="left: 50px; top: 42px;">
+                     <ul class="uk-nav uk-dropdown-nav">
+                           <li><a href="{{ route('set-currency', ['currency' => 'cop']) }}"> <img src="{{ url('assets/frontend/img/cop-flag.png') }}" alt="profile" class="profile">COP</a></li>
+                           <li><a href="{{ route('set-currency', ['currency' => 'eur']) }}"> <img src="{{ url('assets/frontend/img/eur-flag.png') }}" alt="profile" class="profile">EUR</a></li>
+                           <li><a href="{{ route('set-currency', ['currency' => 'usd']) }}"> <img src="{{ url('assets/frontend/img/usd-flag.png') }}" alt="profile" class="profile">USD</a></li>
                      </ul>
                   </div>
                </li>
