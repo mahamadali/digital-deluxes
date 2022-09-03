@@ -13,6 +13,7 @@ use Controllers\Backend\ProductController;
 use Controllers\Backend\PaymentMethodController;
 use Controllers\SupportTicketController;
 use Controllers\Backend\CMSController;
+use Controllers\Backend\TransactionController;
 
 
 Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]], function() {
@@ -36,6 +37,10 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 		Router::bunch('/{order}', ['as' => ''], function () {
 			Router::get('/view', [OrderController::class, 'view'])->name('view');
 		});
+	});
+
+	Router::bunch('/transactions', ['as' => 'transactions.'], function () {
+		Router::get('/', [TransactionController::class, 'index'])->name('index');
 	});
 
 	Router::bunch('/settings', ['as' => 'settings.'], function() {

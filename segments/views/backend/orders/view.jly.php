@@ -100,12 +100,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                        @foreach($order->items as $item):
+                        @foreach($orderItems as $item):
                             <tr>
                                 <th>{{ $item->product_id }}</th>
                                 <th>{{ $item->product_name }}</th>
-                                <th>${{ $item->product_price }}</th>
-                                <th>${{ $item->product_price_profit }}</th>
+                                <th>${{ $item->product_price }} {{ $item->order_info->currency }}</th>
+                                <th>${{ $item->product_price_profit }} EUR</th>
                                 <th>{{ $item->product_qty }}</th>
                             </tr>
                         @endforeach

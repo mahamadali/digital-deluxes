@@ -86,7 +86,7 @@ class PaymentController
 
     public function notify(Request $request)
 	{
-        // $raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1662032598-63075","created_at":"2022-09-01T11:43:18.179Z","finalized_at":"2022-09-01T11:43:18.631Z","amount_in_cents":4419820,"reference":"VNFGWUI05X8O","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"BANCOLOMBIA_TRANSFER","payment_method":{"type":"BANCOLOMBIA_TRANSFER","extra":{"async_payment_url":"https://sandbox.wompi.co/v1/payment_methods/redirect/bancolombia_transfer?transferCode=mNkJGhlUd7VYjAju-approved","external_identifier":"mNkJGhlUd7VYjAju-approved"},"user_type":"PERSON","sandbox_status":"APPROVED","payment_description":"Pago a digitaldeluxes, ref: VNFGWUI05X8O"},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"https://127.0.0.1/digital-deluxes/wallet/1/recharge-success","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"2424234","full_name":"Akbar Husen","phone_number":"+574234","legal_id_type":"CC"},"billing_data":null}},"sent_at":"2022-09-01T11:43:18.684Z","timestamp":1662032598,"signature":{"checksum":"ab71aa9061fb6d98228b4efca8e57d82a1512789f0b47169e54a2f902a3c7ea9","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
+        //$raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1662205373-91120","created_at":"2022-09-03T11:42:54.072Z","finalized_at":"2022-09-03T11:42:54.398Z","amount_in_cents":1109090,"reference":"9ZS2LI3ZIFK5","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"BANCOLOMBIA_TRANSFER","payment_method":{"type":"BANCOLOMBIA_TRANSFER","extra":{"async_payment_url":"https://sandbox.wompi.co/v1/payment_methods/redirect/bancolombia_transfer?transferCode=VVjvM3dBu1hUg8ga-approved","external_identifier":"VVjvM3dBu1hUg8ga-approved"},"user_type":"PERSON","sandbox_status":"APPROVED","payment_description":"Pago a digitaldeluxes, ref: 9ZS2LI3ZIFK5"},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"https://127.0.0.1/digital-deluxes/payment/check","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"25345","full_name":"Akbar Husen","phone_number":"+5754345345345","legal_id_type":"CC"},"billing_data":null}},"sent_at":"2022-09-03T11:42:54.428Z","timestamp":1662205374,"signature":{"checksum":"34804cd65fbadee64f4b8a578b92d317dd6712180f59191f4ef1bb9f3e0abdb4","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
         $raw_post_data = file_get_contents('php://input'); 
         file_put_contents('ipn.txt', $raw_post_data);
 
@@ -105,7 +105,7 @@ class PaymentController
             // $order->status = $transaction->status;
             // $order->updated_at = $transaction->finalized_at;
             // $order = $order->save();
-
+            
             $result = $transaction;
             $order = new Order();
             $order->reference = $result->reference;
@@ -127,13 +127,13 @@ class PaymentController
                 $orderItem->product_id = $item->product_id;
                 $orderItem->product_name = $item->product_name;
                 $orderItem->product_price = $item->product_price;
-                $orderItem->product_price_profit = getProfitCommission($item->product()->price);
+                $orderItem->product_price_profit = getProfitCommission(remove_format($item->product()->price), $result->currency);
                 $orderItem->product_qty = $item->product_qty;
                 $orderItem->save();
             }
 
             $paymentMethod = PaymentMethod::where('title', 'Wompi')->first();
-
+            
             $transaction = new TransactionLog();
             $transaction->user_id = $user->id;
             $transaction->tx_id = $result->id;
@@ -144,7 +144,7 @@ class PaymentController
             $transaction->payment_method = $paymentMethod->title;
             $transaction->payment_method_id = $paymentMethod->id;
             $transaction->kind_of_tx = 'DEBIT';
-            $transaction->save();
+            $transaction = $transaction->save();
 
             Cart::where('user_id',$user->id)->delete();
 
@@ -199,7 +199,7 @@ class PaymentController
             file_put_contents('create-order.txt', $result);
 
             $orderData = json_decode($result);
-
+            
             $order->kg_orderid = $orderData->orderId;
             $order->save();
                 

@@ -296,8 +296,11 @@ if (! function_exists('getProfitPrice')) {
 }
 
 if (! function_exists('getProfitCommission')) {
-    function getProfitCommission($price)
+    function getProfitCommission($price, $currency = '')
     {
+        if(!empty($currency)) {
+            $price = currencyConverter($currency, 'EUR', $price);
+        }
         if(!empty($priceProfit = PriceProfit::selectSet(['max(min_price) as maximum_price', 'profit_perc'])->orderBy('id')->first())) {
             if($priceProfit->maximum_price <= $price) {
                 $profit_prices = $priceProfit;
@@ -305,7 +308,7 @@ if (! function_exists('getProfitCommission')) {
                 $profit_prices = PriceProfit::where('max_price', (float) $price, '>=')->first();
             }
         }
-
+        
         $commission = ($profit_prices->profit_perc * $price) / 100;
         return number_format($commission, 2);
     }

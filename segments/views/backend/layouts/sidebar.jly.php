@@ -29,6 +29,13 @@
         </a>
       </li>
 
+      <li class="nav-item {{ (request()->matchesTo('/admin/transactions/*')) ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.transactions.index') }}">
+          <i class="ti-shopping-cart menu-icon"></i>
+          <span class="menu-title">Transactions</span>
+        </a>
+      </li>
+
       <!-- <li class="nav-item {{ (request()->matchesTo('/admin/settings/*')) ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.settings.list') }}">
           <i class="ti-settings menu-icon"></i>

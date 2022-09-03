@@ -18,7 +18,7 @@ class OrderController
     public function view(Request $request, Order $order) {
 		
 		return render('frontend/orders/view', [
-			'order' => $order
+			'order' => $order,
 		]);
 	}
     
