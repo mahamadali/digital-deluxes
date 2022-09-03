@@ -428,12 +428,12 @@ class PaymentController
 
     public function mercadopago_failure(Request $request, PaymentMethod $paymentMethod)
     {
-        return redirect()->route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id])->withFlashSuccess('Payment failed! Please try again.');
+        return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashSuccess('Payment failed! Please try again.')->go();
     }
 
     public function mercadopago_pending(Request $request, PaymentMethod $paymentMethod)
     {
-        return redirect()->route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id])->withFlashSuccess('Payment gone into pending. we will add funds in your wallet later.');
+        return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashSuccess('Payment gone into pending. we will add funds in your wallet later.')->go();
     }
 
     public function stripe_success(Request $request, PaymentMethod $paymentMethod) {
@@ -465,6 +465,11 @@ class PaymentController
         $transaction->kind_of_tx = 'CREDIT';
         $transaction->save();
         return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashSuccess('$'.$amount. ' '.$paymentMethod->currency.' added in your wallet successfully')->go();
+    }
+
+    public function stripe_failure(Request $request, PaymentMethod $paymentMethod)
+    {
+        return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashError('Payment cancelled! Please try again.')->go();
     }
     
 }

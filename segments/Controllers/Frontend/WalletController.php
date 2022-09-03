@@ -84,7 +84,7 @@ class WalletController
 				]],
 				'mode' => 'payment',
 				'success_url' => route('frontend.payment.stripe.success', ['payment_method' => $paymentMethod->id]).'?session_id={CHECKOUT_SESSION_ID}',
-				'cancel_url' => route('frontend.payment.stripe.failure'),
+				'cancel_url' => route('frontend.payment.stripe.failure', ['payment_method' => $paymentMethod->id]),
 			  ]);
 			  $response = array(
 					'status' => 200,

@@ -61,7 +61,7 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
 
     Router::bunch('/stripe', ['as' => 'stripe.'], function () {
       Router::any('/success/{payment_method}', [PaymentController::class, 'stripe_success'])->name('success')->withOutBarrier('is-front-auth');
-      Router::get('/failure', [PaymentController::class, 'stripe_failure'])->name('failure')->withOutBarrier('is-front-auth');
+      Router::get('/failure/{payment_method}', [PaymentController::class, 'stripe_failure'])->name('failure')->withOutBarrier('is-front-auth');
     });
     
   });
