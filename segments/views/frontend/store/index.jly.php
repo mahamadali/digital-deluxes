@@ -37,28 +37,47 @@
                     <input type="text" class="search_name" name="name" placeholder="{{ trans('store.search') }}" value="{{ $_GET['name'] ?? '' }}"></div>
                 </div>
             </div>
+            <div class="uk-width-1-5">
+                <select class="search-category-input-store" name="system">
+                    <option value="">Operating system</option>
+                    @foreach($operatingSystems as $operatingSystem):
+                        @if(!empty($operatingSystem->system)):
+                        <option value="{{ $operatingSystem->system }}" {{ (isset($_GET["system"]) && $_GET["system"] == $operatingSystem->system) ? 'selected' : '' }}>{{ $operatingSystem->system }}</option>
+                        @endif
+                    @endforeach
+                </select>
+            </div>
         </div>
             <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-3@l uk-child-width-1-2@s uk-flex-middle uk-grid-small" data-uk-grid>
 
+                
+
                 <div class="uk-width-1-5">
-                    <select class="search-category-input-store" name="system">
-                        <option value="">Operating system</option>
-                        @foreach($operatingSystems as $operatingSystem):
-                            @if(!empty($operatingSystem->system)):
-                            <option value="{{ $operatingSystem->system }}" {{ (isset($_GET["system"]) && $_GET["system"] == $operatingSystem->system) ? 'selected' : '' }}>{{ $operatingSystem->system }}</option>
-                            @endif
+                    <select class="search-category-input-store" name="language">
+                        <option value="">Language</option>
+                        @foreach(productLanguages() as $productLanguageEach):
+                            <option value="{{ $productLanguageEach }}" {{ (isset($_GET["language"]) && $_GET["language"] == $productLanguageEach) ? 'selected' : '' }}>{{ $productLanguageEach }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div class="uk-width-1-4">
+                    <select class="search-category-input-store" name="genre">
+                        <option value="">Genre</option>
+                        @foreach(productGenres() as $productGenreEach):
+                            <option value="{{ $productGenreEach }}" {{ (isset($_GET["genre"]) && $_GET["genre"] == $productGenreEach) ? 'selected' : '' }}>{{ $productGenreEach }}</option>
                         @endforeach
                     </select>
                 </div>
 
-                <div class="uk-width-1-5">
+                <div class="uk-width-1-6">
                     <div class="search">
                         <div class="search__input">
                         <input type="text" name="min_price" placeholder="{{ trans('store.min_price') }}" value="{{ $_GET['min_price'] ?? '' }}"></div>
                     </div>
                 </div>
 
-                <div class="uk-width-1-5">
+                <div class="uk-width-1-6">
                     <div class="search">
                         <div class="search__input">
                         <input type="text" name="max_price" placeholder="{{ trans('store.max_price') }}" value="{{ $_GET['max_price'] ?? '' }}"></div>
@@ -66,7 +85,7 @@
                 </div>
 
                 
-                <div class="uk-width-1-5">
+                <div class="uk-width-1-6">
                     <div class="">
                         <button class="search_btn" type="submit">{{ trans('store.search') }}</button>
                         <a class="" href="{{ route('frontend.store.list') }}">{{ trans('store.clear') }}</a>

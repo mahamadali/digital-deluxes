@@ -20,15 +20,17 @@ class StoreController
 			$page = 1;
 		}
 
-		
-        $products = Product::orderBy('id','ASC');
 		$operatingSystems = ProductSystemRequirement::selectSet(['system'])->groupBy('system')->orderBy('id','ASC')->get();
+		
+        $products = Product::whereNotLike('platform', 'kinguin')->whereNotLike('name', '%Kinguin%')->orderBy('id','ASC');
 		
         $name = $request->get("name") ?? '';
 		$category = $request->get("category") ?? '';
 		$min_price = $request->get("min_price") ?? '';
 		$max_price = $request->get("max_price") ?? '';
 		$system = $request->get("system") ?? '';
+		$language = $request->get("language") ?? '';
+		$genre = $request->get("genre") ?? '';
 
         
 
@@ -42,6 +44,14 @@ class StoreController
 
 		if($category){
 			$products = $products->where('platform', '%'.$category.'%', 'LIKE');
+        }
+
+		if($language){
+			$products = $products->whereLike('languages', "%$language%");
+        }
+
+		if($genre){
+			$products = $products->whereLike('genres', "%$genre%");
         }
 
 		if($name){
@@ -58,6 +68,9 @@ class StoreController
 
 		$product_limit = 12;
         $products = $products->paginate($product_limit, $page);
+
+		// echo \Bones\Database::getLastQuery();
+		// exit;
 		
         return render('frontend/store/index', [
 			'products' => $products,

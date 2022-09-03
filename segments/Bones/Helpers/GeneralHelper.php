@@ -369,3 +369,35 @@ if (! function_exists('remove_format')) {
         return $text;
     }
 }
+
+if (! function_exists('productLanguages')) {
+    function productLanguages() {
+        $productLanguages = Product::whereNotNull('languages')->selectSet(['languages'])->groupBy('languages')->get();
+        $productLanguagesArray = [];
+        foreach($productLanguages as $productLanguage) {
+            $product_languages = json_decode($productLanguage->languages);
+            foreach($product_languages as $each_p_language) {
+                if(!in_array($each_p_language, $productLanguagesArray)) {
+                    $productLanguagesArray[] = $each_p_language;
+                }
+            }
+        }
+        return $productLanguagesArray;
+    }
+}
+
+if (! function_exists('productGenres')) {
+    function productGenres() {
+        $productGenres = Product::whereNotNull('genres')->selectSet(['genres'])->groupBy('genres')->get();
+        $productGenresArray = [];
+        foreach($productGenres as $productGenre) {
+            $product_languages = json_decode($productGenre->genres);
+            foreach($product_languages as $each_p_language) {
+                if(!in_array($each_p_language, $productGenresArray)) {
+                    $productGenresArray[] = $each_p_language;
+                }
+            }
+        }
+        return $productGenresArray;
+    }
+}
