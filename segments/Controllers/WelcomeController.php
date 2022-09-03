@@ -4,6 +4,7 @@ namespace Controllers;
 
 use Bones\Request;
 use Bones\Session;
+use Models\CMS;
 use Models\Country;
 use Models\Product;
 use Models\User;
@@ -108,6 +109,13 @@ class WelcomeController
 		
 		return render('frontend/orders', [
 			'orders' => user()->orders
+		]);
+	}
+
+	public function cmspage(Request $request, $page) {
+		$page = CMS::where('slug', $page)->first();
+		return render('frontend/cms', [
+			'page' => $page
 		]);
 	}
     

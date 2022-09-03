@@ -18,13 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
 
-    <style>
-        .alert-danger {
-            color: red;
-            border: 1px solid;
-            padding: 10px;
-        }
-    </style>
+    
 
 </head>
 
@@ -87,10 +81,13 @@
 					  	        {{ prevent_csrf() }}
                                 <div class="uk-margin"><input class="uk-input" type="email" name="email" placeholder="Email" required></div>
                                 <div class="uk-margin"><input class="uk-input" type="password" name="password" placeholder="Password" required></div>
+                                <div class="g-recaptcha" data-sitekey="{{ setting('grecaptcha.site_key') }}"></div>
                                 <div class="uk-margin"><button class="uk-button uk-button-danger uk-width-1-1" type="submit">Log In</button></div>
+                                
                                 <!-- <div class="uk-margin uk-text-center"><a href="01_login-in.html">Forgotten password?</a></div> -->
                                 <hr>
                                 <div class="uk-text-center"><span>Don’t have an account?</span><a class="uk-margin-small-left" href="{{ url('sign-up') }}">Register</a></div>
+                                
                             </form>
                             <div id="messages"></div>
                         </div>
@@ -102,6 +99,8 @@
 
     <script src="{{ url('assets/frontend/js/libs.js') }}"></script>
     <script src="{{ url('assets/frontend/js/main.js') }}"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    
     <!-- <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
 
     <script>

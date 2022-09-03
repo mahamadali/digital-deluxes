@@ -12,6 +12,7 @@ use Controllers\Backend\OrderController;
 use Controllers\Backend\ProductController;
 use Controllers\Backend\PaymentMethodController;
 use Controllers\SupportTicketController;
+use Controllers\Backend\CMSController;
 
 
 Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]], function() {
@@ -66,6 +67,11 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 			Router::post('/update', [BlogController::class, 'update'])->name('update');
 			Router::get('/delete', [BlogController::class, 'delete'])->name('delete');
 		});
+	});
+
+	Router::bunch('/cms', ['as' => 'cms.'], function () {
+		Router::get('/create', [CMSController::class, 'create'])->name('create');
+		Router::post('/store/{page}', [CMSController::class, 'store'])->name('store');
 	});
 
 	Router::bunch('/support-tickets', ['as' => 'support-tickets.'], function () {

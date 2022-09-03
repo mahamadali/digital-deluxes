@@ -6,18 +6,15 @@ use Bones\Database;
 
 return new class
 {
-	protected $table = 'settings';
+	protected $table = 'cms_pages';
 
 	public function fill()
 	{
 		Database::__insertMulti([
 			[
-				'key' => 'receive_email_alerts_at',
-				'value' => 'landaettabrandon@yahoo.com',
-			],
-			[
-				'key' => 'block_email_domains',
-				'value' => '',
+				'title' => 'Terms & Conditions',
+				'slug' => 'terms-conditions',
+				'description' => '',
 			],
 		], null, $this->table);
 	}

@@ -37,7 +37,7 @@
                     <input type="text" class="search_name" name="name" placeholder="{{ trans('store.search') }}" value="{{ $_GET['name'] ?? '' }}"></div>
                 </div>
             </div>
-            <div class="uk-width-1-5">
+            <div class="uk-width-1-5" style="display: flex;">
                 <select class="search-category-input-store" name="system">
                     <option value="">Operating system</option>
                     @foreach($operatingSystems as $operatingSystem):
@@ -45,6 +45,14 @@
                         <option value="{{ $operatingSystem->system }}" {{ (isset($_GET["system"]) && $_GET["system"] == $operatingSystem->system) ? 'selected' : '' }}>{{ $operatingSystem->system }}</option>
                         @endif
                     @endforeach
+                </select>
+
+                <select class="" name="sort_by">
+                    <option value="">Sort By</option>
+                    <option value="Best Match">Best Match</option>
+                    <option value="Newest">Newest</option>
+                    <option value="Price Lowest">Price Lowest</option>
+                    <option value="Price Highest">Price Highest</option>
                 </select>
             </div>
         </div>

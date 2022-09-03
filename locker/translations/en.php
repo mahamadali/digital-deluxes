@@ -13,7 +13,12 @@
             'blogs' => 'Blogs',
             'login' => 'Login',
             'support_tickets' => 'Tickets',
-            'wallet' => 'Wallet'
+            'wallet' => 'Wallet',
+            'terms' => 'Terms & Conditions'
+        ],
+
+        'validation' => [
+            'recaptcha_required' => 'Please check google captcha'
         ],
 
         'homepage' => [

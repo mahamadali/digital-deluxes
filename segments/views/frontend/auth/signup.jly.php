@@ -85,6 +85,7 @@
                                 <div class="uk-margin"><input type="hidden" name="country_code" id="country_code" value=""><input class="uk-input" type="text" name="phone" id="phone" placeholder="Enter Phone Number"></div>
                                 <div class="uk-margin"><input class="uk-input" type="email" name="email" placeholder="Enter Email"></div>
                                 <div class="uk-margin"><input class="uk-input" type="password" name="password" placeholder="Password"></div>
+                                <div class="g-recaptcha" data-sitekey="{{ setting('grecaptcha.site_key') }}"></div>
                                 <div class="uk-margin"><button class="uk-button uk-button-danger uk-width-1-1" type="submit">Register</button></div>
                                 <div class="uk-text-center"><span>Already have an account?</span><a class="uk-margin-small-left" href="{{ url('login') }}">Log In</a></div>
                             </form>
@@ -101,6 +102,7 @@
     <script src="{{ url('assets/frontend/js/main.js') }}"></script>
     <script src="{{ url('assets/frontend/js/jquery.validate.min.js') }}"></script>
     <script src="{{ url('assets/js/js-intlTelInput.min.js') }}"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <script>
          $("form[name='register']").validate({

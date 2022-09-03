@@ -86,12 +86,14 @@ class PaymentController
 
     public function notify(Request $request)
 	{
-        $raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1662032598-63075","created_at":"2022-09-01T11:43:18.179Z","finalized_at":"2022-09-01T11:43:18.631Z","amount_in_cents":4419820,"reference":"VNFGWUI05X8O","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"BANCOLOMBIA_TRANSFER","payment_method":{"type":"BANCOLOMBIA_TRANSFER","extra":{"async_payment_url":"https://sandbox.wompi.co/v1/payment_methods/redirect/bancolombia_transfer?transferCode=mNkJGhlUd7VYjAju-approved","external_identifier":"mNkJGhlUd7VYjAju-approved"},"user_type":"PERSON","sandbox_status":"APPROVED","payment_description":"Pago a digitaldeluxes, ref: VNFGWUI05X8O"},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"https://127.0.0.1/digital-deluxes/wallet/1/recharge-success","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"2424234","full_name":"Akbar Husen","phone_number":"+574234","legal_id_type":"CC"},"billing_data":null}},"sent_at":"2022-09-01T11:43:18.684Z","timestamp":1662032598,"signature":{"checksum":"ab71aa9061fb6d98228b4efca8e57d82a1512789f0b47169e54a2f902a3c7ea9","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
-        // $raw_post_data = file_get_contents('php://input'); 
-        // file_put_contents('ipn.txt', $raw_post_data);
+        // $raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1662032598-63075","created_at":"2022-09-01T11:43:18.179Z","finalized_at":"2022-09-01T11:43:18.631Z","amount_in_cents":4419820,"reference":"VNFGWUI05X8O","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"BANCOLOMBIA_TRANSFER","payment_method":{"type":"BANCOLOMBIA_TRANSFER","extra":{"async_payment_url":"https://sandbox.wompi.co/v1/payment_methods/redirect/bancolombia_transfer?transferCode=mNkJGhlUd7VYjAju-approved","external_identifier":"mNkJGhlUd7VYjAju-approved"},"user_type":"PERSON","sandbox_status":"APPROVED","payment_description":"Pago a digitaldeluxes, ref: VNFGWUI05X8O"},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"https://127.0.0.1/digital-deluxes/wallet/1/recharge-success","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"2424234","full_name":"Akbar Husen","phone_number":"+574234","legal_id_type":"CC"},"billing_data":null}},"sent_at":"2022-09-01T11:43:18.684Z","timestamp":1662032598,"signature":{"checksum":"ab71aa9061fb6d98228b4efca8e57d82a1512789f0b47169e54a2f902a3c7ea9","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
+        $raw_post_data = file_get_contents('php://input'); 
+        file_put_contents('ipn.txt', $raw_post_data);
 
         $data = json_decode($raw_post_data);
+        
         $redirectURLExploded = explode("/", $data->data->transaction->redirect_url);
+        
         if(end($redirectURLExploded) == 'recharge-success') {
             exit;
         }
@@ -129,6 +131,20 @@ class PaymentController
                 $orderItem->product_qty = $item->product_qty;
                 $orderItem->save();
             }
+
+            $paymentMethod = PaymentMethod::where('title', 'Wompi')->first();
+
+            $transaction = new TransactionLog();
+            $transaction->user_id = $user->id;
+            $transaction->tx_id = $result->id;
+            $transaction->currency = $result->currency;
+            $transaction->type = 'order';
+            $transaction->amount = cartTotal($user->id);
+            $transaction->status = 'COMPLETED';
+            $transaction->payment_method = $paymentMethod->title;
+            $transaction->payment_method_id = $paymentMethod->id;
+            $transaction->kind_of_tx = 'DEBIT';
+            $transaction->save();
 
             Cart::where('user_id',$user->id)->delete();
 

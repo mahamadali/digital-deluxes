@@ -5,9 +5,11 @@ namespace Controllers;
 use Bones\Alert;
 use Bones\Request;
 use Bones\Session;
+use Bones\Str;
 use Mail\WelcomeEmail;
 use Jolly\Engine;
 use Models\Role;
+use Models\Setting;
 use Models\User;
 
 class AuthController
@@ -81,14 +83,23 @@ class AuthController
             'phone' => 'required',
             'email' => 'required|unique:users,email',
 			'password' => 'required',
+			'g-recaptcha-response' => 'required'
         ],[
-            'email.unique' => 'Email must be unique'
+            'email.unique' => 'Email must be unique',
+			'g-recaptcha-response.required' => trans('validation.recaptcha_required')
         ]);
 
         if ($validator->hasError()) {
             return response()->json(['status' => 304, 'errors' => $validator->errors()]);
         }
 
+		$blocked_domains = Setting::getMeta('block_email_domains');
+		$exploded_email = explode('@', $request->email);
+		$user_email_domain = end($exploded_email);
+		if(in_array($user_email_domain, explode(',', $blocked_domains))) {
+			return response()->json(['status' => 304, 'errors' => ['Your domain is blocked by administrator']]);
+		}
+		
 		$user = new User();
 		$user->first_name = $request->first_name;
 		$user->last_name = $request->last_name;
@@ -98,8 +109,6 @@ class AuthController
 		$user->password = md5($request->password);
 		$user->role_id = Role::where('name', 'user')->first()->id;
 		$user = $user->save();
-
-		
 
 		Alert::as(new WelcomeEmail(User::where('id', $user->id)->first()))->notify();
 

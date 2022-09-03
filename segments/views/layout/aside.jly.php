@@ -34,6 +34,7 @@
 
         </ul>
 
+        <div class="social-icons-menus">
         <input id="toggle" type="checkbox">
         <a target="_blank" href="https://www.instagram.com/digitaldeluxescom"><img src="{{ url('assets/frontend/img/social-icons/instagram.png') }}" style="height: 30px;"></a>
         <a target="_blank" href="https://www.facebook.com/digitaldeluxes"><img src="{{ url('assets/frontend/img/social-icons/facebook.png') }}" style="height: 30px;"></a>
@@ -43,5 +44,9 @@
                 document.getElementsByTagName('body')[0].classList.toggle("dark-theme");
             });
         </script>
+        </div>
+        <div class="footer-links-menus">
+        <a href="{{ route('cmspage', ['cms' => 'terms-conditions']) }}">{{ trans('menu.terms') }}</a>
+        </div>
     </div>
 </aside>

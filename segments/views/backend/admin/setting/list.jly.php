@@ -25,7 +25,7 @@
           
           <div class="row mb-3">
             <div class="col-md-4">
-              {{ $setting->key }}
+              {{ ucwords(str_replace('_', ' ', $setting->key)) }}
               <input type="hidden" class="form-control" name="setting_ids[]" value="{{ $setting->id }}" >
               <input type="hidden" class="form-control" name="setting_keys[]" value="{{ $setting->key }}" >
             </div>

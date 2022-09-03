@@ -856,6 +856,10 @@ a {
 }
 
 a:hover {
+    color: #000;
+}
+
+body.dark-theme a:hover {
     color: #FFF;
 }
 
@@ -6348,4 +6352,13 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     .mercadopago-button {
         width: 100%;
         visibility: hidden;
+    }
+
+    .social-icons-menus {
+        text-align: center;
+    }
+
+    .footer-links-menus {
+        text-align: center;
+        margin-top: 17px;
     }

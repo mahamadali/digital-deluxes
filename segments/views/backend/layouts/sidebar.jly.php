@@ -52,6 +52,13 @@
         </div>
       </li>
 
+      <li class="nav-item {{ (request()->matchesTo('/admin/cms/*')) ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.cms.create') }}">
+          <i class="ti-list menu-icon"></i>
+          <span class="menu-title">CMS</span>
+        </a>
+      </li>
+
       <li class="nav-item {{ (request()->matchesTo('/admin/blogs/*')) ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.blogs.index') }}">
           <i class="ti-list menu-icon"></i>

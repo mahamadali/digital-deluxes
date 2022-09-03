@@ -97,6 +97,19 @@ class AuthController
 
 	public function checkLogin(Request $request)
 	{
+
+		$validator = $request->validate([
+            'email' => 'required',
+            'password' => 'required',
+			'g-recaptcha-response' => 'required'
+        ],[
+			'g-recaptcha-response.required' => trans('validation.recaptcha_required')
+        ]);
+
+		if ($validator->hasError()) {
+			return redirect()->withFlashError(implode('<br>', $validator->errors()))->with('old', $request->all())->back();
+		}
+
 		$email = $request->email;
 		$password = $request->password;
 
@@ -152,14 +165,16 @@ class AuthController
 
 	public function register(Request $request)
 	{
-
+		
 		$validator = $request->validate([
             'first_name' => 'required',
             'last_name' => 'required',
             'law_firm' => 'required',
-            'email' => 'required|unique:users,email'
+            'email' => 'required|unique:users,email',
+			'g-recaptcha-response' => 'required'
         ],[
-            'email.unique' => 'Email must be unique'
+            'email.unique' => 'Email must be unique',
+			'g-recaptcha-response.required' => trans('validation.recaptcha_required')
         ]);
 
         if ($validator->hasError()) {

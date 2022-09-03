@@ -94,3 +94,5 @@ Router::bunch('/blogs', ['as' => 'blogs.'], function () {
     Router::get('/view', [BlogController::class, 'view'])->name('view');
   });
 });
+
+Router::get('/{cms}', [WelcomeController::class, 'cmspage'])->name('cmspage');
