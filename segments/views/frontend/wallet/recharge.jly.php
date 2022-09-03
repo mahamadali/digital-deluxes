@@ -64,6 +64,7 @@
 
 @block('scripts')
 <script src="https://sdk.mercadopago.com/js/v2"></script>
+<script type="text/javascript" src="https://js.stripe.com/v3/"></script>
 <script>
     $(document).ready(function() {
         $("#recharge-form").validate({
@@ -157,6 +158,17 @@
                             // });
 
                             // $('.mercadopago-button').click();
+                            
+                        }
+
+                        if(response.status == 200 && response.payment_method == 'Stripe') {
+                            
+                            if(response.redirectUrl != null) {
+                                window.stripe = Stripe('{{ setting("stripe.publishable_key") }}');
+                                stripe.redirectToCheckout({ sessionId: response.stripeSessionId });
+                            } else {
+                                toastr.error('Currently '+response.payment_method+' is not responsive! Please try with other payment method.');
+                            }
                             
                         }
                     },

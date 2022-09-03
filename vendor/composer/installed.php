@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '9d91da55bf7aee6dd2d14b447077a36a2efae5df',
+        'reference' => '74b0af18eed18670a60f3fbad2dd682f78e5d96f',
         'name' => '__root__',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '9d91da55bf7aee6dd2d14b447077a36a2efae5df',
+            'reference' => '74b0af18eed18670a60f3fbad2dd682f78e5d96f',
             'dev_requirement' => false,
         ),
         'doctrine/annotations' => array(
@@ -257,6 +257,15 @@
             'install_path' => __DIR__ . '/../ralouphie/getallheaders',
             'aliases' => array(),
             'reference' => '120b605dfeb996808c31b6477290a714d356e822',
+            'dev_requirement' => false,
+        ),
+        'stripe/stripe-php' => array(
+            'pretty_version' => 'v9.4.0',
+            'version' => '9.4.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../stripe/stripe-php',
+            'aliases' => array(),
+            'reference' => 'a759cccb477ed8acad7c379d45fc8be5bc69636e',
             'dev_requirement' => false,
         ),
         'symfony/deprecation-contracts' => array(

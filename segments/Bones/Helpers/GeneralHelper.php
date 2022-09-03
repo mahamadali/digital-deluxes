@@ -222,8 +222,8 @@ if (! function_exists('getProduct')) {
 }
 
 function currencyConverter($from_Currency,$to_Currency,$amount, $exchange_rate = true) {
-    
-    $apikey = '12e38b423a9544abc8488f2e';
+    // return $amount;
+    $apikey = '709e569abb8bb4279b0edea5';
     $req_url = 'https://v6.exchangerate-api.com/v6/'.$apikey.'/latest/'.$from_Currency;
     $response_json = file_get_contents($req_url);
     // dd($response_json);

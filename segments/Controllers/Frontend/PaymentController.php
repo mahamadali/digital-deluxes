@@ -435,5 +435,36 @@ class PaymentController
     {
         return redirect()->route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id])->withFlashSuccess('Payment gone into pending. we will add funds in your wallet later.');
     }
+
+    public function stripe_success(Request $request, PaymentMethod $paymentMethod) {
+        
+        $stripe = new \Stripe\StripeClient(
+            setting('stripe.secret_key')
+          );
+        $session = $stripe->checkout->sessions->retrieve(
+            $request->session_id,
+            []
+        );
+
+        $amount = $session->amount_total/100;
+        
+        $currencyInEur = currencyConverter($paymentMethod->currency, 'EUR', $amount);
+        $user = user();
+        $user->wallet_amount = $user->wallet_amount + $currencyInEur;
+        $user->save();
+        
+        $transaction = new TransactionLog();
+        $transaction->user_id = auth()->id;
+        $transaction->tx_id = $request->session_id;
+        $transaction->currency = $paymentMethod->currency;
+        $transaction->type = 'wallet';
+        $transaction->amount = $amount;
+        $transaction->status = 'COMPLETED';
+        $transaction->payment_method = $paymentMethod->title;
+        $transaction->payment_method_id = $paymentMethod->id;
+        $transaction->kind_of_tx = 'CREDIT';
+        $transaction->save();
+        return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashSuccess('$'.$amount. ' '.$paymentMethod->currency.' added in your wallet successfully')->go();
+    }
     
 }

@@ -65,9 +65,34 @@ class WalletController
 				'preference_id' => $preference->id,
 				'redirectUrl' => setting('mercadopago.sandbox') ? $preference->sandbox_init_point : $preference->init_point,
 				'payment_method' => $paymentMethod->title
-			); 
-			echo json_encode($response);
-			exit;
+			);
+			return response()->json($response);
+		}
+
+		if($paymentMethod->title == 'Stripe') {
+			\Stripe\Stripe::setApiKey( setting('stripe.secret_key') );
+			$session = \Stripe\Checkout\Session::create([
+				'line_items' => [[
+				  'price_data' => [
+					'currency' => $paymentMethod->currency,
+					'product_data' => [
+					  'name' => 'Digital Deluxes Wallet',
+					],
+					'unit_amount' => ($request->balance * 100),
+				  ],
+				  'quantity' => 1,
+				]],
+				'mode' => 'payment',
+				'success_url' => route('frontend.payment.stripe.success', ['payment_method' => $paymentMethod->id]).'?session_id={CHECKOUT_SESSION_ID}',
+				'cancel_url' => route('frontend.payment.stripe.failure'),
+			  ]);
+			  $response = array(
+					'status' => 200,
+					'stripeSessionId' => $session->id,
+					'redirectUrl' => $session->url,
+					'payment_method' => $paymentMethod->title
+				);
+			  return response()->json($response);
 		}
 	}
 
