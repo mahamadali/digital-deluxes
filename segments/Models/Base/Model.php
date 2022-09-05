@@ -4,9 +4,9 @@ namespace Models\Base;
 
 use Bones\Database;
 use Bones\Str;
-use Contributors\Particles\Pagination;
 use JollyException\BadMethodException;
 use JollyException\DatabaseException;
+use Contributors\Particles\Pagination;
 use Models\Traits\Relation;
 use Models\Traits\SelfResolve;
 
@@ -254,25 +254,25 @@ class Model extends Database
 
     public function ___whereNull($whereProp, $cond = 'AND')
     {
-        $this->db->__where($whereProp, NULL, 'IS', $cond);
+        $this->db->__whereNull($whereProp, $cond);
         return $this;
     }
 
     public function ___orWhereNull($whereProp)
     {
-        $this->db->__where($whereProp, NULL, 'IS', 'OR');
+        $this->db->__orWhereNull($whereProp);
         return $this;
     }
 
     public function ___whereNotNull($whereProp, $cond = 'AND')
     {
-        $this->db->__where($whereProp, NULL, 'IS NOT', $cond);
+        $this->db->__whereNotNull($whereProp, $cond);
         return $this;
     }
 
     public function ___orWhereNotNull($whereProp)
     {
-        $this->db->__where($whereProp, NULL, 'IS NOT', 'OR');
+        $this->db->__orWhereNotNull($whereProp);
         return $this;
     }
 
@@ -486,10 +486,6 @@ class Model extends Database
         }
 
         $entries = $this->select($this->primary_key)->db->__getRows($numRows, $this->columnSet(), $this->table);
-        
-        $this->primary_keys = array_map(function($item) {
-            return $item->{$this->primary_key};
-        }, $entries);
 
         $result = [];
         
@@ -500,6 +496,13 @@ class Model extends Database
             
             if (!empty($modelObj)) {
                 $result[$key] = $modelObj;
+            }
+        }
+
+        foreach($this->with as $with) {
+            $this->$with = $this->$with();
+            if (!empty($relationalProps = $this->$with->relationalProps) && !empty($this->$with->relationalProps['type'])) {
+                $result = $this->___buildRelationalData($with, $entries, $result, $relationalProps);
             }
         }
 
@@ -533,6 +536,13 @@ class Model extends Database
         $modelObj = $this->build($modelObj, $attributes);
         $modelObj->setSelfOnly(true);
 
+        foreach($this->with as $with) {
+            $this->$with = $this->$with();
+            if (!empty($relationalProps = $this->$with->relationalProps) && !empty($this->$with->relationalProps['type'])) {
+                $modelObj = $this->___buildRelationalData($with, $entries, $modelObj, $relationalProps);
+            }
+        }
+
         return $modelObj;
     }
 
@@ -552,28 +562,40 @@ class Model extends Database
         return $this;
     }
 
+    public function ___clearLimit(...$limit)
+    {
+        $this->db->__limit(implode(',', resolveAsArray($limit)));
+        return $this;
+    }
+
     public function ___paginate($page_limit = 0, $query_param = 'page')
     {
         $page = (!empty(request()->get($query_param))) ? request()->get($query_param) : 1;
         $paginated = $this->db->paginate($page_limit, $page, $this->columns, $this->table);
         $wrapped = [];
+
         foreach ($paginated as $key => $entry) {
             if (Str::contains($key, '__pagination')) {
                 $wrapped[$key] = new Pagination($entry, $query_param);
                 continue;
             }
+
             $attributes = (is_object($entry)) ? get_object_vars($entry) : array_keys($entry);
+
             $modelObj = (new $this->model());
             $modelObj = $this->build($modelObj, $attributes);
             $modelObj->setSelfOnly(true);
+
             foreach($this->with as $with) {
                 $this->$with = $this->$with();
                 if (!empty($relationalProps = $this->$with->relationalProps) && !empty($this->$with->relationalProps['type'])) {
                     $modelObj = $this->___buildRelationalData($with, $entry, $modelObj, $relationalProps);
                 }
             }
+
             $wrapped[] = $modelObj;
         }
+
         return $wrapped;
     }
 
