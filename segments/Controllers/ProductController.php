@@ -171,4 +171,149 @@ class ProductController
 	public function checkProductExist($productId){
 		return Product::where('productId',$productId)->first();
 	}
+
+	public function productUpdate(Request $request) {
+		// $raw_post_data = '{"kinguinId":40762,"productId":"5c9b6ccc2539a4e8f17dda5c","qty":63,"textQty":63,"price":9.51,"cheapestOfferId":["61f176260995060001d8b1ba"],"updatedAt":"2022-08-15T11:58:30.959+00:00"}';
+		$raw_post_data = file_get_contents('php://input'); 
+        file_put_contents('product-update.txt', $raw_post_data);
+		$data = json_decode($raw_post_data);
+		$product = Product::where('productId', $data->productId)->first();
+		$product->qty = $data->qty;
+		$product->kinguinId = $data->kinguinId;
+		$product->price = $data->price;
+		$product->updated_at = $data->updatedAt;
+		$product->cheapestOfferId = json_encode($data->cheapestOfferId);
+		$product->save();
+
+		ob_start();
+
+		header("HTTP/1.1 204 NO CONTENT");
+
+		header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
+		header("Pragma: no-cache"); // HTTP 1.0.
+		header("Expires: 0"); // Proxies.
+
+		ob_end_flush(); //now the headers are sent
+		exit;
+	}
+
+	public function search(Request $request) {
+		$products = Product::whereLike('name', "%".$request->term."%")->orWhereLike('description', "%".$request->term."%")->whereNotLike('name', "%Kinguin%")->select('coverImage', 'id', 'name', 'qty', 'price', 'platform')->get();
+
+		$output = array();
+		if(count($products) > 0)
+		{
+		foreach($products as $product)
+		{
+		if (strpos(strtolower($product->name), 'kinguin') !== false) {
+			continue;	
+		}
+		$html = "<table style='width:100%;'>";
+		$html .= "<tr>";
+		$html .= "<td width='70'>";
+		$html .= '<img src="'.$product->coverImage.'" width="50" />';
+		$html .= "</td>";
+		$html .= "<td>";
+		$html .= "<table>";
+		$html .= "<tr>";
+		$html .= "<td>";
+		$html .= $product->name;
+		$html .= "</td>";
+		$html .= "</tr>";
+		$html .= "<tr>";
+		$html .= "<td>";
+		$html .= $product->platform;
+		$html .= "</td>";
+		$html .= "</tr>";
+		$html .= "</table>";
+		$html .= "</td>";
+		$html .= "</tr>";
+		$html .= "</table>";
+		$temp_array = array();
+		$temp_array['id'] = $product->id;
+		$temp_array['value'] = $product->name;
+		$temp_array['label'] = $html;
+		$output[] = $temp_array;
+		}
+		}
+		else
+		{
+		$temp_array['id'] = '';
+		$output['value'] = '';
+		$output['label'] = 'No Record Found';
+		}
+
+		echo json_encode($output);
+		exit;
+	}
+
+	public function syncProductImages(Request $request) {
+		$products = Product::SelectSet(['kinguinId'])->whereNull('coverImage')->get(200);
+		$count = 0;
+		foreach($products as $product) {
+
+			$kproduct = getProduct($product->kinguinId);
+			$kproduct = json_decode($kproduct);
+			
+			$product->name = $kproduct->name ?? null;
+			$product->description = $kproduct->description ?? null;
+			$product->coverImage = $kproduct->coverImage ?? $kproduct->images->cover->thumbnail ?? '';
+			$product->coverImageOriginal = $kproduct->coverImageOriginal ?? $kproduct->images->cover->url ?? '';
+			if(empty($product->coverImage)) {
+				if(!empty($kproduct->images->screenshots[0])) {
+					$product->coverImage = $kproduct->images->screenshots[0]->thumbnail;
+				}
+			}
+			if(empty($product->coverImageOriginal)) {
+				if(!empty($kproduct->images->screenshots[0])) {
+					$product->coverImageOriginal = $kproduct->images->screenshots[0]->url;
+				}
+			}
+			$product->platform = $kproduct->platform ?? null;
+			$product->releaseDate = $kproduct->releaseDate ?? null;
+			$product->qty = $kproduct->qty ?? null;
+			$product->textQty = $kproduct->textQty ?? null;
+			$product->price = $kproduct->price ?? null;
+			$product->regionalLimitations = $kproduct->regionalLimitations ?? null;
+			$product->regionId = $kproduct->regionId ?? null;
+			$product->activationDetails = $kproduct->activationDetails ?? null;
+			$product->productId = $kproduct->productId ?? null;
+			$product->originalName = $kproduct->originalName ?? null;
+			$product->offersCount = $kproduct->offersCount ?? null;
+			$product->totalQty = $kproduct->totalQty ?? null;
+			$product->ageRating = $kproduct->ageRating ?? null;
+			$product->steam = $kproduct->steam ?? null;
+			$product->cheapestOfferId = $kproduct->cheapestOfferId ? json_encode($kproduct->cheapestOfferId) :  null;
+			$product->languages = $kproduct->languages ? json_encode($kproduct->languages) :  null;
+			$product->tags = $kproduct->tags ? json_encode($kproduct->tags) :  null;
+			$product->merchantName = $kproduct->merchantName ?? null ? json_encode($kproduct->merchantName) :  null;
+			$product->developers = $kproduct->developers ?? null ? json_encode($kproduct->developers) :  null;
+			$product->publishers = $kproduct->publishers ?? null ? json_encode($kproduct->publishers) :  null;
+			$product->genres = $kproduct->genres  ?? null ? json_encode($kproduct->genres) :  null;
+			$product->updated_at = date('y-m-d h:i:s');
+			$product->save();
+
+			
+			if(!empty($kproduct->images->screenshots)){
+				ProductScreenshot::where('product_id', $product->id)->delete();
+				foreach($kproduct->images->screenshots as $screenshot){
+					$product_screenshot = new ProductScreenshot();
+					$product_screenshot->product_id  = $product->id;
+					$product_screenshot->url  = $screenshot->thumbnail;
+					$product_screenshot->url_original  = $screenshot->url;
+					$product_screenshot->save();
+				}
+			}
+
+			$count++;
+
+		}
+		echo $count. " products images updated";
+		exit();
+	}
+
+	public function regionCountries(Request $request) {
+		$region = $request->region;
+		return getRegionCountries($region);
+	}
 }

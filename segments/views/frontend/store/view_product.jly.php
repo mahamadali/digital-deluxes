@@ -1,18 +1,29 @@
 @extends('app')
 
 @block("title") {{ setting('app.title', 'Ali Rocks!') }} @endblock
+
+@block('styles')
 <style>
     .grey_text{
         color:#767676;
     }
+    .platform-logos {
+        max-height: 40px;
+    }
 </style>
+@endblock
+
 @block("content")
 <main class="page-main">
                 <ul class="uk-breadcrumb">
-                    <li><a href="{{ route('frontend.store.list') }}"><span data-uk-icon="chevron-left"></span><span>Back to Store</span></a></li>
+                    <li><a href="{{ route('frontend.store.list') }}"><span data-uk-icon="chevron-left"></span><span>{{ trans('store.back_to_store') }}</span></a></li>
                     <li><span>{{ $product->name }}</span></li>
                 </ul>
-                <h3 class="uk-text-lead">{{ $product->name }}</h3>
+                <h3 class="uk-text-lead">{{ $product->name }} 
+                    @if(!empty($product->originalName)):
+                    <small>({{ $product->originalName }})</small>
+                    @endif
+                </h3>
                 <div class="uk-grid uk-grid-small" data-uk-grid>
                     <div class="uk-width-2-3@s">
                         <div class="gallery">
@@ -59,98 +70,141 @@
                                 <div class="swiper-pagination"></div>
                             </div>
                         </div>
+
+                        <div class="game-profile-card" style="margin-top: 50px;">
+                            <div class="game-profile-card__title">
+                                <b>{{ trans('store.activation_details') }}:</b>
+                                <p>{{ $product->activationDetails }}</p>
+                            </div>
+                        </div>
+
+                        @if(!empty($product->systemRequirements())):
+                        <div class="game-profile-card" style="margin-top: 50px;">
+                            <div class="game-profile-card__title">
+                                <b>{{ trans('store.system_requirements') }}:</b>
+                                <p>
+                                <ul class="game-profile-card__list">
+                                    <li>
+                                        @foreach($product->systemRequirements() as $system_requirement):
+                                        <div>
+                                            <b class="grey_text">{{ $system_requirement->system }}</b>
+                                            <br>
+                                            {{ $system_requirement->requirement ? implode(', ',json_decode($system_requirement->requirement)) : '' }}
+                                        </div>
+                                        @endforeach
+                                    </li>
+                                </ul>
+                                </p>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if(!empty($product->languages)):
+                        <div class="game-profile-card" style="margin-top: 50px;">
+                            <div class="game-profile-card__title">
+                                <b>{{ trans('store.languages') }}:</b>
+                                <p>
+                                    <ul class="game-profile-card__type">
+                                        @foreach(json_decode($product->languages) as $language):
+                                            <li><span>{{ $language }}</span></li>
+                                        @endforeach    
+                                    </ul>
+                                </p>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if(!empty($product->tags)):
+                        <div class="game-profile-card" style="margin-top: 50px;">
+                            <div class="game-profile-card__title">
+                                <b>{{ trans('store.tags') }}:</b>
+                                <p>
+                                    <ul class="game-profile-card__type">
+                                        @foreach(json_decode($product->tags) as $tag):
+                                            <li><span>{{ $tag }}</span></li>
+                                        @endforeach    
+                                    </ul>
+                                </p>
+                            </div>
+                        </div>
+                        @endif
+
                     </div>
                     <div class="uk-width-1-3@s">
+                        <div class="game-profile-price">
+                            <div class="country_restriction_success_text" style="display: none;"><i class="ico_tick-circle"></i> Can be activated in: <span class="YOUR_COUNTRY"></span></div>
+                            <div class="country_restriction_danger_text" style="display: none;"><i class="ico_close-circle"></i> Cannot be activated in: <span class="YOUR_COUNTRY"></span></div>
+                            <div class="row" style="margin-top: 10px;">
+                                @foreach($platformLogos as $logo):
+                                    <img class="platform-logos" src="{{ url($logo->path) }}">
+                                @endforeach
+                            </div>
+                            <hr>
+                            <div class="game-profile-price__value">{{ currencySymbol() }}{{ $product->price }} {{ strtoupper(session()->getCurrency()) }}</div>
+                            <a href="{{ route('frontend.cart.add',[$product->id]) }}" class="uk-button uk-button-danger uk-width-1-1 buy-now-btn">
+                                <span class="ico_shopping-cart"></span><span>{{ trans('store.buy_now') }}</span>
+                            </a>
+                            @if(!empty(auth()) && $product->isInWishlist()):
+                            <button class="uk-button uk-button-danger uk-width-1-1 remove_from_fav" data-url="{{ route('frontend.store.remove-from-fav', ['product' => $product->id]) }}" type="button">
+                                <span class="ico_favourites"></span><span>{{ trans('store.remove_from_wishlist') }}</span>
+                            </button>
+                            @else
+                            <button class="uk-button uk-button-primary uk-width-1-1 add_to_fav" data-url="{{ route('frontend.store.add-to-fav', ['product' => $product->id]) }}" type="button">
+                                <span class="ico_favourites"></span><span>{{ trans('store.add_to_wishlist') }}</span>
+                            </button>
+                            @endif
+                            <div id="messages"></div>
+                        </div>
+                        
                         <div class="game-profile-card">
                             <div class="game-profile-card__media"><img src="{{ $product->coverImageOriginal }}" alt="game-profile-card"></div>
-                            <div class="game-profile-card__intro"><span>{{ $product->description ? $product->description : 'N/A' }}</span></div>
+                            <div class="game-profile-card__intro"><span>{{ $product->description ? $product->description : '' }}</span></div>
                             <ul class="game-profile-card__list">
                                 <!-- <li>
                                     <div>Reviews:</div>
                                     <div class="game-card__rating"><span>4.7</span><i class="ico_star"></i><span class="rating-vote">(433)</span></div>
                                 </li> -->
                                 <li>
-                                    <div>Release date:</div>
-                                    <div>{{ $product->releaseDate ? date("d M,Y", strtotime($product->releaseDate)) : 'N/A' }}</div>
+                                    <div></div>
+                                    <div class="game-card__rating"><span>{{ $product->qty }} left in stock</span></div>
                                 </li>
                                 <li>
-                                    <div>Developer:</div>
-                                    <div>{{ $product->developers ? implode(', ',json_decode($product->developers)) : 'N/A' }}</div>
+                                    <div>{{ trans('store.regionalLimitations') }}:</div>
+                                    <div>{{ $product->regionalLimitations }}</div>
                                 </li>
-
                                 <li>
-                                    <div>Publisher:</div>
-                                    <div>{{ $product->publishers ? implode(', ',json_decode($product->publishers)) : 'N/A' }}</div>
+                                    <div>{{ trans('store.release_date') }}:</div>
+                                    <div>{{ $product->releaseDate ? date("d M, Y", strtotime($product->releaseDate)) : '' }}</div>
                                 </li>
-
-
                                 <li>
-                                    <div>Genres:</div>
-                                    <div>{{ $product->genres ? implode(', ',json_decode($product->genres)) : 'N/A' }}</div>
+                                    <div>{{ trans('store.developer') }}:</div>
+                                    <div>{{ $product->developers ? implode(', ',json_decode($product->developers)) : '' }}</div>
                                 </li>
 
                                 <li>
-                                    <div>Merchant Name:</div>
-                                    <div>{{ $product->merchantName ? implode(', ',json_decode($product->merchantName)) : 'N/A' }}</div>
+                                    <div>{{ trans('store.publisher') }}:</div>
+                                    <div>{{ $product->publishers ? implode(', ',json_decode($product->publishers)) : '' }}</div>
                                 </li>
 
+
                                 <li>
-                                    <div>Platforms:</div>
+                                    <div>{{ trans('store.genres') }}:</div>
+                                    <div>{{ $product->genres ? implode(', ',json_decode($product->genres)) : '' }}</div>
+                                </li>
+
+                                <!-- <li>
+                                    <div>{{ trans('store.merchant_name') }}:</div>
+                                    <div>{{ $product->merchantName ? implode(', ',json_decode($product->merchantName)) : '' }}</div>
+                                </li> -->
+
+                                <li>
+                                    <div>{{ trans('store.platforms') }}:</div>
                                     <div>{{ $product->platform }}</div>
                                 </li>
-
-                                <li>
-                                    <div><b>Activation Details:</b></div>
-                                 
-                                </li>
-
-                                <li>
-                                    <div></div>
-                                    <div>{{ $product->activationDetails }}</div>
-                                </li>
-                                
-
                                
                             </ul>
                             
-                            @if(!empty($product->systemRequirements())):
-                            <div><b class="grey_text">System Requirement:</b></div>
-
-                            <ul class="game-profile-card__type">
-                                <li>
-                                    @foreach($product->systemRequirements() as $system_requirement):
-                                    <div><b>{{ $system_requirement->system }}</b></div>
-                                    <div>{{ $system_requirement->requirement ? implode(', ',json_decode($system_requirement->requirement)) : 'N/A' }}</div>
-                                    @endforeach
-                                </li>
-                            </ul>
-                            @endif
-
-                            <ul class="game-profile-card__type">
-                                @if(!empty($product->tags)):
-                                    @foreach(json_decode($product->tags) as $tag):
-                                        <li><span>{{ $tag }}</span></li>
-                                    @endforeach    
-                                @endif
-                            </ul>
-
                             
-                        </div>
-                        <div class="game-profile-price">
-                            <div class="game-profile-price__value">${{ $product->price }} USD</div>
-                            <button class="uk-button uk-button-danger uk-width-1-1" type="button">
-                                <span class="ico_shopping-cart"></span><span>Buy Now</span>
-                            </button>
-                            @if($product->isInWishlist()):
-                            <button class="uk-button uk-button-danger uk-width-1-1 remove_from_fav" data-url="{{ route('frontend.store.remove-from-fav', ['product' => $product->id]) }}" type="button">
-                                <span class="ico_favourites"></span><span>Remove From Wishlist</span>
-                            </button>
-                            @else
-                            <button class="uk-button uk-button-primary uk-width-1-1 add_to_fav" data-url="{{ route('frontend.store.add-to-fav', ['product' => $product->id]) }}" type="button">
-                                <span class="ico_favourites"></span><span>Add to Wishlist</span>
-                            </button>
-                            @endif
-                            <div id="messages"></div>
                         </div>
                     </div>
                 </div>
@@ -173,6 +227,9 @@
                     $('#messages').html('<p align="center" style="color:green;">'+response.message+'</p>');
                     $(obj).after('<button class="uk-button uk-button-danger uk-width-1-1 remove_from_fav" data-url="{{ route('frontend.store.remove-from-fav', ['product' => $product->id]) }}" type="button"><span class="ico_favourites"></span><span>Remove from Wishlist</span></button>');
                     $(obj).remove();
+                },
+                error: function() {
+                    toastr.error('Please login!');
                 }
             });
         });
@@ -194,5 +251,87 @@
             });
         });
     });
+
+    var loggedInUser = '<?php echo !empty(auth()) ? user()->id : '' ?? "" ?>';
+
+    if(loggedInUser == '') {
+        checkWithIP();
+    } else {
+        var user_country = '<?php echo !empty(auth()->country_info) ? user()->country_info->country_name : "" ?? "" ?>';
+        var country_code = '<?php echo !empty(auth()->country_info) ? user()->country_info->country_code : "" ?? "" ?>';
+        
+        if(user_country.length == 0) {
+            checkWithIP();
+        } else {
+            handleIp(user_country, country_code);
+        }
+    }
+
+    function checkWithIP() {
+        $.getJSON("https://api.ipify.org/?format=json", function(e) {
+            
+            fetch("https://ip-api.io/json/"+e.ip, {
+                headers: { Accept: "application/json" },
+            })
+                .then((resp) => resp.json())
+                .catch(() => {
+                return {
+                    country: "us",
+                };
+                })
+                .then((resp) => {
+                    handleIp(resp.country_name, resp.country_code);
+                });
+        });
+        
+    }
+
+    
+        function handleIp(country, code) {
+            var restriction_countries = '<?php echo $product->regionalLimitations ?>';
+            if(restriction_countries.toLowerCase() == 'region free' || restriction_countries.toLowerCase() == 'rest of the world' || restriction_countries.toLowerCase() == 'outside europe' || restriction_countries.toLowerCase() == 'other' || restriction_countries.toLowerCase() == 'other') {
+                $('.country_restriction_success_text').show();
+                $('.country_restriction_danger_text').hide();
+                $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country);
+            } else {
+                var allowCountry = 0;
+                
+                $.getJSON("{{ route('api.region-countries') }}?region="+restriction_countries, function(e) {
+                    var total_countries = Object.keys(e.data).length;
+                    if(total_countries > 0) {
+                        var counter = 0;
+                        $.each(e.data, function (i) {
+                            
+                            if(code == i) {
+                                allowCountry = 1;
+                            }
+                            counter++;
+                            if(total_countries == counter) {
+                                if(allowCountry == 0) {
+                                    $('.country_restriction_success_text').hide();
+                                    $('.country_restriction_danger_text').show();
+                                    $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(country)
+                                } else {
+                                    $('.country_restriction_success_text').show();
+                                    $('.country_restriction_danger_text').hide();
+                                    $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country)
+                                }
+                            }
+                        });
+                    } else {
+                        if(restriction_countries == country) {
+                            $('.country_restriction_success_text').show();
+                            $('.country_restriction_danger_text').hide();
+                            $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country)
+                        } else {
+                            $('.country_restriction_success_text').hide();
+                            $('.country_restriction_danger_text').show();
+                            $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(country)
+                        }
+                    }
+                });
+            }
+            
+        }
 </script>
 @endblock

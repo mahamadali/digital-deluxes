@@ -14,7 +14,7 @@ class Language extends AutoMethodMap
             return $word;
         }
 
-        return $this->transWord($word, (!empty(session()->getLanguage())) ? session()->getLanguage() : setting('app.default_lang'), $data);
+        return $this->transWord($word, (!empty(session()->getLanguage())) ? session()->getLanguage() : setting('app.default_lang', 'en'), $data);
     }
 
     public function __transWord($word, $language, $data = [])
@@ -23,10 +23,10 @@ class Language extends AutoMethodMap
             return $word;
 
         if (empty(trim($language)))
-            $language = (!empty(session()->getLanguage())) ? session()->getLanguage() : setting('app.default_lang');
+            $language = (!empty(session()->getLanguage())) ? session()->getLanguage() : setting('app.default_lang', 'en');
         
         if (!file_exists($this->translations_dir .'/'.$language.'.php'))
-            $language = setting('app.default_lang');
+            $language = setting('app.default_lang', 'en');
 
         $translated = findFileVariableByKey($this->translations_dir, $language . '.' . $word, $word);
         

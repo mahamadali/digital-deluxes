@@ -125,7 +125,8 @@ class Router
             return false;
         }
         
-        $route = trim($route, '/');
+        $routeSegments = explode('?', $route);
+        $route = trim($routeSegments[0], '/');
         Session::appendSetReserved('latest_routes', $route);
         self::clearSavedRoutes();
         if (empty(self::$routes[$route])) {
@@ -688,7 +689,11 @@ class Router
 
     public static function url(string $path)
     {
-        return setting('app.base_url') .'/'. setting('app.sub_dir', '') .'/'. $path;
+        $url = setting('app.base_url') .'/';
+        if (!empty($subDir = setting('app.sub_dir', ''))) {
+            $url .= $subDir . '/';
+        }
+        return $url . $path;
     }
 
     public static function exists(string $routeToCheck, $return = false)

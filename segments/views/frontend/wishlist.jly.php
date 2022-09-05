@@ -7,7 +7,7 @@
         <div class="uk-width">
             <div class="widjet --filters">
                 <div class="widjet__head">
-                    <h3 class="uk-text-lead">My Wishlits</h3>
+                    <h3 class="uk-text-lead">{{ trans('wishlist.my_wishlists') }}</h3>
                 </div>
             </div>
             @foreach($wishlists as $wishlist):
@@ -20,7 +20,7 @@
                         <div class="game-card__bottom">
                             <div class="game-card__rating-and-price">
                                 <div class="game-card__rating"><i class="ico_star"></i> <span>3.9</span></div>
-                                <div class="game-card__price"><span>${{ $wishlist->product->price }} </span></div>
+                                <div class="game-card__price"><span>{{ currencySymbol() }}{{ $wishlist->product->price }} </span></div>
                             </div>
                         </div>
                     </div>

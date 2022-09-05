@@ -17,6 +17,7 @@ return new class
 				'email' => 'super@admin.com',
 				'password' => md5('secret'),
 				'role_id' => 1,
+				'status' => 'Active'
 			],
 		], null, $this->table);
 	}

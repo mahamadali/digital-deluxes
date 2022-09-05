@@ -13,7 +13,11 @@ return new class
 		Database::__insertMulti([
 			[
 				'key' => 'receive_email_alerts_at',
-				'value' => 'hasanmoriya429@gmail.com',
+				'value' => 'landaettabrandon@yahoo.com',
+			],
+			[
+				'key' => 'block_email_domains',
+				'value' => '',
 			],
 		], null, $this->table);
 	}

@@ -29,23 +29,55 @@ class CartController
 			$cart->user_id = auth()->id;
 			$cart->product_id = $product_id;
 			$cart->product_name = $product->name;
-			$cart->product_price = $product->price;
+			$cart->product_price = remove_format($product->price);
 			$cart->product_qty = 1;
-			$cart->save();
+			$checkItemAvailableInstore = getProduct($product->kinguinId);
+			$kinguinproduct = json_decode($checkItemAvailableInstore);
+			if(isset($kinguinproduct->qty) && $kinguinproduct->qty >= 1) {
+				$cart->save();
+			} else {
+				return redirect()->withFlashError('Sorry! Game is not available in store')->with('old', $request->all())->back();
+			}
+			
 		}else{
 			$is_cart_exist->product_qty = $is_cart_exist->product_qty + 1;
-			$is_cart_exist->save();
+			$checkItemAvailableInstore = getProduct($product->kinguinId);
+			$kinguinproduct = json_decode($checkItemAvailableInstore);
+			if(isset($kinguinproduct->qty) && $kinguinproduct->qty >= ($is_cart_exist->product_qty + 1)) {
+				$is_cart_exist->save();
+			} else {
+				return redirect()->withFlashError('Sorry! Game is not available in store')->with('old', $request->all())->back();
+			}
+			
 		}
 
-		return redirect()->withFlashSuccess('Add To Cart added successfully!')->with('old', $request->all())->back();
+		return redirect()->withFlashSuccess('Item added into cart successfully!')->with('addedcart', 1)->back();
 	}
 
 	public function removeToCart(Request $request,$cart_id)
 	{
 		Cart::where('id',$cart_id)->where('user_id',auth()->id)->delete();
 
-		return redirect()->withFlashSuccess('Product removed from cart successfully!')->with('old', $request->all())->back();
-
+		return redirect()->withFlashSuccess('Product removed from cart successfully!')->with('addedcart', 1)->back();
 		
+	}
+
+	public function updateQty(Request $request, Product $product)
+	{
+		$is_cart_exist = Cart::where('product_id', $product->id)->where('user_id', auth()->id)->first();
+		
+		if(!empty($is_cart_exist)){
+			$is_cart_exist->product_qty = $request->qty;
+			$checkItemAvailableInstore = getProduct($product->kinguinId);
+			$kinguinproduct = json_decode($checkItemAvailableInstore);
+			if(isset($kinguinproduct->qty) && $kinguinproduct->qty >= $request->qty) {
+				$is_cart_exist->save();
+			} else {
+				return response()->json(['status' => 304, 'message' => 'Qty not available in store!']);
+			}
+			
+		}
+
+		return response()->json(['status' => 200, 'message' => 'Cart updated!']);
 	}
 }

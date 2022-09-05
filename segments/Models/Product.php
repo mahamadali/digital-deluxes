@@ -12,9 +12,14 @@ use Models\ProductVideo;
 class Product extends Model
 {
     protected $table = 'products';
+	protected $attach = ['price'];
 
     public function offers(){
 		return $this->hasMany(ProductOffer::class, 'product_id')->get();
+	}
+
+	public function offer(){
+		return $this->hasOne(ProductOffer::class, 'product_id');
 	}
 
     public function screenshots(){
@@ -36,5 +41,20 @@ class Product extends Model
 			return true;
 		}
 		return false;
+	}
+	
+	public function getPriceProperty() {
+		$price = $this->price;
+		
+		if(!session()->has('base_price')) {
+			session()->setCurrency('cop');
+			$base_price = currencyConverter('EUR', 'COP', 1);
+			session()->set('base_price', $base_price);
+		}
+		
+		$currenctCurrencyPrice = (float) session()->get('base_price') * $price;
+		
+		$profitPrice = getProfitPrice($currenctCurrencyPrice);
+		return $profitPrice;
 	}
 }

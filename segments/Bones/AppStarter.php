@@ -1,6 +1,7 @@
 <?php
 
 use Bones\Router;
+use Bones\URL;
 use Jolly\Engine;
 
 class AppStarter
@@ -10,8 +11,10 @@ class AppStarter
 
     public static function boost()
     {
+        $start_time = microtime(true);
+
         // Load defaults on app start
-        self::loadDefaults();
+        self::loadDefaults($start_time);
 
         // Fetch current uri and adjust route
         $route = URL::adjustRoute($_SERVER['REQUEST_URI']);
@@ -20,7 +23,7 @@ class AppStarter
         Router::dispatch($route);
     }
 
-    public static function loadDefaults()
+    public static function loadDefaults($start_time)
     {
         // Register base classes for autoload
         self::autoloader();
@@ -35,6 +38,9 @@ class AppStarter
 
         // Start an app session
         \Bones\Session::start();
+
+        // Save execution start time
+        session()->set('execution_start_time', $start_time);
 
         // Set default platform language to english if not set
         if (!session()->hasLanguage() && !empty($defaultLang = setting('app.default_lang'))) {
@@ -70,6 +76,13 @@ class AppStarter
         // Include Helper file(s)
         foreach (glob('segments/Bones/Helpers/*.php') as $helper) {
             include_once($helper);
+        }
+
+        // Register aliases
+        $aliases = setting('aliases');
+        foreach ($aliases as $alias => $for) {
+            if (!in_array($alias, ['Barriers']))
+                class_alias($for, $alias);
         }
 
         // Include route file(s)

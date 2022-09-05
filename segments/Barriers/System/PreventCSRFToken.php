@@ -8,6 +8,10 @@ class PreventCSRFToken
 {
     public $excludeRoutes = [
         // define routes to exclude from csrf-token check
+        '/api/product-update',
+        '/payment/*',
+        'api/product-update',
+        'payment/*'
     ];
 
     public function check(Request $request)

@@ -3,9 +3,9 @@
 namespace Jolly;
 
 use Bones\Str;
-use JollyException\FileNotFound;
+use Bones\FileNotFound;
+use Contributors\Particles\Pagination;
 use Models\Base\Model;
-use Models\User;
 
 require_once('ErrorHandler.php');
 
@@ -22,14 +22,14 @@ class Engine
         self::$parameters = $parameters;
     }
 
-    public static function render(string $view, array $data = [], bool $return = false): string
+    public static function render(string $view, array $data = [], bool $return = false, $stopExecution = false): string
     {
         // self::$path = __DIR__.'../../views/';
         self::$path = 'segments/views/';
         return self::load($view, $data, $return);
     }
 
-    private static function load(string $view, array $data, bool $return = false): string
+    private static function load(string $view, array $data, bool $return = false, $stopExecution = false): string
     {
         $file = self::$path . $view . '.jly.php';
 
@@ -45,14 +45,12 @@ class Engine
                 foreach ($with as $key => $withSet) {
                     if (is_object($withSet) && is_subclass_of($withSet, Model::class)) {
                         $tmpWith[] = $withSet;
+                    } else if (Str::containsWord($key, ['__pagination']) && $withSet instanceof Pagination) {
+                        $data[$setKey.$key] = (gettype($withSet) == 'array') ? json_decode(json_encode($withSet)) : $withSet;
+                        unset($with[$key]);
                     } else {
                         if (count($with) != count($with, COUNT_RECURSIVE)) {
-                            if (Str::containsWord($key, ['__pagination'])) {
-                                $data[$setKey.$key] = (gettype($withSet) == 'array') ? json_decode(json_encode($withSet)) : $withSet;
-                                unset($with[$key]);
-                            } else {
-                                $tmpWith[] = (gettype($withSet) == 'array') ? json_decode(json_encode($withSet)) : $withSet;
-                            }
+                            $tmpWith[] = (gettype($withSet) == 'array') ? json_decode(json_encode($withSet)) : $withSet;
                         } else {
                             $tmpWith = json_decode(json_encode($with));
                         }
@@ -68,10 +66,12 @@ class Engine
         if (!$return) {
             ob_start();
             include($cached_file);
+            if ($stopExecution) exit;
             return '';
         } else {
             ob_start();
             include($cached_file);
+            if ($stopExecution) exit;
             $content = ob_get_contents();
             ob_end_clean();
             return $content;

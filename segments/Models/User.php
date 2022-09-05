@@ -10,11 +10,11 @@ use Models\Cart;
 
 class User extends Model
 {
-	use TrashMask;
+	// use TrashMask;
 
 	protected $table = 'users';
 	protected $attaches = ['full_name'];
-	protected $with = ['role', 'wishlists'];
+	protected $with = ['role', 'wishlists', 'orders', 'country_info'];
 
 	protected $defaults = [];
 
@@ -35,6 +35,14 @@ class User extends Model
 
 	public function cart_items(){
 		return $this->hasMany(Cart::class, 'user_id')->get();
+	}
+
+	public function orders(){
+		return $this->hasMany(Order::class, 'user_id')->without('user')->orderBy('id');
+	}
+
+	public function country_info(){
+		return $this->parallelTo(Country::class, 'country');
 	}
 	
 
