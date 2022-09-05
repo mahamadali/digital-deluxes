@@ -65,54 +65,8 @@
         <script src="{{ url('assets/frontend/js/jquery.validate.min.js') }}"></script>
 
         <script>
-        var exchangePrice = '{{ cartTotal() }}';
-        var cartTotal = exchangePrice;
-        
-        if(cartTotal > 0) {
-            cartTotal = '{{ currencyConverter(strtoupper(session()->getCurrency()), "COP", cartTotal(), false) }}';
-            var amountInCents = (cartTotal * 100).toFixed(0);
-            var user_phone = '{{ !empty(auth()) ? user()->phone : "" }}';
-            if(user_phone != '') {
-                var checkout = new WidgetCheckout({
-                currency: 'COP',
-                amountInCents: amountInCents,
-                reference: '{{ strtoupper(random_strings(12)) }}',
-                publicKey: '{{ setting("wompi.PUB_KEY") }}',
-                redirectUrl: '{{ setting("wompi.REDIRECT_URL") }}', // Opcional
-                customerData: { // Opcional
-                    email:'{{ !empty(auth()) ? user()->email : "" }}',
-                    fullName: '{{ !empty(auth()) ? user()->first_name." ".user()->last_name : "" }}',
-                    phoneNumber: '{{ !empty(auth()) ? user()->phone : "" }}',
-                    phoneNumberPrefix: '+{{ !empty(auth()) ? user()->country_code : "" }}',
-                    legalId: '{{ !empty(auth()) ? user()->id : 0 }}',
-                    legalIdType: 'CC'
-                }
-                });
-            }
-        }
 
-        $('.checkout-btn').on('click', function() {
-            var user_phone = '{{ !empty(auth()) ? user()->phone : "" }}';
-            if(user_phone == '') {
-                toastr.error('Please enter your phone in your profile to make payment');
-                return false;
-            } else {
-                checkout.open(function ( result ) {
-                var transaction = result.transaction
-                console.log('Transaction ID: ', transaction.id)
-                console.log('Transaction object: ', transaction)
-                $('#page-preloader').show();
-                if(transaction.status == "APPROVED") {
-                    window.location.href = transaction.redirectUrl+"?id="+transaction.id;
-                } else {
-                    $('#page-preloader').hide();
-                    toastr.error(transaction.statusMessage);
-                }
-                });
-            }
-        });
-
-        $( function() {
+$( function() {
             
             $('.search__input input[type="search"]').autocomplete({
                 source: "{{ route('api.search-product') }}",
@@ -156,57 +110,57 @@
             //     window.location.href = '{{ route("frontend.store.list") }}?category='+$(this).val();
             // });
 
-            $("#support-ticket-form").validate({
-            rules: {
-                title: {
-                    required: true
-                },
-                order_number: {
-                    required: true
-                },
-                details: {
-                    required: true
-                },
-                'attachments[]': {
-                    required: true
-                }
-            },
-            submitHandler: function(form) {
-                $(form).find('button[type="submit"]').html('<i class="fa fa-spinner fa-spin"></i>Processing...');
-                $(form).find('button[type="submit"]').prop('disabled', true);
-                formData = new FormData(form),
-                $.ajax({
-                url : $(form).attr('action'),
-                type : 'POST',
-                data : formData,
-                dataType: 'json',
-                contentType: false, processData: false,
-                success: function(response) {
+            
+        });
 
-                    $(form).find('button[type="submit"]').html('Submit');
-                    $(form).find('button[type="submit"]').prop('disabled', false);
-
-                    $('#messages').html('');
-                    if(response.status == 304) {
-                        response.errors.forEach(error => {
-                            $('#messages').append('<p align="center" style="color:red;">'+error+'</p>');
-                        });
-                    }
-
-                    if(response.status == 200) {
-                        $('#messages').append('<p align="center" style="color:green;">'+response.message+'</p>');
-                        form.reset();
-                    }
-                },
-                error: function() {
-                    $(form).find('button[type="submit"]').html('Submit');
-                    $(form).find('button[type="submit"]').prop('disabled', false);
+        var exchangePrice = '{{ cartTotal() }}';
+        var cartTotal = exchangePrice;
+        
+        if(cartTotal > 0 && cartTotal > 1500) {
+            cartTotal = '{{ currencyConverter(strtoupper(session()->getCurrency()), "COP", cartTotal(), false) }}';
+            var amountInCents = (cartTotal * 100).toFixed(0);
+            var user_phone = '{{ !empty(auth()) ? user()->phone : "" }}';
+            if(user_phone != '') {
+                var checkout = new WidgetCheckout({
+                currency: 'COP',
+                amountInCents: amountInCents,
+                reference: '{{ strtoupper(random_strings(12)) }}',
+                publicKey: '{{ setting("wompi.PUB_KEY") }}',
+                redirectUrl: '{{ setting("wompi.REDIRECT_URL") }}', // Opcional
+                customerData: { // Opcional
+                    email:'{{ !empty(auth()) ? user()->email : "" }}',
+                    fullName: '{{ !empty(auth()) ? user()->first_name." ".user()->last_name : "" }}',
+                    phoneNumber: '{{ !empty(auth()) ? user()->phone : "" }}',
+                    phoneNumberPrefix: '+{{ !empty(auth()) ? user()->country_code : "" }}',
+                    legalId: '{{ !empty(auth()) ? user()->id : 0 }}',
+                    legalIdType: 'CC'
                 }
                 });
-                
+            }
+        }
+
+        $('.checkout-btn').on('click', function() {
+            var user_phone = '{{ !empty(auth()) ? user()->phone : "" }}';
+            if(user_phone == '') {
+                toastr.error('Please enter your phone in your profile to make payment');
+                return false;
+            } else {
+                checkout.open(function ( result ) {
+                var transaction = result.transaction
+                console.log('Transaction ID: ', transaction.id)
+                console.log('Transaction object: ', transaction)
+                $('#page-preloader').show();
+                if(transaction.status == "APPROVED") {
+                    window.location.href = transaction.redirectUrl+"?id="+transaction.id;
+                } else {
+                    $('#page-preloader').hide();
+                    toastr.error(transaction.statusMessage);
                 }
-            });
+                });
+            }
         });
+
+        
         </script>
         @plot('scripts')
         @include('layout/alert')

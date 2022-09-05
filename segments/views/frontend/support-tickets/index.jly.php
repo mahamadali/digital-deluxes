@@ -43,3 +43,55 @@
     </div>
 </main>
 @endblock
+
+@block('scripts')
+<script>
+    $("#support-ticket-form").validate({
+        rules: {
+            title: {
+                required: true
+            },
+            order_number: {
+                required: true
+            },
+            details: {
+                required: true
+            },
+        },
+        submitHandler: function(form) {
+            $(form).find('button[type="submit"]').html('<i class="fa fa-spinner fa-spin"></i>Processing...');
+            $(form).find('button[type="submit"]').prop('disabled', true);
+            formData = new FormData(form),
+            $.ajax({
+            url : $(form).attr('action'),
+            type : 'POST',
+            data : formData,
+            dataType: 'json',
+            contentType: false, processData: false,
+            success: function(response) {
+
+                $(form).find('button[type="submit"]').html('Submit');
+                $(form).find('button[type="submit"]').prop('disabled', false);
+
+                $('#messages').html('');
+                if(response.status == 304) {
+                    response.errors.forEach(error => {
+                        $('#messages').append('<p align="center" style="color:red;">'+error+'</p>');
+                    });
+                }
+
+                if(response.status == 200) {
+                    $('#messages').append('<p align="center" style="color:green;">'+response.message+'</p>');
+                    form.reset();
+                }
+            },
+            error: function() {
+                $(form).find('button[type="submit"]').html('Submit');
+                $(form).find('button[type="submit"]').prop('disabled', false);
+            }
+            });
+            
+            }
+        });
+</script>
+@endblock

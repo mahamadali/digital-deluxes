@@ -25,7 +25,7 @@ class WalletController
 			$cop_currency_base_price = currencyConverter('USD', 'COP', 1);
 			$balances = [5*$cop_currency_base_price,10*$cop_currency_base_price,15*$cop_currency_base_price,20*$cop_currency_base_price,25*$cop_currency_base_price,50*$cop_currency_base_price];
 		} else {
-			$balances = [61 => 5.00, 52 => 9.99, 62 => 10.00, 63 => 15.00, 65 => 25.00, 54 =>49.99,60 => 99.99];
+			$balances = [61 => 5.00, 62 => 10.00, 63 => 15.00, 65 => 25.00, 54 =>49.99,60 => 99.99];
 		}
 		return render('frontend/wallet/recharge',['paymentMethod' => $paymentMethod, 'balances' => $balances]);
 	}

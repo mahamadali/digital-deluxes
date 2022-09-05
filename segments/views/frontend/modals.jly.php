@@ -21,7 +21,7 @@
                     <div class="uk-form-controls"><textarea class="uk-textarea" name="details" placeholder="Try to include all details..." required></textarea></div>
                     <div class="uk-form-controls uk-margin-small-top">
                         <!-- <div data-uk-form-custom><input type="file"><button class="uk-button uk-button-default" type="button" tabindex="-1"><i class="ico_attach-circle"></i><span>Attach File</span></button></div> -->
-                        <input type="file" name="attachments[]" multiple class="uk-input" required>
+                        <input type="file" name="attachments[]" multiple class="uk-input">
                     </div>
                 </div>
                 <div class="uk-margin">

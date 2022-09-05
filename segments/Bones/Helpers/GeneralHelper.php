@@ -243,6 +243,7 @@ function currencyConverter($from_Currency,$to_Currency,$amount, $exchange_rate =
 }
 
 function callCurrencyApi($from_Currency,$to_Currency,$amount, $exchange_rate = true) {
+    return $amount;
     $apikey = '5dbdf1f441d523a92b8f769e';
     $req_url = 'https://v6.exchangerate-api.com/v6/'.$apikey.'/latest/'.$from_Currency;
     $response_json = file_get_contents($req_url);
