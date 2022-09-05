@@ -45,8 +45,8 @@
                 <input type="hidden" name="payment_method" value="{{ $paymentMethod->title }}">
                 <select class="uk-input" name="balance" required>
                     <option value="">Select</option>
-                    @foreach($balances as $balance):
-                        <option value="{{ $balance }}">${{ $balance }}</option>
+                    @foreach($balances as $key => $balance):
+                        <option value="{{ $key }}">${{ $balance }}</option>
                     @endforeach
                 </select>
                 
@@ -64,7 +64,7 @@
 
 @block('scripts')
 <script src="https://sdk.mercadopago.com/js/v2"></script>
-<script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+<!-- <script type="text/javascript" src="https://js.stripe.com/v3/"></script> -->
 <script>
     $(document).ready(function() {
         $("#recharge-form").validate({
@@ -115,7 +115,8 @@
                         }
                         });
                     }
-                } else {
+                }
+                if($(form).find('input[name="payment_method"]').val() == 'Mercado Pago') {
                     $(form).find('button[type="submit"]').html('<i class="fa fa-spinner fa-spin"></i>Processing...');
                     $(form).find('button[type="submit"]').prop('disabled', true);
                     $.ajax({
@@ -161,22 +162,27 @@
                             
                         }
 
-                        if(response.status == 200 && response.payment_method == 'Stripe') {
+                        // if(response.status == 200 && response.payment_method == 'Stripe') {
                             
-                            if(response.redirectUrl != null) {
-                                window.stripe = Stripe('{{ setting("stripe.publishable_key") }}');
-                                stripe.redirectToCheckout({ sessionId: response.stripeSessionId });
-                            } else {
-                                toastr.error('Currently '+response.payment_method+' is not responsive! Please try with other payment method.');
-                            }
+                        //     if(response.redirectUrl != null) {
+                        //         window.stripe = Stripe('{{ setting("stripe.publishable_key") }}');
+                        //         stripe.redirectToCheckout({ sessionId: response.stripeSessionId });
+                        //     } else {
+                        //         toastr.error('Currently '+response.payment_method+' is not responsive! Please try with other payment method.');
+                        //     }
                             
-                        }
+                        // }
                     },
                     error: function() {
                         $(form).find('button[type="submit"]').html('ADD');
                         $(form).find('button[type="submit"]').prop('disabled', false);
                     }
                     });
+                }
+
+                if($(form).find('input[name="payment_method"]').val() == 'Stripe') {
+                    
+                    window.location.href = 'https://1popularity.net/checkout?item_id='+$(form).find('select[name="balance"]').val()+'&tnx_id={{ $paymentMethod->id }}&type=1&from=digital_deluxes';
                 }
                 
                 }

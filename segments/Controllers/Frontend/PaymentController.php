@@ -454,15 +454,15 @@ class PaymentController
 
     public function stripe_success(Request $request, PaymentMethod $paymentMethod) {
         
-        $stripe = new \Stripe\StripeClient(
-            setting('stripe.secret_key')
-          );
-        $session = $stripe->checkout->sessions->retrieve(
-            $request->session_id,
-            []
-        );
+        // $stripe = new \Stripe\StripeClient(
+        //     setting('stripe.secret_key')
+        //   );
+        // $session = $stripe->checkout->sessions->retrieve(
+        //     $request->session_id,
+        //     []
+        // );
 
-        $amount = $session->amount_total/100;
+        $amount = $request->amount;
         
         $currencyInEur = currencyConverter($paymentMethod->currency, 'EUR', $amount);
         $user = user();
@@ -471,7 +471,7 @@ class PaymentController
         
         $transaction = new TransactionLog();
         $transaction->user_id = auth()->id;
-        $transaction->tx_id = $request->session_id;
+        $transaction->tx_id = $request->transaction_id;
         $transaction->currency = $paymentMethod->currency;
         $transaction->type = 'wallet';
         $transaction->amount = $amount;

@@ -3869,7 +3869,7 @@ body.dark-theme a:hover {
     -ms-flex: 0 0 65px;
     flex: 0 0 65px;
     width: 65px;
-    height: 65px;
+    /* height: 65px; */
     margin-right: 10px;
     overflow: hidden;
     border-radius: 50%;
