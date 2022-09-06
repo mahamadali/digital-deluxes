@@ -23,10 +23,14 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 		Router::get('/view/{user}', [ UserController::class, 'view' ])->name('view');
 		Router::get('/edit/{user}', [ UserController::class, 'edit' ])->name('edit');
 		Router::post('/update/{user}', [ UserController::class, 'update' ])->name('update');
+		Router::post('/payment_method_update/{user}', [ UserController::class, 'paymentMethodUpdate' ])->name('payment_method_update');
+		
 	});
 
 	Router::bunch('/products', ['as' => 'products.'], function () {
 		Router::get('/', [ProductController::class, 'index'])->name('index');
+		Router::get('/create', [ProductController::class, 'create'])->name('create');
+		Router::post('/store', [ProductController::class, 'store'])->name('store');
 		Router::bunch('/{product}', ['as' => ''], function () {
 			Router::get('/view', [ProductController::class, 'view'])->name('view');
 		});

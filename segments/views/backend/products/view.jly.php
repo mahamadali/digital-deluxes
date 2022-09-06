@@ -149,7 +149,8 @@
                         <li>
                             @foreach($product->systemRequirements() as $system_requirement):
                             <div><b>{{ $system_requirement->system }}</b></div>
-                            <div>{{ $system_requirement->requirement ? implode(', ',json_decode($system_requirement->requirement)) : 'N/A' }}</div>
+                           
+                            <div>{{ $system_requirement->requirement ? $system_requirement->requirement : 'N/A' }}</div>
                             @endforeach
                         </li>
                     </ul>

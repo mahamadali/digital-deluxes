@@ -59,7 +59,7 @@
             <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-3@l uk-child-width-1-2@s uk-flex-middle uk-grid-small" data-uk-grid>
 
                 
-
+               
                 <div class="uk-width-1-5">
                     <select class="search-category-input-store" name="language">
                         <option value="">Language</option>
@@ -69,6 +69,9 @@
                     </select>
                 </div>
                 
+                
+
+                @if(count(productGenres()) != 0):
                 <div class="uk-width-1-4">
                     <select class="search-category-input-store" name="genre">
                         <option value="">Genre</option>
@@ -77,6 +80,7 @@
                         @endforeach
                     </select>
                 </div>
+                @endif
 
                 <div class="uk-width-1-6">
                     <div class="search">

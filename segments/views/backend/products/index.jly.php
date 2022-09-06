@@ -22,6 +22,11 @@
           <input type="search" name="search" class="form-control" placeholder="Type and press enter to search" value="{{ isset($_GET['search']) ? $_GET['search'] : '' }}">
           </form>
         </div>
+
+        <div class="col-md-8 text-right">
+          <a href="{{ route('admin.products.create') }}" class="btn btn-primary"><i class="ti-plus"></i> New Product</a>
+        </div>
+
       </div>
       <div class="table-responsive">
         <table id="product-listing" class="table">

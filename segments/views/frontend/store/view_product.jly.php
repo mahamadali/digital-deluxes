@@ -89,7 +89,12 @@
                                         <div>
                                             <b class="grey_text">{{ $system_requirement->system }}</b>
                                             <br>
-                                            {{ $system_requirement->requirement ? implode(', ',json_decode($system_requirement->requirement)) : '' }}
+                                            @if(is_array($system_requirement->requirement)):
+                                                {{ $system_requirement->requirement ? implode(', ',json_decode($system_requirement->requirement)) : '' }}
+                                            @else
+                                                {{ $system_requirement->requirement ? $system_requirement->requirement : '' }}
+                                            @endif
+                                            
                                         </div>
                                         @endforeach
                                     </li>
