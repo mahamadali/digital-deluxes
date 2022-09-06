@@ -14,7 +14,7 @@ class WelcomeController
 {
     public function index()
     {
-        $latest_products = Product::whereNotNull('coverImageOriginal')->orderBy('RAND()')->limit(3)->get();
+		$latest_products = Product::whereNotNull('coverImageOriginal')->orderBy('RAND()')->limit(3)->get();
 
         $tranding_products = Product::whereNotNull('coverImageOriginal')->orderBy('RAND()')->limit(3)->get();
 

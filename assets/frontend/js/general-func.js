@@ -168,3 +168,19 @@ function addCommas(nStr)
     }
     return x1 + x2;
 }
+
+function saveCustomerBillingInfo(action, formData) {
+	$.ajax({
+		url : action,
+		type : 'POST',
+		data : formData,
+		dataType: 'json',
+		contentType: false, processData: false,
+		success: function(response) {
+
+		},
+		error: function() {
+			
+		}
+	});
+}

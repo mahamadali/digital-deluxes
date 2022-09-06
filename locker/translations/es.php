@@ -33,6 +33,7 @@
             'edit_profile' => 'Editar perfil',
             'upload_profile_image' => 'Subir imagen de perfil',
             'save' => 'Ahorrar',
+            'customer_info' => 'Información al cliente'
         ],
 
          'wishlist' => [
@@ -69,6 +70,14 @@
             'checkout' => 'VERIFICAR',
             'subtotal' => 'Total parcial',
             'total' => 'Total',
+        ],
+
+        'checkout' => [
+            'title' => 'Verificar',
+            'place_order' => 'Realizar pedido',
+            'payment_methods' => 'Métodos de pago',
+            'additional_note' => 'Nota adicional',
+            'note' => 'Nota'
         ],
 
          'login_page' => [

@@ -46,7 +46,7 @@
                 <select class="uk-input" name="balance" required>
                     <option value="">Select</option>
                     @foreach($balances as $key => $balance):
-                        <option value="{{ $key }}">${{ $balance }}</option>
+                        <option value="{{ $paymentMethod->title == 'Stripe' ? $key : $balance }}">${{ $balance }}</option>
                     @endforeach
                 </select>
                 

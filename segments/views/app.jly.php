@@ -107,58 +107,58 @@ $( function() {
                 };;
 
             // $('.search-category-input').on('change', function() {
-            //     window.location.href = '{{ route("frontend.store.list") }}?category='+$(this).val();
+            //     window.location.href = '{ { route("frontend.store.list") }}?category='+$(this).val();
             // });
 
             
         });
 
-        var exchangePrice = '{{ cartTotal() }}';
-        var cartTotal = exchangePrice;
+        // var exchangePrice = '{ { cartTotal() } }';
+        // var cartTotal = exchangePrice;
         
-        if(cartTotal > 0 && cartTotal > 1500) {
-            cartTotal = '{{ currencyConverter(strtoupper(session()->getCurrency()), "COP", cartTotal(), false) }}';
-            var amountInCents = (cartTotal * 100).toFixed(0);
-            var user_phone = '{{ !empty(auth()) ? user()->phone : "" }}';
-            if(user_phone != '') {
-                var checkout = new WidgetCheckout({
-                currency: 'COP',
-                amountInCents: amountInCents,
-                reference: '{{ strtoupper(random_strings(12)) }}',
-                publicKey: '{{ setting("wompi.PUB_KEY") }}',
-                redirectUrl: '{{ setting("wompi.REDIRECT_URL") }}', // Opcional
-                customerData: { // Opcional
-                    email:'{{ !empty(auth()) ? user()->email : "" }}',
-                    fullName: '{{ !empty(auth()) ? user()->first_name." ".user()->last_name : "" }}',
-                    phoneNumber: '{{ !empty(auth()) ? user()->phone : "" }}',
-                    phoneNumberPrefix: '+{{ !empty(auth()) ? user()->country_code : "" }}',
-                    legalId: '{{ !empty(auth()) ? user()->id : 0 }}',
-                    legalIdType: 'CC'
-                }
-                });
-            }
-        }
+        // if(cartTotal > 0 && cartTotal > 1500) {
+        //     cartTotal = '{ { currencyConverter(strtoupper(session()->getCurrency()), "COP", cartTotal(), false) } }';
+        //     var amountInCents = (cartTotal * 100).toFixed(0);
+        //     var user_phone = '{ { !empty(auth()) ? user()->phone : "" } }';
+        //     if(user_phone != '') {
+        //         var checkout = new WidgetCheckout({
+        //         currency: 'COP',
+        //         amountInCents: amountInCents,
+        //         reference: '{ { strtoupper(random_strings(12)) } }',
+        //         publicKey: '{ { setting("wompi.PUB_KEY") } }',
+        //         redirectUrl: '{ { setting("wompi.REDIRECT_URL") } }', // Opcional
+        //         customerData: { // Opcional
+        //             email:'{ { !empty(auth()) ? user()->email : "" } }',
+        //             fullName: '{ { !empty(auth()) ? user()->first_name." ".user()->last_name : "" } }',
+        //             phoneNumber: '{ { !empty(auth()) ? user()->phone : "" } }',
+        //             phoneNumberPrefix: '+{ { !empty(auth()) ? user()->country_code : "" } }',
+        //             legalId: '{ { !empty(auth()) ? user()->id : 0 } }',
+        //             legalIdType: 'CC'
+        //         }
+        //         });
+        //     }
+        // }
 
-        $('.checkout-btn').on('click', function() {
-            var user_phone = '{{ !empty(auth()) ? user()->phone : "" }}';
-            if(user_phone == '') {
-                toastr.error('Please enter your phone in your profile to make payment');
-                return false;
-            } else {
-                checkout.open(function ( result ) {
-                var transaction = result.transaction
-                console.log('Transaction ID: ', transaction.id)
-                console.log('Transaction object: ', transaction)
-                $('#page-preloader').show();
-                if(transaction.status == "APPROVED") {
-                    window.location.href = transaction.redirectUrl+"?id="+transaction.id;
-                } else {
-                    $('#page-preloader').hide();
-                    toastr.error(transaction.statusMessage);
-                }
-                });
-            }
-        });
+        // $('.checkout-btn').on('click', function() {
+        //     var user_phone = '{ { !empty(auth()) ? user()->phone : "" } }';
+        //     if(user_phone == '') {
+        //         toastr.error('Please enter your phone in your profile to make payment');
+        //         return false;
+        //     } else {
+        //         checkout.open(function ( result ) {
+        //         var transaction = result.transaction
+        //         console.log('Transaction ID: ', transaction.id)
+        //         console.log('Transaction object: ', transaction)
+        //         $('#page-preloader').show();
+        //         if(transaction.status == "APPROVED") {
+        //             window.location.href = transaction.redirectUrl+"?id="+transaction.id;
+        //         } else {
+        //             $('#page-preloader').hide();
+        //             toastr.error(transaction.statusMessage);
+        //         }
+        //         });
+        //     }
+        // });
 
         
         </script>

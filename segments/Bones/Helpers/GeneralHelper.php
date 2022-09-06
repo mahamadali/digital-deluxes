@@ -161,7 +161,7 @@ if (! function_exists('cartTotal')) {
         $cart_details  = Cart::where('user_id', $userId)->orderBy('id')->get();
         $total = 0;
         foreach($cart_details as $cart) {
-            $total += $cart->product_price * $cart->product_qty;
+            $total += remove_format($cart->product()->price) * $cart->product_qty;
         }
         return $total;
     }
@@ -223,15 +223,18 @@ if (! function_exists('getProduct')) {
 
 function currencyConverter($from_Currency,$to_Currency,$amount, $exchange_rate = true) {
     
-    if(session()->has('currency_expire_time')) {
+    if(session()->has('currency_'.$to_Currency) && !empty(session()->get('currency_'.$to_Currency))) {
         $currency_expire_time = session()->get('currency_expire_time');
         $now = strtotime(date('Y-m-d H:i:s'));
         $min_diff = round(abs($now - $currency_expire_time) / 60,2);
+        
         if($min_diff > 60) {
             $value = callCurrencyApi($from_Currency,$to_Currency,$amount, $exchange_rate);
             session()->set('currency_'.$to_Currency, $value);
+            session()->set('currency_expire_time', $now);
         } else {
             $value = session()->get('currency_'.$to_Currency);
+            $value = $amount * $value;
         }
     } else {
         $currency_expire_time = strtotime(date('Y-m-d H:i:s'));
@@ -239,15 +242,19 @@ function currencyConverter($from_Currency,$to_Currency,$amount, $exchange_rate =
         session()->set('currency_'.$to_Currency, $value);
         session()->set('currency_expire_time', $currency_expire_time);
     }
+
     return $value;        
 }
 
 function callCurrencyApi($from_Currency,$to_Currency,$amount, $exchange_rate = true) {
-    return $amount;
-    $apikey = '5dbdf1f441d523a92b8f769e';
+    // return $amount;
+    if($from_Currency == $to_Currency) {
+        return $amount;
+    }
+    $apikey = 'c31293d496c3c4ccaa092f72';
     $req_url = 'https://v6.exchangerate-api.com/v6/'.$apikey.'/latest/'.$from_Currency;
     $response_json = file_get_contents($req_url);
-    // dd($response_json);
+    
     // Continuing if we got a result
     if(false !== $response_json) {
 

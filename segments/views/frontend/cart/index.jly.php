@@ -72,13 +72,13 @@
                 <div class="custom__body">
                  <div class="col-custom-row-12">
                     <div class="col-custom-12">
-                         Subtotal  <b class="custom-right subtotal_count"></b>
+                         Subtotal  {{ currencySymbol() }}<b class="custom-right subtotal_count"></b>
                     </div>
                  </div>
 
                  <div class="col-custom-row-12">
                     <div class="col-custom-12">
-                         Total  <b class="custom-right total_count"></b>
+                         Total  {{ currencySymbol() }}<b class="custom-right total_count"></b>
                     </div>
                  </div>
                  <div class="col-custom-row-12">

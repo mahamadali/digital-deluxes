@@ -43,7 +43,7 @@
         <p>Total <span>{{ currencySymbol() }}<span class="total_count"></span></span></p>
     </div> <!-- cd-cart-total -->
 
-    <a href="#0" class="checkout-btn">Checkout</a>
+    <a href="{{ route('frontend.checkout.index') }}" class="checkout-btn">Checkout</a>
     @endif
     
     <p class="cd-go-to-cart"><a href="{{ route('frontend.home') }}">Continue Shopping</a></p>

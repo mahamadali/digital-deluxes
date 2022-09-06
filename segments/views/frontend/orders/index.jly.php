@@ -27,7 +27,12 @@
                 <tr>
                     <td>{{ $order->id }}</td>
                     <td>{{ $order->transaction_id }}</td>
-                    <td>{{ currencySymbol() }}{{ $order->order_total() }}</td>
+                    @if($order->currency == 'COP'):
+                        <td>{{ $order->amount_in_cents/ 100 }} {{ $order->currency }}</td>
+                    @else
+                    <td>{{ $order->order_amount }} {{ $order->currency }}</td>
+                    @endif
+                    
                     <td>{{ $order->status }}</td>
                     <td>{{ date('M d, Y, H:i', strtotime($order->created_at)) }}</td>
                     <td>

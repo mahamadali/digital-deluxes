@@ -9,6 +9,7 @@ use Controllers\Frontend\OrderController;
 use Controllers\Frontend\BlogController;
 use Controllers\Frontend\WalletController;
 use Controllers\SupportTicketController;
+use Controllers\Frontend\CheckoutController;
 
 Router::get('/', [WelcomeController::class, 'index'])->name('home');
 
@@ -46,6 +47,11 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
     Router::post('/remove-from-fav/{product}', [StoreController::class, 'removeFromFav'])->name('remove-from-fav');
   });
 
+  Router::bunch('/checkout', ['as' => 'checkout.'], function () {
+    Router::get('/', [CheckoutController::class, 'index'])->name('index');
+    Router::post('/create-order', [CheckoutController::class, 'createOrder'])->name('createOrder');
+  });
+
   Router::bunch('/payment', ['as' => 'payment.'], function () {
     Router::get('/', [PaymentController::class, 'index'])->name('store')->withOutBarrier('is-front-auth');
     Router::any('/check', [PaymentController::class, 'check'])->name('check')->withOutBarrier('is-front-auth');
@@ -57,6 +63,12 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
       Router::any('/success', [PaymentController::class, 'mercadopago_success'])->name('success')->withOutBarrier('is-front-auth');
       Router::get('/failure/{payment_method}', [PaymentController::class, 'mercadopago_failure'])->name('failure')->withOutBarrier('is-front-auth');
       Router::get('/pending/{payment_method}', [PaymentController::class, 'mercadopago_pending'])->name('pending')->withOutBarrier('is-front-auth');
+    });
+
+    Router::bunch('/mercadopago-order', ['as' => 'mercadopago-order.'], function () {
+      Router::any('/success', [PaymentController::class, 'mercadopago_order_success'])->name('success')->withOutBarrier('is-front-auth');
+      Router::get('/failure', [PaymentController::class, 'mercadopago_order_failure'])->name('failure')->withOutBarrier('is-front-auth');
+      Router::get('/pending', [PaymentController::class, 'mercadopago_order_pending'])->name('pending')->withOutBarrier('is-front-auth');
     });
 
     Router::bunch('/stripe', ['as' => 'stripe.'], function () {

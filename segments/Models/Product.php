@@ -46,7 +46,7 @@ class Product extends Model
 	public function getPriceProperty() {
 		$price = $this->price;
 		
-		if(!session()->has('base_price')) {
+		if(!session()->has('base_price') && empty(session()->get('base_price'))) {
 			session()->setCurrency('cop');
 			$base_price = currencyConverter('EUR', 'COP', 1);
 			session()->set('base_price', $base_price);

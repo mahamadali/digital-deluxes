@@ -136,6 +136,14 @@ class AuthController
 			Session::remove('auth');
 			return redirect()->to(route('frontend.auth.login'))->withFlashError('Your account has been suspended!')->go();
 		}
+
+		if(!session()->has('base_price') && empty(session()->get('base_price'))) {
+			$usd_base = currencyConverter('EUR', 'USD', 1);
+			$cop_base = currencyConverter('EUR', 'COP', 1);
+			$eur_base = currencyConverter('EUR', 'EUR', 1);
+			session()->set('base_price', $cop_base);
+		}
+
 		$role = $user->role->name ?? '';
 		switch ($role) {
 			case 'admin':
@@ -287,6 +295,7 @@ class AuthController
 
 		session()->setLanguage('en');
 		Session::set('auth', $user);
+		
 		return $this->redirectAfterLogin($user);
 	}
 

@@ -2,13 +2,13 @@
 
 @block("title") {{ setting('app.title', 'Ali Rocks!') }} @endblock
 <style>
-    .alert-success{
+    /* .alert-success{
         color:green;
     }
 
     .alert-danger{
         color:red;
-    }
+    } */
     .iti--separate-dial-code
     {
         width: 100% !important;

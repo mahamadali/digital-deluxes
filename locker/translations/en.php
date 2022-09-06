@@ -33,6 +33,7 @@
             'edit_profile' => 'Edit Profile',
             'upload_profile_image' => 'Upload Profile Image',
             'save' => 'Save',
+            'customer_info' => 'Customer Information'
         ],
 
          'wishlist' => [
@@ -73,6 +74,14 @@
             'checkout' => 'CHECKOUT',
             'subtotal' => 'Subtotal',
             'total' => 'Total',
+        ],
+
+        'checkout' => [
+            'title' => 'Checkout',
+            'place_order' => 'Place Order',
+            'payment_methods' => 'Payment Methods',
+            'additional_note' => 'Additional Note',
+            'note' => 'Note'
         ],
 
         'login_page' => [
