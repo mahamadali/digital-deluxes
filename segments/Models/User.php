@@ -38,7 +38,7 @@ class User extends Model
 	}
 
 	public function orders(){
-		return $this->hasMany(Order::class, 'user_id')->orderBy('id');
+		return $this->hasMany(Order::class, 'user_id')->without('user')->orderBy('id');
 	}
 
 	public function country_info(){

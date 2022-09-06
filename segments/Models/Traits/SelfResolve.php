@@ -2,11 +2,9 @@
 
 namespace Models\Traits;
 
-use Bones\Database;
 use Bones\Str;
 use JollyException\DatabaseException;
 use Models\Base\Supporters\Transform;
-use Models\Order;
 
 trait SelfResolve
 {
@@ -64,17 +62,17 @@ trait SelfResolve
             $modelObj->$attach = $modelObj->$attach;
         }
 
-        // foreach ($this->with as $with) {
+        foreach ($this->with as $with) {
 
-        //     if (in_array($with, $this->without)) continue;
+            if (in_array($with, $this->without)) continue;
 
-        //     $modelObj->$with = $modelObj->$with();
-        //     if (!empty($executableCallRelated = $modelObj->callRelated($with))) {
-        //         if (is_object($modelObj->$with)) {
-        //             $modelObj->$with = $modelObj->$with->$executableCallRelated();
-        //         }
-        //     }
-        // }
+            $modelObj->$with = $modelObj->$with();
+            if (!empty($executableCallRelated = $modelObj->callRelated($with))) {
+                if (is_object($modelObj->$with)) {
+                    $modelObj->$with = $modelObj->$with->$executableCallRelated();
+                }
+            }
+        }
 
         if (!empty($this->where_has)) {
             foreach ($this->where_has as $relation => $whereHas) {
@@ -113,269 +111,6 @@ trait SelfResolve
         }
 
         return $modelObj;
-    }
-
-    public function circularWiths($model)
-    {
-        $circular_withs = [];
-        foreach ($model->with as $relative_with) {
-            $relative_with_obj = $model->$relative_with();
-            if (get_class($relative_with_obj) === get_class($this)) {
-                $circular_withs[] = $relative_with;
-            }
-        }
-
-        return $circular_withs;
-    }
-
-    public function ___buildRelationalData($with, $entries, $result, $relationalProps)
-    {
-        if ($relationalProps['type'] == 'hasMany') {
-                    
-            if (is_array($entries)) {
-                $forein_key_values_to_map = array_map(function($item) use ($relationalProps) {
-                    return $item->{$relationalProps['local_key']};
-                }, $entries);
-            } else {
-                $forein_key_values_to_map = [$entries->{$relationalProps['local_key']}];
-            }
-
-            if (!empty($forein_key_values_to_map)) {
-                $relatedModelObj = new $relationalProps['related_model']();
-
-                $relationalData = $relatedModelObj->___clearWhere()->without($this->circularWiths($relatedModelObj))->whereIn($relationalProps['foreign_key'], $forein_key_values_to_map)->get();
-
-                if ($relationalData != null) {
-                    if (is_array($entries)) {
-                        foreach ($result as &$entry) {
-                            $entry->$with = [];
-                            foreach ($relationalData as $withEntry) {
-                                if ($entry->{$relationalProps['local_key']} == $withEntry->{$relationalProps['foreign_key']}) {
-                                    $entry->$with[] = $withEntry;
-                                }
-                            }
-                        }
-                    } else {
-                        $result->$with = $relationalData;
-                    }
-                }
-            }
-
-        } else if ($relationalProps['type'] == 'parallelTo') {
-
-            if (is_array($entries)) {
-                $forein_key_values_to_map = array_map(function($item) use ($relationalProps) {
-                    return $item->{$relationalProps['foreign_key']};
-                }, $entries);
-            } else {
-                $forein_key_values_to_map = [$entries->{$relationalProps['foreign_key']}];
-            }
-
-            if (!empty($forein_key_values_to_map)) {
-                $relatedModelObj = new $relationalProps['related_model']();
-                
-                $relationalData = $relatedModelObj->___clearWhere()->without($this->circularWiths($relatedModelObj))->whereIn($relationalProps['local_key'], $forein_key_values_to_map)->get();
-
-                if ($relationalData != null) {
-                    if (is_array($entries)) {
-                        foreach ($result as &$entry) {
-                            $entry->$with = null;
-                            foreach ($relationalData as $withEntry) {
-                                if ($entry->{$relationalProps['foreign_key']} == $withEntry->{$relationalProps['local_key']}) {
-                                    $entry->$with = $withEntry;
-                                }
-                            }
-                        }
-                    } else {
-                        $result->$with = $relationalData[0];
-                    }
-                }
-            }
-
-        } else if ($relationalProps['type'] == 'hasOne') {
-
-            if (is_array($entries)) {
-                $forein_key_values_to_map = array_map(function($item) use ($relationalProps) {
-                    return $item->{$relationalProps['local_key']};
-                }, $entries);
-            } else {
-                $forein_key_values_to_map = [$entries->{$relationalProps['local_key']}];
-            }
-
-            if (!empty($forein_key_values_to_map)) {
-                $relatedModelObj = new $relationalProps['related_model']();
-                
-                $relationalData = $relatedModelObj->___clearWhere()->skipRelationships()->whereIn($relationalProps['foreign_key'], $forein_key_values_to_map)->get();
-
-                if ($relationalData != null) {
-                    if (is_array($entries)) {
-                        foreach ($result as &$entry) {
-                            $entry->$with = null;
-                            foreach ($relationalData as $withEntry) {
-                                if ($entry->{$relationalProps['local_key']} == $withEntry->{$relationalProps['foreign_key']}) {
-                                    $entry->$with = $withEntry;
-                                }
-                            }
-                        }
-                    } else {
-                        $result->$with = $relationalData[0];
-                    }
-                }
-            }
-
-        } else if ($relationalProps['type'] == 'hasOneVia') {
-
-            $final_model = $relationalProps['final_model'];
-            $intermediate_model = $relationalProps['intermediate_model'];
-            $intermediate_model_foreign_key = $relationalProps['intermediate_model_foreign_key'];
-            $final_model_foreign_key = $relationalProps['final_model_foreign_key'];
-            $local_key = $relationalProps['local_key'];
-            $intermediate_model_local_key = $relationalProps['intermediate_model_local_key'];
-
-            if (is_array($entries)) {
-                $intermediate_values_to_map = array_map(function($item) use ($local_key) {
-                    return $item->{$local_key};
-                }, $entries);
-            } else {
-                $intermediate_values_to_map = [$entries->{$local_key}];
-            }
-
-            if (!empty($intermediate_values_to_map)) {
-                $interMediateObj = new $intermediate_model();
-                $interMediateData = $interMediateObj->___clearWhere()->without($this->circularWiths($interMediateObj))->select($intermediate_model_local_key, $intermediate_model_foreign_key)->whereIn($intermediate_model_foreign_key, $intermediate_values_to_map)->___clearLimit()->getAsArray();
-                
-                if (!empty($interMediateData)) {
-                    $finalModelObj = new $final_model();
-                    $finalData = $finalModelObj->___clearWhere()->without($this->circularWiths($finalModelObj))->whereIn($final_model_foreign_key, array_column($interMediateData, $intermediate_model_foreign_key))->get();
-
-                    if (!empty($finalData)) {
-                        if (is_array($entries)) {
-                            foreach ($result as &$entry) {
-                                $entry->$with = null;
-                                foreach ($interMediateData as $interMediate) {
-                                    if ($interMediate[$intermediate_model_foreign_key] == $entry->{$local_key}) {
-                                        $loop = true;
-                                        foreach ($finalData as $final) {
-                                            if ($loop && $final->{$final_model_foreign_key} == $interMediate[$intermediate_model_local_key]) {
-                                                $entry->$with = $final;
-                                                $loop = false;
-                                            }
-                                        }
-                                    }
-                                }    
-                            }
-                        } else {
-                            $result->$with = $finalData[0];
-                        }
-                    }
-
-                }
-
-            }
-
-        } else if ($relationalProps['type'] == 'hasManyVia') {
-
-            $final_model = $relationalProps['final_model'];
-            $intermediate_model = $relationalProps['intermediate_model'];
-            $intermediate_model_foreign_key = $relationalProps['intermediate_model_foreign_key'];
-            $final_model_foreign_key = $relationalProps['final_model_foreign_key'];
-            $local_key = $relationalProps['local_key'];
-            $intermediate_model_local_key = $relationalProps['intermediate_model_local_key'];
-
-            if (is_array($entries)) {
-                $intermediate_values_to_map = array_map(function($item) use ($local_key) {
-                    return $item->{$local_key};
-                }, $entries);
-            } else {
-                $intermediate_values_to_map = [$entries->{$local_key}];
-            }
-
-            if (!empty($intermediate_values_to_map)) {
-                $interMediateObj = new $intermediate_model();
-                $interMediateData = $interMediateObj->___clearWhere()->without($this->circularWiths($interMediateObj))->select($intermediate_model_local_key, $intermediate_model_foreign_key)->whereIn($intermediate_model_foreign_key, $intermediate_values_to_map)->___clearLimit()->getAsArray();
-                
-                if (!empty($interMediateData)) {
-                    $finalModelObj = new $final_model();
-                    $finalData = $finalModelObj->___clearWhere()->without($this->circularWiths($finalModelObj))->whereIn($final_model_foreign_key, array_column($interMediateData, $intermediate_model_foreign_key))->get();
-
-                    if (!empty($finalData)) {
-                        if (is_array($entries)) {
-                            foreach ($result as &$entry) {
-                                $entry->$with = [];
-                                foreach ($interMediateData as $interMediate) {
-                                    if ($interMediate[$intermediate_model_foreign_key] == $entry->{$local_key}) {
-                                        $loop = true;
-                                        foreach ($finalData as $final) {
-                                            if ($loop && $final->{$final_model_foreign_key} == $interMediate[$intermediate_model_local_key]) {
-                                                $entry->$with[] = $final;
-                                            }
-                                        }
-                                    }
-                                }    
-                            }
-                        } else {
-                            $result->$with = $finalData;
-                        }
-                    }
-
-                }
-
-            }
-
-        } else if ($relationalProps['type'] == 'belongsToMany') {
-
-            // opd($relationalProps);
-
-            $final_model = $relationalProps['final_model'];
-            $intermediate_table = $relationalProps['intermediate_table'];
-            $intermediate_to_primary_foreign_key = $relationalProps['intermediate_to_primary_foreign_key'];
-            $intermediate_to_secondary_foreign_key = $relationalProps['intermediate_to_secondary_foreign_key'];
-            $local_key = $relationalProps['local_key'];
-            $final_model_local_key = $relationalProps['final_model_local_key'];
-
-            if (is_array($entries)) {
-                $forein_key_values_to_map = array_map(function($item) use ($local_key) {
-                    return $item->{$local_key};
-                }, $entries);
-            } else {
-                $forein_key_values_to_map = [$entries->{$local_key}];
-            }
-
-            if (!empty($forein_key_values_to_map)) {
-                
-                $interMediateData = Database::getInstance()->__clearWhere();
-                $interMediateData = $interMediateData->whereIn($intermediate_to_primary_foreign_key, $forein_key_values_to_map)->pluck([$intermediate_to_primary_foreign_key, $intermediate_to_secondary_foreign_key], $intermediate_table);
-                
-                if (!empty($interMediateData)) {
-                    $finalModelObj = new $final_model();
-                    $finalData = $finalModelObj->___clearWhere()->without($this->circularWiths($finalModelObj))->whereIn($final_model_local_key, array_column($interMediateData, $intermediate_to_secondary_foreign_key))->get();
-
-                    if (!empty($finalData)) {
-                        if (is_array($entries)) {
-                            foreach ($result as &$entry) {
-                                $entry->$with = [];
-                                foreach ($interMediateData as $interMediate) {
-                                    if ($interMediate->$intermediate_to_primary_foreign_key == $entry->{$local_key}) {
-                                        $loop = true;
-                                        foreach ($finalData as $final) {
-                                            if ($loop && $final->{$final_model_local_key} == $interMediate->$intermediate_to_secondary_foreign_key) {
-                                                $entry->$with[] = $final;
-                                            }
-                                        }
-                                    }
-                                }    
-                            }
-                        } else {
-                            $result->$with = $finalData;
-                        }
-                    }
-                    
-                }
-            }
-
-        }
-
-        return $result;
     }
 
     public function ___transformElement($transformType, $value, $operation = 'set')

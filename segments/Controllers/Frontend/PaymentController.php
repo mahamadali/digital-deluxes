@@ -107,7 +107,7 @@ class PaymentController
             // $order = $order->save();
             
             $cartItems = cartItems($user->id);
-            dd($cartItems);
+            
             $manualOrderItems = [];
             $manualOrderTotalPrice = 0;
             $kinguinOrderItems = [];
@@ -122,8 +122,6 @@ class PaymentController
                     $kinguinOrderTotalPrice += remove_format($item->product()->price);
                 }
             }
-
-            dd($manualOrderItems);
             
             if(!empty($manualOrderItems)) {
                 $result = $transaction;
