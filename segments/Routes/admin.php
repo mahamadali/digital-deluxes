@@ -33,6 +33,8 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 		Router::post('/store', [ProductController::class, 'store'])->name('store');
 		Router::bunch('/{product}', ['as' => ''], function () {
 			Router::get('/view', [ProductController::class, 'view'])->name('view');
+			Router::get('/edit', [ProductController::class, 'edit'])->name('edit');
+			Router::post('/update', [ ProductController::class, 'update' ])->name('update');
 		});
 	});
 

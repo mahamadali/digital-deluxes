@@ -47,6 +47,9 @@
                         <td>€{{ $product->price }}</td>
                         <td>{{ $product->qty }}</td>
                         <td>
+                          @if($product->product_type == 'M'):
+                            <a href="{{ route('admin.products.edit', ['product' => $product->id]) }}" class="btn btn-sm btn-success">Edit</a>
+                          @endif  
                             <a href="{{ route('admin.products.view', ['product' => $product->id]) }}" class="btn btn-sm btn-info">View</a>
                         </td>
                     </tr>

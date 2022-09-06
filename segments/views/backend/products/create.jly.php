@@ -234,6 +234,21 @@
                 <a href="javascript:void(0);" class="btn btn-info btn-sm add_more_requirement mt-4" style="font-size:25px;margin-top: 5px;"><i class="ti-plus"></i></a>
             </div>
         </div>  
+
+        <h5 class="mt-3">Product Keys</h5>
+
+        <div class="row product_key_container">
+            <div class="col-md-10">
+                <div class="form-group">
+                    <label>key</label>
+                    <input type="text" class="form-control" name="product_key[]" placeholder="Key" >
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <a href="javascript:void(0);" class="btn btn-info btn-sm add_more_key mt-4" style="font-size:25px;margin-top: 5px;"><i class="ti-plus"></i></a>
+            </div>
+        </div>  
           
         <div class="row">
           <div class="col-md-4">
@@ -313,6 +328,19 @@ $(document).on('click', '.add_more_requirement', function() {
 });
 $(document).on('click', '.remove_requirement', function() {
     if($('.product_requirement_container').length > 1) {
+        $(this).parent().parent().remove();
+    }
+});
+
+$(document).on('click', '.add_more_key', function() {
+    var clone = $('.product_key_container:first').clone().find('select, input').val('').end();
+    $('.product_key_container:last').after(clone);
+    $('.product_key_container:last').find('.add_more_key').after('<a href="javascript:void(0);" class="btn btn-danger btn-sm remove_key mt-4" style="font-size:25px;margin-top: 5px;"><i class="ti-minus"></i></a>');
+    $('.product_key_container:last').find('.add_more_key').remove();
+    
+});
+$(document).on('click', '.remove_key', function() {
+    if($('.product_key_container').length > 1) {
         $(this).parent().parent().remove();
     }
 });
