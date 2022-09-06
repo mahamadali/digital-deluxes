@@ -12,7 +12,12 @@ class CheckoutController
 
 	public function index(Request $request)
 	{
-		$total_amount = currencyConverter(strtoupper(session()->getCurrency()), "COP", cartTotal());
+		if(strtoupper(session()->getCurrency()) != "COP") {
+			$total_amount = currencyConverter(strtoupper(session()->getCurrency()), "COP", cartTotal());
+		} else {
+			$total_amount = cartTotal();
+		}
+		
 		$order_reference = strtoupper(random_strings(12));
         $user = user();
         $countries = Country::get();
