@@ -79,9 +79,88 @@
           </div>
           <button type="submit" class="btn btn-primary mr-2">Submit</button>
           <a href="{{ route('admin.users.list') }}" class="btn btn-light">Cancel</a>
+        </form>
       </div>
     </div>
   </div>
+
+  <div class="col-md-6 grid-margin stretch-card">
+    
+    <div class="card">
+      <div class="card-body">
+     
+        <form method="post" enctype="multipart/form-data" action="{{ route('admin.users.payment_method_update', ['user' => $user->id]) }}">
+        {{ prevent_csrf() }}
+        <h4 class="card-title">
+              Payment Method
+        </h4>
+        <p class="card-description">
+          
+        </p>
+
+        @if(!empty($user_payment_methods)):
+
+          @foreach($user_payment_methods as $method):
+
+         
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">{{ $method->payment_method_info()->first()->title }}</label>
+              <div class="col-sm-4">
+                <div class="form-check">
+                  <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="status_{{ $method->payment_method_id }}" id="status_active_{{ $method->payment_method_id }}" value="Active" {{ ($method->status == 1) ? 'checked' : '' }}>
+                    Active
+                  <i class="input-helper"></i></label>
+                </div>
+              </div>
+              <div class="col-sm-5">
+                <div class="form-check">
+                  <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="status_{{ $method->payment_method_id }}" id="status_deactive{{ $method->payment_method_id }}" value="Deactivate" {{ ($method->status == 0) ? 'checked' : '' }}>
+                    Deactive
+                  <i class="input-helper"></i></label>
+                </div>
+              </div>
+            </div>
+            @endforeach
+
+
+        @else
+
+            @foreach($payment_methods as $method):
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">{{ $method->title }}</label>
+              <div class="col-sm-4">
+                <div class="form-check">
+                  <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="status_{{ $method->id }}" id="status_active_{{ $method->id }}" value="Active" {{ ($method->status == 'ACTIVE') ? 'checked' : '' }}>
+                    Active
+                  <i class="input-helper"></i></label>
+                </div>
+              </div>
+              <div class="col-sm-5">
+                <div class="form-check">
+                  <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="status_{{ $method->id }}" id="status_deactive{{ $method->id }}" value="Deactivate" {{ ($method->status == 'DEACTIVE') ? 'checked' : '' }}>
+                    Deactive
+                  <i class="input-helper"></i></label>
+                </div>
+              </div>
+            </div>
+            @endforeach
+        
+        @endif
+
+        
+
+
+          <button type="submit" class="btn btn-primary mr-2">Submit</button>
+          <a href="{{ route('admin.users.list') }}" class="btn btn-light">Cancel</a>
+          </form>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 @endblock
