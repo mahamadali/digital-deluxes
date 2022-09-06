@@ -59,6 +59,7 @@ class ProductController
 		$productData['releaseDate'] = $request->releaseDate ? $request->releaseDate :  null;
 		$productData['activationDetails'] = $request->activationDetails ??  null;
 		$productData['originalName'] = $request->originalName ? $request->originalName : null;
+		$productData['order_type'] = 'M';
 
 		$product = Product::create($productData);
 		

@@ -12,7 +12,7 @@ return new class
 	{
 		DataWing::modify($this->table, function (Skeleton $table)
 		{
-			$table->enum('order_type', ['K', 'M'])->default('K')->after('productId');
+			$table->enum('product_type', ['K', 'M'])->default('K')->after('productId');
 			return $table;
 		});
 	}
@@ -21,7 +21,7 @@ return new class
 	{
 		DataWing::modify($this->table, function (Skeleton $table)
 		{
-			$table->dropColumn('order_type');
+			$table->dropColumn('product_type');
 			return $table;
 		});
 	}
