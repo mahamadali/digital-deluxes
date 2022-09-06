@@ -12,7 +12,7 @@ class Order extends Model
     protected $with = ['user', 'keys', 'items'];
     
     public function user() {
-        return $this->parallelTo(User::class, 'user_id')->without('orders');
+        return $this->parallelTo(User::class, 'user_id');
     }
     
     public function keys() {

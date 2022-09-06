@@ -146,6 +146,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                @if (!empty($order->keys)):
                                 @foreach($order->keys as $key):
                                     <tr>
                                         <th>{{ $key->name }}</th>
@@ -153,6 +154,7 @@
                                         <th>{{ $key->offerId }}</th>
                                     </tr>
                                 @endforeach
+                                @endif
                                 </tbody>
                             </table>
                         </div>

@@ -86,9 +86,9 @@ class PaymentController
 
     public function notify(Request $request)
 	{
-        //$raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1662205373-91120","created_at":"2022-09-03T11:42:54.072Z","finalized_at":"2022-09-03T11:42:54.398Z","amount_in_cents":1109090,"reference":"9ZS2LI3ZIFK5","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"BANCOLOMBIA_TRANSFER","payment_method":{"type":"BANCOLOMBIA_TRANSFER","extra":{"async_payment_url":"https://sandbox.wompi.co/v1/payment_methods/redirect/bancolombia_transfer?transferCode=VVjvM3dBu1hUg8ga-approved","external_identifier":"VVjvM3dBu1hUg8ga-approved"},"user_type":"PERSON","sandbox_status":"APPROVED","payment_description":"Pago a digitaldeluxes, ref: 9ZS2LI3ZIFK5"},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"https://127.0.0.1/digital-deluxes/payment/check","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"25345","full_name":"Akbar Husen","phone_number":"+5754345345345","legal_id_type":"CC"},"billing_data":null}},"sent_at":"2022-09-03T11:42:54.428Z","timestamp":1662205374,"signature":{"checksum":"34804cd65fbadee64f4b8a578b92d317dd6712180f59191f4ef1bb9f3e0abdb4","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
-        $raw_post_data = file_get_contents('php://input'); 
-        file_put_contents('ipn.txt', $raw_post_data);
+        $raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1662466272-10847","created_at":"2022-09-06T12:11:12.583Z","finalized_at":"2022-09-06T12:11:13.094Z","amount_in_cents":5245944,"reference":"GOJYI1QIHF3Z","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"BANCOLOMBIA_TRANSFER","payment_method":{"type":"BANCOLOMBIA_TRANSFER","extra":{"async_payment_url":"https://sandbox.wompi.co/v1/payment_methods/redirect/bancolombia_transfer?transferCode=HZFlOPlZCJjDmZ43-approved","external_identifier":"HZFlOPlZCJjDmZ43-approved"},"user_type":"PERSON","sandbox_status":"APPROVED","payment_description":"Pago a digitaldeluxes, ref: GOJYI1QIHF3Z"},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"https://127.0.0.1/digital-deluxes/payment/check","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"2423423","full_name":"Akbar Husen","phone_number":"+573534543535","legal_id_type":"CC"},"billing_data":null}},"sent_at":"2022-09-06T12:11:13.172Z","timestamp":1662466273,"signature":{"checksum":"a575da2a7ff2a701b18953a539529ecaaa4271daf48c22ca72d7bcd151aa6cdc","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
+        // $raw_post_data = file_get_contents('php://input'); 
+        // file_put_contents('ipn.txt', $raw_post_data);
 
         $data = json_decode($raw_post_data);
         
@@ -106,31 +106,52 @@ class PaymentController
             // $order->updated_at = $transaction->finalized_at;
             // $order = $order->save();
             
-            $result = $transaction;
-            $order = new Order();
-            $order->reference = $result->reference;
-            $order->transaction_id = $result->id;
-            $order->payment_method_type = $result->payment_method_type;
-            $order->payment_method = json_encode($result->payment_method);
-            $order->status = $result->status;
-            $order->status_message = $result->status_message;
-            $order->currency = $result->currency;
-            $order->amount_in_cents = $result->amount_in_cents;
-            $order->order_amount = cartTotal($user->id);
-            $order->user_id = $user->id;
-            $order = $order->save();
-
             $cartItems = cartItems($user->id);
+            dd($cartItems);
+            $manualOrderItems = [];
+            $manualOrderTotalPrice = 0;
+            $kinguinOrderItems = [];
+            $kinguinOrderTotalPrice = 0;
             foreach($cartItems as $item) {
-                $orderItem = new OrderItem();
-                $orderItem->order_id = $order->id;
-                $orderItem->product_id = $item->product_id;
-                $orderItem->product_name = $item->product_name;
-                $orderItem->product_price = $item->product_price;
-                $orderItem->product_price_profit = getProfitCommission(remove_format($item->product()->price), $result->currency);
-                $orderItem->product_qty = $item->product_qty;
-                $orderItem->save();
+                if($item->product()->product_type == 'M') {
+                    $manualOrderItems[] = $item;
+                    $manualOrderTotalPrice += remove_format($item->product()->price);
+                }
+                if($item->product()->product_type == 'K') {
+                    $kinguinOrderItems[] = $item;
+                    $kinguinOrderTotalPrice += remove_format($item->product()->price);
+                }
             }
+
+            dd($manualOrderItems);
+            
+            if(!empty($manualOrderItems)) {
+                $result = $transaction;
+                $mannual_order = new Order();
+                $mannual_order->reference = $result->reference;
+                $mannual_order->transaction_id = $result->id;
+                $mannual_order->payment_method_type = $result->payment_method_type;
+                $mannual_order->payment_method = json_encode($result->payment_method);
+                $mannual_order->status = $result->status;
+                $mannual_order->status_message = $result->status_message;
+                $mannual_order->currency = $result->currency;
+                $mannual_order->amount_in_cents = $result->amount_in_cents;
+                $mannual_order->order_amount = $kinguinOrderTotalPrice;
+                $mannual_order->user_id = $user->id;
+                $mannual_order->order_type = 'M';
+                $mannual_order = $mannual_order->save();
+                foreach($manualOrderItems as $manualOrderItems) {
+                    $mannual_order_item = new OrderItem();
+                    $mannual_order_item->order_id = $mannual_order->id;
+                    $mannual_order_item->product_id = $manualOrderItems->product_id;
+                    $mannual_order_item->product_name = $manualOrderItems->product_name;
+                    $mannual_order_item->product_price = $manualOrderItems->product_price;
+                    $mannual_order_item->product_price_profit = getProfitCommission(remove_format($manualOrderItems->product()->price), $result->currency);
+                    $mannual_order_item->product_qty = $manualOrderItems->product_qty;
+                    $mannual_order_item->save();
+                }
+            }
+            
 
             $paymentMethod = PaymentMethod::where('title', 'Wompi')->first();
             
@@ -148,60 +169,87 @@ class PaymentController
 
             Cart::where('user_id',$user->id)->delete();
 
-            $orderProducts = OrderItem::where('order_id', $order->id)->get();
+            if(!empty($kinguinOrderItems)) {
+                $result = $transaction;
+                $order = new Order();
+                $order->reference = $result->reference;
+                $order->transaction_id = $result->id;
+                $order->payment_method_type = $result->payment_method_type;
+                $order->payment_method = json_encode($result->payment_method);
+                $order->status = $result->status;
+                $order->status_message = $result->status_message;
+                $order->currency = $result->currency;
+                $order->amount_in_cents = $result->amount_in_cents;
+                $order->order_amount = $kinguinOrderTotalPrice;
+                $order->user_id = $user->id;
+                $order->order_type = 'K';
+                $order = $order->save();
+                foreach($kinguinOrderItems as $kinguinOrderItem) {
+                    $orderItem = new OrderItem();
+                    $orderItem->order_id = $order->id;
+                    $orderItem->product_id = $kinguinOrderItem->product_id;
+                    $orderItem->product_name = $kinguinOrderItem->product_name;
+                    $orderItem->product_price = $kinguinOrderItem->product_price;
+                    $orderItem->product_price_profit = getProfitCommission(remove_format($kinguinOrderItem->product()->price), $result->currency);
+                    $orderItem->product_qty = $kinguinOrderItem->product_qty;
+                    $orderItem->save();
+                }
+
+                $orderProducts = OrderItem::where('order_id', $order->id)->get();
         
-            $products = [];
-            foreach($orderProducts as $orderProduct) {
-                // $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
-                // $keyTypeResponse = $this->fetchKeyType($orderProduct);
-                // $keyTypeResponse = json_decode($keyTypeResponse);
-                // $offerId = $this->fetchOfferId($keyTypeResponse);
-                // $offer = json_decode($offerId);
-                $products[] = (object) [
-                    'kinguinId' => $orderProduct->product->kinguinId,
-                    'qty' => $orderProduct->product_qty,
-                    'name' => $orderProduct->product_name,
-                    'price' => $orderProduct->product_price,
-                    // 'keyType' => 'text',
-                    // 'offerId' => $offerId,
+                $products = [];
+                foreach($orderProducts as $orderProduct) {
+                    // $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
+                    // $keyTypeResponse = $this->fetchKeyType($orderProduct);
+                    // $keyTypeResponse = json_decode($keyTypeResponse);
+                    // $offerId = $this->fetchOfferId($keyTypeResponse);
+                    // $offer = json_decode($offerId);
+                    $products[] = (object) [
+                        'kinguinId' => $orderProduct->product->kinguinId,
+                        'qty' => $orderProduct->product_qty,
+                        'name' => $orderProduct->product_name,
+                        'price' => $orderProduct->product_price,
+                        // 'keyType' => 'text',
+                        // 'offerId' => $offerId,
+                    ];
+                }
+                
+                // $orderExternalId = $this->orderExternalId($keyTypeResponse);
+                // $orderExternalId = json_decode($orderExternalId);
+                $params = (object) [
+                    'products' => $products,
+                    'orderExternalId' => $order->reference
                 ];
+
+                // dd(json_decode("{\"products\":[{\"kinguinId\":1949,\"qty\":1,\"name\":\"Counter-Strike: Source Steam CD Key\",\"price\":5.79}]}"));
+
+                // dd($params);
+
+                // Generated by curl-to-PHP: http://incarnate.github.io/curl-to-php/
+                $ch = curl_init();
+
+                curl_setopt($ch, CURLOPT_URL, setting('kinguin.endpoint').'/v1/order');
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+
+                $headers = array();
+                $headers[] = 'X-Api-Key: '.setting('kinguin.api_key');
+                $headers[] = 'Content-Type: application/json';
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+                $result = curl_exec($ch);
+                if (curl_errno($ch)) {
+                    echo 'Error:' . curl_error($ch);
+                }
+                curl_close($ch);
+                file_put_contents('create-order.txt', $result);
+
+                $orderData = json_decode($result);
+                
+                $order->kg_orderid = $orderData->orderId;
+                $order->save();
             }
-            
-            // $orderExternalId = $this->orderExternalId($keyTypeResponse);
-            // $orderExternalId = json_decode($orderExternalId);
-            $params = (object) [
-                'products' => $products,
-                'orderExternalId' => $order->reference
-            ];
-
-            // dd(json_decode("{\"products\":[{\"kinguinId\":1949,\"qty\":1,\"name\":\"Counter-Strike: Source Steam CD Key\",\"price\":5.79}]}"));
-
-            // dd($params);
-
-            // Generated by curl-to-PHP: http://incarnate.github.io/curl-to-php/
-            $ch = curl_init();
-
-            curl_setopt($ch, CURLOPT_URL, setting('kinguin.endpoint').'/v1/order');
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
-
-            $headers = array();
-            $headers[] = 'X-Api-Key: '.setting('kinguin.api_key');
-            $headers[] = 'Content-Type: application/json';
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-            $result = curl_exec($ch);
-            if (curl_errno($ch)) {
-                echo 'Error:' . curl_error($ch);
-            }
-            curl_close($ch);
-            file_put_contents('create-order.txt', $result);
-
-            $orderData = json_decode($result);
-            
-            $order->kg_orderid = $orderData->orderId;
-            $order->save();
                 
             // Order placed on kinguin
             die(204);
