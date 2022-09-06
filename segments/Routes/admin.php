@@ -27,6 +27,8 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 
 	Router::bunch('/products', ['as' => 'products.'], function () {
 		Router::get('/', [ProductController::class, 'index'])->name('index');
+		Router::get('/create', [ProductController::class, 'create'])->name('create');
+		Router::post('/store', [ProductController::class, 'store'])->name('store');
 		Router::bunch('/{product}', ['as' => ''], function () {
 			Router::get('/view', [ProductController::class, 'view'])->name('view');
 		});
