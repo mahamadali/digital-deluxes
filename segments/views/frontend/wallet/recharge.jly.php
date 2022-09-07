@@ -44,7 +44,7 @@
             <div class="uk-margin">
                 <input type="hidden" name="payment_method" value="{{ $paymentMethod->title }}">
                 <select class="uk-input" name="balance" required>
-                    <option value="">Select</option>
+                    <option value="">{{ trans('checkout.select') }}</option>
                     @foreach($balances as $key => $balance):
                         <option value="{{ $paymentMethod->title == 'Stripe' ? $key : $balance }}">${{ $balance }}</option>
                     @endforeach
