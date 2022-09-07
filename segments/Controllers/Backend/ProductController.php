@@ -124,7 +124,7 @@ class ProductController
 	}
 
 	public function edit(Request $request, Product $product) {
-
+		
 		$tags = !empty($product->tags) ? implode(',',json_decode($product->tags)) : '';
 		$merchantName = !empty($product->merchantName) ? implode(',',json_decode($product->merchantName)) : '';
 		$developers = !empty($product->developers) ? implode(',',json_decode($product->developers)) : '';

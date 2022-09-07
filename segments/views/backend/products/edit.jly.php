@@ -95,7 +95,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label>Price</label>
-                    <input type="text" class="form-control" name="price" value="{{ $product->price ? $product->price : 0 }}" placeholder="Price" required>
+                    <input type="text" class="form-control" name="price" value="{{ $product->price_original }}" placeholder="Price" required>
                 </div>
             </div>
 

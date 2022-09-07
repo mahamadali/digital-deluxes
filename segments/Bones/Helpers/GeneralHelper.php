@@ -223,24 +223,28 @@ if (! function_exists('getProduct')) {
 
 function currencyConverter($from_Currency,$to_Currency,$amount, $exchange_rate = true) {
     
-    if(session()->has('currency_'.$to_Currency) && !empty(session()->get('currency_'.$to_Currency))) {
+    if(session()->has('currency_'.$from_Currency.'_'.$to_Currency) && !empty(session()->get('currency_'.$from_Currency.'_'.$to_Currency))) {
         $currency_expire_time = session()->get('currency_expire_time');
         $now = strtotime(date('Y-m-d H:i:s'));
         $min_diff = round(abs($now - $currency_expire_time) / 60,2);
         
         if($min_diff > 60) {
-            $value = callCurrencyApi($from_Currency,$to_Currency,$amount, $exchange_rate);
-            session()->set('currency_'.$to_Currency, $value);
+            $base_price = callCurrencyApi($from_Currency, $to_Currency , 1, $exchange_rate);
+            session()->set('currency_'.$from_Currency.'_'.$to_Currency, $base_price);
             session()->set('currency_expire_time', $now);
+            $value = $base_price * $amount;
         } else {
-            $value = session()->get('currency_'.$to_Currency);
-            $value = $amount * $value;
+            $base_price = session()->get('currency_'.$from_Currency.'_'.$to_Currency);
+            $value = $amount * (float) $base_price;
         }
     } else {
+        
         $currency_expire_time = strtotime(date('Y-m-d H:i:s'));
-        $value = callCurrencyApi($from_Currency,$to_Currency,$amount, $exchange_rate);
-        session()->set('currency_'.$to_Currency, $value);
+        $base_price = callCurrencyApi($from_Currency, $to_Currency, 1, $exchange_rate);
+        
+        session()->set('currency_'.$from_Currency.'_'.$to_Currency, $base_price);
         session()->set('currency_expire_time', $currency_expire_time);
+        $value = $amount * (float) $base_price;
     }
 
     return $value;        
@@ -269,7 +273,7 @@ function callCurrencyApi($from_Currency,$to_Currency,$amount, $exchange_rate = t
                 // YOUR APPLICATION CODE HERE, e.g.
                 $base_price = $amount; // Your price in USD
                 if($exchange_rate) {
-                    $base_price = round(($base_price * $response->conversion_rates->{$to_Currency}), 2);
+                    $base_price = $base_price * $response->conversion_rates->{$to_Currency};
                 }
                 
                 return $base_price;
@@ -325,9 +329,11 @@ if (! function_exists('getProfitPrice')) {
 if (! function_exists('getProfitCommission')) {
     function getProfitCommission($price, $currency = '')
     {
+        
         if(!empty($currency)) {
             $price = currencyConverter($currency, 'EUR', $price);
         }
+        
         if(!empty($priceProfit = PriceProfit::selectSet(['max(min_price) as maximum_price', 'profit_perc'])->orderBy('id')->first())) {
             if($priceProfit->maximum_price <= $price) {
                 $profit_prices = $priceProfit;

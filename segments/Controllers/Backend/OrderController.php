@@ -4,6 +4,7 @@ namespace Controllers\Backend;
 
 use Bones\Request;
 use Models\City;
+use Models\CustomerBillingInfo;
 use Models\Order;
 use Models\OrderItem;
 
@@ -19,9 +20,11 @@ class OrderController
 
     public function view(Request $request, Order $order) {
 		$order_items = OrderItem::where('order_id', $order->id)->get();
+		$customer_billing_infos = CustomerBillingInfo::where('order_reference', $order->reference)->first();
 		return render('backend/orders/view', [
 			'order' => $order,
-			'orderItems' => $order_items
+			'orderItems' => $order_items,
+			'customer_billing_infos' => $customer_billing_infos
 		]);
 	}
 }

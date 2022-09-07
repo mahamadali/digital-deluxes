@@ -146,9 +146,11 @@
                             </div>
                             <hr>
                             <div class="game-profile-price__value">{{ currencySymbol() }}{{ $product->price }} {{ strtoupper(session()->getCurrency()) }}</div>
+                            @if($productQty > 0):
                             <a href="{{ route('frontend.cart.add',[$product->id]) }}" class="uk-button uk-button-danger uk-width-1-1 buy-now-btn">
                                 <span class="ico_shopping-cart"></span><span>{{ trans('store.buy_now') }}</span>
                             </a>
+                            @endif
                             @if(!empty(auth()) && $product->isInWishlist()):
                             <button class="uk-button uk-button-danger uk-width-1-1 remove_from_fav" data-url="{{ route('frontend.store.remove-from-fav', ['product' => $product->id]) }}" type="button">
                                 <span class="ico_favourites"></span><span>{{ trans('store.remove_from_wishlist') }}</span>
@@ -171,7 +173,7 @@
                                 </li> -->
                                 <li>
                                     <div></div>
-                                    <div class="game-card__rating"><span>{{ $product->qty }} left in stock</span></div>
+                                    <div class="game-card__rating"><span>{{ $productQty }} left in stock</span></div>
                                 </li>
                                 <li>
                                     <div>{{ trans('store.regionalLimitations') }}:</div>

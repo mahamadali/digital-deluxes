@@ -188,9 +188,9 @@
                             <table class="uk-table customer-info-tbl">
                                 <tbody>
                                     <tr style="margin-top: 20px;">
-                                    <th>Address</th>
-                                    <th colspan="2">Additional Note</th>
-                                </tr>
+                                        <th>Address</th>
+                                        <th colspan="2">Additional Note</th>
+                                    </tr>
                                 <tr>
                                     <td>
                                         {{ $customer_billing_infos->address }}

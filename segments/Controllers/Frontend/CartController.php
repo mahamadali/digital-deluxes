@@ -42,27 +42,48 @@ class CartController
 				}
 
 			}else{
-				$cart->save();
+				if($product->product_type == 'M') {
+					$productQty = count($product->manual_keys()->where('is_used', 0)->get());
+					if(isset($productQty) && $productQty > 0) {
+						$cart->save();
+					} else {
+						return redirect()->withFlashError('Sorry! Game qty is not available in store')->with('old', $request->all())->back();
+					}
+					
+				}
+				
 			}	
 
 
 			
 			
 		}else{
-			$is_cart_exist->product_qty = $is_cart_exist->product_qty + 1;
-			$checkItemAvailableInstore = getProduct($product->kinguinId);
-			$kinguinproduct = json_decode($checkItemAvailableInstore);
+			if($product->product_type == 'K') {
+				$is_cart_exist->product_qty = $is_cart_exist->product_qty + 1;
+				$checkItemAvailableInstore = getProduct($product->kinguinId);
+				$kinguinproduct = json_decode($checkItemAvailableInstore);
 
 
-			if(!empty($product->productId)){
-				if(isset($kinguinproduct->qty) && $kinguinproduct->qty >= ($is_cart_exist->product_qty + 1)) {
+				if(!empty($product->productId)){
+					if(isset($kinguinproduct->qty) && $kinguinproduct->qty >= ($is_cart_exist->product_qty + 1)) {
+						$is_cart_exist->save();
+					} else {
+							return redirect()->withFlashError('Sorry! Game is not available in store')->with('old', $request->all())->back();
+					}
+				}else{
+					$is_cart_exist->save();
+				}
+			}
+
+			if($product->product_type == 'M') {
+				$is_cart_exist->product_qty = $is_cart_exist->product_qty + 1;
+				$productQty = count($product->manual_keys()->where('is_used', 0)->get());
+				if(isset($productQty) && $productQty >= $is_cart_exist->product_qty + 1) {
 					$is_cart_exist->save();
 				} else {
-						return redirect()->withFlashError('Sorry! Game is not available in store')->with('old', $request->all())->back();
+					return redirect()->withFlashError('Sorry! Game qty not available in store')->with('old', $request->all())->back();
 				}
-			}else{
-				$is_cart_exist->save();
-			}	
+			}
 
 			
 			
@@ -82,24 +103,35 @@ class CartController
 	public function updateQty(Request $request, Product $product)
 	{
 		$is_cart_exist = Cart::where('product_id', $product->id)->where('user_id', auth()->id)->first();
-		$product = Product::where('id',$product_id)->first();
+		$product = Product::where('id',$product->id)->first();
 		
 		if(!empty($is_cart_exist)){
-			$is_cart_exist->product_qty = $request->qty;
-			$checkItemAvailableInstore = getProduct($product->kinguinId);
-			$kinguinproduct = json_decode($checkItemAvailableInstore);
 
-			if(!empty($product->productId)){
-				if(isset($kinguinproduct->qty) && $kinguinproduct->qty >= $request->qty) {
+			if($product->product_type == 'K') {
+				$is_cart_exist->product_qty = $request->qty;
+				$checkItemAvailableInstore = getProduct($product->kinguinId);
+				$kinguinproduct = json_decode($checkItemAvailableInstore);
+
+				if(!empty($product->productId)){
+					if(isset($kinguinproduct->qty) && $kinguinproduct->qty >= $request->qty) {
+						$is_cart_exist->save();
+					} else {
+						return response()->json(['status' => 304, 'message' => 'Qty not available in store!']);
+					}
+				}else{
+					$is_cart_exist->save();
+				}
+			}
+
+			if($product->product_type == 'M') {
+				$productQty = count($product->manual_keys()->where('is_used', 0)->get());
+				$is_cart_exist->product_qty = $request->qty;
+				if(isset($productQty) && $productQty >= $request->qty) {
 					$is_cart_exist->save();
 				} else {
 					return response()->json(['status' => 304, 'message' => 'Qty not available in store!']);
 				}
-			}else{
-				$is_cart_exist->save();
-			}	
-
-			
+			}
 			
 		}
 

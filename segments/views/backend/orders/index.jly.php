@@ -26,6 +26,7 @@
                 <td>Transaction #</td>
                 <td>Amount</td>
                 <td>Status</td>
+                <td>Type</td>
                 <td>Created At</td>
                 <td>Action</td>
             </tr>
@@ -39,6 +40,7 @@
                         <td>{{ $order->transaction_id }}</td>
                         <td>${{ $order->order_total() }}</td>
                         <td>{{ $order->status }}</td>
+                        <td>{{ $order->order_type }}</td>
                         <td>{{ date('M d, Y, H:i', strtotime($order->created_at)) }}</td>
                         <td>
                             <a href="{{ route('admin.orders.view', ['order' => $order->id]) }}" class="btn btn-sm btn-info">View</a>

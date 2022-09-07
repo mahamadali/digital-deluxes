@@ -12,7 +12,9 @@ use Models\ProductVideo;
 class Product extends Model
 {
     protected $table = 'products';
-	protected $attach = ['price'];
+	protected $attach = ['price', 'price_original'];
+
+	public $price_original = 0;
 
     public function offers(){
 		return $this->hasMany(ProductOffer::class, 'product_id')->get();
@@ -42,9 +44,14 @@ class Product extends Model
 		}
 		return false;
 	}
+
+	public function getPriceOriginalProperty() {
+		return $this->price_original;
+	}
 	
 	public function getPriceProperty() {
 		$price = $this->price;
+		$this->price_original = $price;
 		
 		if(!session()->has('base_price') && empty(session()->get('base_price'))) {
 			session()->setCurrency('cop');
@@ -56,5 +63,9 @@ class Product extends Model
 		
 		$profitPrice = getProfitPrice($currenctCurrencyPrice);
 		return $profitPrice;
+	}
+
+	public function manual_keys() {
+		return $this->hasMany(ProductKeys::class, 'product_id');
 	}
 }

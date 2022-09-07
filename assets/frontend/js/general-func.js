@@ -146,7 +146,7 @@ function doCalc(){
     $(".widjet-game__info").each(function() {
          price  = $(this).find('.price').html();
          qty  = $(this).find('.quantity').val();
-		 price = price.replace(",","");
+		 price = price.replace(/,/g,"");
          item_total += price * qty;
     });
 

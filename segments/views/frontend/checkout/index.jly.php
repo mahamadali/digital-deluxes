@@ -148,6 +148,13 @@
                  <div class="widjet__head">
                     <h6 class="uk-text-sub-lead">{{ trans('checkout.payment_methods') }}</h6>
                 </div>
+                @if($walletEnable):
+                <div class="col-custom-row-12">
+                    <div class="col-custom-12">
+                    <label><input type="radio" name="payment_method" data-value="Wallet" value="Wallet" required> {{ trans('menu.wallet') }} <small>{{ $wallet_in_cop }} COP</small></label>
+                    </div>
+                 </div>
+                 @endif
                 @foreach($payment_methods as $key => $payment_method):
                  <div class="col-custom-row-12">
                     <div class="col-custom-12">
@@ -265,6 +272,34 @@
                         },
                         error: function() {
                             
+                        }
+                    });
+                }
+
+                if($(form).find('input[name="payment_method"]:checked').data('value') == 'Wallet') {
+                    $(form).find('button[type="submit"]').prop('disabled', true);
+                    $('#page-preloader').show();
+                    var formData = new FormData(form);
+                    $.ajax({
+                        url : $(form).attr('action'),
+                        type : 'POST',
+                        data : formData,
+                        dataType: 'json',
+                        contentType: false, processData: false,
+                        success: function(response) {
+                            $('#page-preloader').hide();
+                            if(response.status == 304) {
+                                toastr.error(response.message);
+                                $(form).find('button[type="submit"]').prop('disabled', false);
+                            } else {
+                                toastr.success(response.message);
+                                window.location.href = response.redirectUrl;
+                            }
+                        },
+                        error: function() {
+                            $(form).find('button[type="submit"]').prop('disabled', false);
+                            toastr.error('Something went wrong! Please refresh page and try again!');
+                            $('#page-preloader').hide();
                         }
                     });
                 }
