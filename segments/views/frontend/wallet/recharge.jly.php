@@ -114,6 +114,8 @@
                             toastr.error(transaction.statusMessage);
                         }
                         });
+                    } else {
+                        toastr.error('Please update your phone number!');
                     }
                 }
                 if($(form).find('input[name="payment_method"]').val() == 'Mercado Pago') {
