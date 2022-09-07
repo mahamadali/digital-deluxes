@@ -60,6 +60,7 @@
             'serial'=> 'Serial', 
             'offer_id'=> 'Offer Id', 
             'customer_bill_info'=> 'Customer Billing Information', 
+            'view'=> 'View', 
         ],
 
          'store' => [
@@ -132,5 +133,11 @@
             'password' => 'Password',
             'already_have_an_account' => 'Already have an account',
             'log_in' => 'Log In',
+        ],
+
+        'wallet' => [
+            'available' => 'Available',
+            'recharge' => 'Recharge',
+            'activities' => 'Activities',
         ],
     ];

@@ -36,7 +36,7 @@
                     <td>{{ $order->status }}</td>
                     <td>{{ date('M d, Y, H:i', strtotime($order->created_at)) }}</td>
                     <td>
-                        <a href="{{ route('frontend.orders.view', ['order' => $order->id]) }}" class="uk-button uk-button-danger">View</a>
+                        <a href="{{ route('frontend.orders.view', ['order' => $order->id]) }}" class="uk-button uk-button-danger">{{ trans('orders.view') }}</a>
                     </td>
                 </tr>
             @endforeach

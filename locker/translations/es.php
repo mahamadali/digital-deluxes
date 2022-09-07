@@ -83,6 +83,7 @@
              'serial'=> 'De serie', 
              'offer_id'=> 'Identificación de la oferta', 
              'customer_bill_info'=> 'Información de facturación del cliente', 
+             'view'=> 'Vista', 
         ],
 
          'cart' => [
@@ -131,5 +132,10 @@
             'password' => 'Clave',
             'already_have_an_account' => 'Ya tienes una cuenta',
             'log_in' => 'Iniciar sesión',
+        ],
+         'wallet' => [
+            'available' => 'Disponible',
+            'recharge' => 'Recargar',
+            'activities' => 'Actividades',
         ],
     ];

@@ -7,12 +7,12 @@
     <div class="uk-width-1-3@l uk-first-column">
         <div class="widjet --wallet">
             <div class="widjet__head">
-                <h3 class="uk-text-lead">Wallet</h3>
+                <h3 class="uk-text-lead">{{ trans('menu.wallet') }}</h3>
             </div>
             <div class="widjet__body">
                 <div class="wallet-info">
                     <div class="wallet-value">{{ user()->wallet_amount }} EUR</div>
-                    <div class="wallet-label"><i class="icon-wallet"></i> Available</div>
+                    <div class="wallet-label"><i class="icon-wallet"></i> {{ trans('wallet.available') }}</div>
                 </div>
             </div>
         </div>
@@ -29,7 +29,7 @@
                         <div class="payment-card__logo"><img src="{{ url('assets/frontend/img/payment-logos/'.$paymentMethod->title.'.png') }}" alt="logo"></div>
                     </div>
                     <div class="payment-card__number">{{ $paymentMethod->title }}</div>
-                    <div class="payment-card__value" style="text-align: center;"><a href="{{ route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]) }}" class="recharge-button">Recharge</a></div>
+                    <div class="payment-card__value" style="text-align: center;"><a href="{{ route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]) }}" class="recharge-button">{{ trans('wallet.recharge') }}</a></div>
                 </div>
             </div>
         </div>
@@ -40,7 +40,7 @@
     <div class="uk-width-2-3@l">
         <div class="widjet --activities">
             <div class="widjet__head">
-                <h3 class="uk-text-lead">Activities</h3>
+                <h3 class="uk-text-lead">{{ trans('wallet.activities') }}</h3>
                 <!-- <a href="09_games-store.html">View All</a> -->
             </div>
             <div class="widjet__body">
