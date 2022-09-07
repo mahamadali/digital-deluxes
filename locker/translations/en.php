@@ -192,4 +192,10 @@
             'browse_all_articles' => 'browse all articles',
             'send_feedback' => 'Send Feedback',
         ],
+
+         'payment_success' => [
+            'order_placed_success' => 'Congratulations, Order Placed.',
+            'thankyou_msg_success' => 'Thanks you for placing order. You will receive an email for your games serial keys.',
+            'go_to_home' => 'Go to HOME',
+        ],
     ];

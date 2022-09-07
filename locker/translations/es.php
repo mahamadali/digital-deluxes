@@ -191,4 +191,10 @@
             'browse_all_articles' => 'navegar por todos los artículos',
             'send_feedback' => 'Enviar comentarios',
         ],
+
+         'payment_success' => [
+            'order_placed_success' => 'Enhorabuena, pedido realizado.',
+            'thankyou_msg_success' => 'Gracias por hacer el pedido. Recibirá un correo electrónico para las claves de serie de sus juegos.',
+            'go_to_home' => 'Ir a casa',
+        ],
     ];
