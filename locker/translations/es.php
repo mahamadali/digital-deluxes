@@ -10,6 +10,7 @@
             'main' => 'Principal',
             'store' => 'Tienda',
             'orders' => 'Orders',
+            'support' => 'Apoyo',
             'blogs' => 'Blogs',
             'login' => 'Acceso',
             'support_tickets' => 'Entradas',

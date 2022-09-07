@@ -10,6 +10,7 @@
             'main' => 'Main',
             'store' => 'Store',
             'orders' => 'Orders',
+            'support' => 'Support',
             'blogs' => 'Blogs',
             'login' => 'Login',
             'support_tickets' => 'Tickets',

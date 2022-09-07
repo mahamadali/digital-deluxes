@@ -26,7 +26,7 @@
             <li><a href="12_streams.html"><i class="ico_streams"></i><span>Streams</span></a></li>
             <li><a href="13_community.html"><i class="ico_community"></i><span>Community</span></a></li> -->
             @if(!empty(auth())):
-            <li class="uk-nav-header">Support</li>
+            <li class="uk-nav-header">{{ trans('menu.support') }}</li>
             <li class="{{ (request()->matchesTo('/support-tickets')) ? 'uk-active' : '' }}"><a href="{{ route('frontend.support-tickets.listing') }}"><i class="ico_edit"></i><span>{{ trans('menu.support_tickets') }}</span></a></li>
             <!-- <li><a href="#modal-report" data-uk-toggle><i class="ico_report"></i><span>Report</span></a></li> -->
             @endif
