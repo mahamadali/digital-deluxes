@@ -96,7 +96,7 @@ class StoreController
 			$productQty = count($product->manual_keys()->where('is_used', 0)->get());
 		endif;
 		if($product->product_type == 'K'):
-			$productQty = count($product->product->qty);
+			$productQty = $product->qty;
 		endif;
 		$platformLogos = PlatformLogo::where('platform', $product->platform)->get();
 		return render('frontend/store/view_product', [
