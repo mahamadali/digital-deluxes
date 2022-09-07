@@ -160,4 +160,10 @@
             'no_item_cart' => 'No hay artículo en el carrito',
             'continue_shopping' => 'Seguir comprando',
         ],
+
+        'view_product' => [
+            'can_be_activated_in' => 'Se puede activar en',
+            'cant_be_activated_in' => 'No se puede activar en',
+            'left_in_stock' => 'quedaban en almacenaje',
+        ],
     ];

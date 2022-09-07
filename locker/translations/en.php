@@ -161,4 +161,10 @@
             'no_item_cart' => 'No item in cart',
             'continue_shopping' => 'Continue Shopping',
         ],
+
+        'view_product' => [
+            'can_be_activated_in' => 'Can be activated in',
+            'cant_be_activated_in' => 'Cannot be activated in',
+            'left_in_stock' => 'left in stock',
+        ],
     ];

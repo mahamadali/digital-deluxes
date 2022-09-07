@@ -137,8 +137,8 @@
                     </div>
                     <div class="uk-width-1-3@s">
                         <div class="game-profile-price">
-                            <div class="country_restriction_success_text" style="display: none;"><i class="ico_tick-circle"></i> Can be activated in: <span class="YOUR_COUNTRY"></span></div>
-                            <div class="country_restriction_danger_text" style="display: none;"><i class="ico_close-circle"></i> Cannot be activated in: <span class="YOUR_COUNTRY"></span></div>
+                            <div class="country_restriction_success_text" style="display: none;"><i class="ico_tick-circle"></i> {{ trans('view_product.can_be_activated_in') }}: <span class="YOUR_COUNTRY"></span></div>
+                            <div class="country_restriction_danger_text" style="display: none;"><i class="ico_close-circle"></i> {{ trans('view_product.cant_be_activated_in') }}: <span class="YOUR_COUNTRY"></span></div>
                             <div class="row" style="margin-top: 10px;">
                                 @foreach($platformLogos as $logo):
                                     <img class="platform-logos" src="{{ url($logo->path) }}">
@@ -173,7 +173,7 @@
                                 </li> -->
                                 <li>
                                     <div></div>
-                                    <div class="game-card__rating"><span>{{ $productQty }} left in stock</span></div>
+                                    <div class="game-card__rating"><span>{{ $productQty }} {{ trans('view_product.left_in_stock') }}</span></div>
                                 </li>
                                 <li>
                                     <div>{{ trans('store.regionalLimitations') }}:</div>
