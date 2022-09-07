@@ -42,6 +42,12 @@
 
         'orders' => [
             'title' => 'My Orders',
+            'order' => 'Order',
+            'transaction' => 'Transaction',
+            'amount' => 'Amount',
+            'status' => 'Status',
+            'created_at' => 'Created At',
+            'action' => 'Action',
         ],
 
          'store' => [
@@ -81,7 +87,17 @@
             'place_order' => 'Place Order',
             'payment_methods' => 'Payment Methods',
             'additional_note' => 'Additional Note',
-            'note' => 'Note'
+            'note' => 'Note',
+            'first_name' => 'First Name',
+            'last_name' => 'Last Name',
+            'email' => 'Email',
+            'country_code' => 'Country Code',
+            'phone' => 'Phone Number',
+            'address' => 'Address',
+            'country' => 'Country',
+            'select' => 'Select',
+            'city' => 'City',
+            
         ],
 
         'login_page' => [

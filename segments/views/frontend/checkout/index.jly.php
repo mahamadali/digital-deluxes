@@ -77,24 +77,24 @@
                         
                         
                         <div class="uk-grid" data-uk-grid>
-                            <div class="uk-width-1-2@l"><label>First Name</label><input type="text" class="uk-input" name="first_name" placeholder="First Name" value="{{ $user->first_name }}" required></div>
-                            <div class="uk-width-1-2@l"><label>Last Name</label><input type="text" class="uk-input" name="last_name" placeholder="Last Name" value="{{ $user->last_name }}" required></div>
+                            <div class="uk-width-1-2@l"><label>{{ trans('checkout.first_name') }}</label><input type="text" class="uk-input" name="first_name" placeholder="{{ trans('checkout.first_name') }}" value="{{ $user->first_name }}" required></div>
+                            <div class="uk-width-1-2@l"><label>{{ trans('checkout.last_name') }}</label><input type="text" class="uk-input" name="last_name" placeholder="{{ trans('checkout.last_name') }}" value="{{ $user->last_name }}" required></div>
                         </div>
 
-                        <div class="uk-margin"><label>Email</label><input type="email" class="uk-input" name="email" placeholder="Email" value="{{ $user->email }}" required></div>
+                        <div class="uk-margin"><label>{{ trans('checkout.email') }}</label><input type="email" class="uk-input" name="email" placeholder="{{ trans('checkout.email') }}" value="{{ $user->email }}" required></div>
                         
                         <div class="uk-grid" data-uk-grid>
-                        <div class="uk-width-1-1@l"><label>Country Code</label><input type="hidden" name="country_code" id="country_code" value="{{ $user->country_code }}"><input type="text" class="uk-input" name="phone" id="phone" placeholder="Phone Number" value="{{ $user->phone }}" required></div>
+                        <div class="uk-width-1-1@l"><label>{{ trans('checkout.country_code') }}</label><input type="hidden" name="country_code" id="country_code" value="{{ $user->country_code }}"><input type="text" class="uk-input" name="phone" id="phone" placeholder="{{ trans('checkout.phone') }}" value="{{ $user->phone }}" required></div>
                         </div>
                         <div class="uk-grid" data-uk-grid>
-                        <div class="uk-width-1-1@l"><label>Address</label><input type="text" class="uk-input" name="address" placeholder="Address" value="{{ $user->address }}" required></div>
+                        <div class="uk-width-1-1@l"><label>{{ trans('checkout.address') }}</label><input type="text" class="uk-input" name="address" placeholder="{{ trans('checkout.address') }}" value="{{ $user->address }}" required></div>
                         
                         </div>
                         <div class="uk-grid" data-uk-grid>
                         <div class="uk-width-1-2@l">
-                            <label>Country</label>
+                            <label>{{ trans('checkout.country') }}</label>
                             <select class="uk-input" name="country" required>
-                                <option value="">Select</option>
+                                <option value="">{{ trans('checkout.country') }}</option>
                                 @foreach($countries as $country):
                                     <option value="{{ $country->id }}" {{ $user->country == $country->id ? 'selected' : '' }}>{{ $country->country_name }}</option>
                                 @endforeach
@@ -102,8 +102,8 @@
                             
                         </div>
                         <div class="uk-width-1-2@l">
-                            <label>City</label>
-                            <input type="text" class="uk-input" name="city" placeholder="City" value="{{ $user->city }}" required></div>
+                            <label>{{ trans('checkout.city') }}</label>
+                            <input type="text" class="uk-input" name="city" placeholder="{{ trans('checkout.city') }}" value="{{ $user->city }}" required></div>
                         </div>
                         
                         

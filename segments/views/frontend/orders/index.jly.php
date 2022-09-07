@@ -14,12 +14,12 @@
             <table class="uk-table">
                 <thead>
                     <tr>
-                        <td>Order #</td>
-                        <td>Transaction #</td>
-                        <td>Amount</td>
-                        <td>Status</td>
-                        <td>Created At</td>
-                        <td>Action</td>
+                        <td>{{ trans('orders.order') }} #</td>
+                        <td>{{ trans('orders.transaction') }} #</td>
+                        <td>{{ trans('orders.amount') }}</td>
+                        <td>{{ trans('orders.status') }}</td>
+                        <td>{{ trans('orders.created_at') }}</td>
+                        <td>{{ trans('orders.action') }}</td>
                     </tr>
                 </thead>
             <tbody>

@@ -63,6 +63,16 @@
             'clear' => 'Clara'
         ],
 
+        'orders' => [
+            'title' => 'Mis ordenes',
+            'order' => 'Ordenar',
+            'transaction' => 'Transacción',
+            'amount' => 'Monto',
+            'status' => 'Estado',
+            'created_at' => 'Creado en',
+            'action' => 'Acción',
+        ],
+
          'cart' => [
             'carts' => 'carros',
             'price' => 'Precio',
@@ -77,7 +87,16 @@
             'place_order' => 'Realizar pedido',
             'payment_methods' => 'Métodos de pago',
             'additional_note' => 'Nota adicional',
-            'note' => 'Nota'
+            'note' => 'Nota',
+            'first_name' => 'Primer nombre',
+            'last_name' => 'Apellido',
+            'email' => 'Correo electrónico',
+            'country_code' => 'Código de país',
+            'phone' => 'Número de teléfono',
+            'address' => 'Dirección',
+            'country' => 'País',
+            'select' => 'Seleccione',
+            'city' => 'Ciudad',
         ],
 
          'login_page' => [

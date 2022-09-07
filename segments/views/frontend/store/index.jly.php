@@ -49,10 +49,10 @@
 
                 <select class="" name="sort_by">
                     <option value="">Sort By</option>
-                    <option value="Best Match">Best Match</option>
-                    <option value="Newest">Newest</option>
-                    <option value="Price Lowest">Price Lowest</option>
-                    <option value="Price Highest">Price Highest</option>
+                    <option {{ (isset($_GET["sort_by"]) && $_GET["sort_by"] == "Best Match") ? 'selected' : '' }} value="Best Match">Best Match</option>
+                    <option {{ (isset($_GET["sort_by"]) && $_GET["sort_by"] == "Newest") ? 'selected' : '' }} value="Newest">Newest</option>
+                    <option {{ (isset($_GET["sort_by"]) && $_GET["sort_by"] == "Price Lowest") ? 'selected' : '' }} value="Price Lowest">Price Lowest</option>
+                    <option {{ (isset($_GET["sort_by"]) && $_GET["sort_by"] == "Price Highest") ? 'selected' : '' }} value="Price Highest">Price Highest</option>
                 </select>
             </div>
         </div>
@@ -138,3 +138,12 @@
    
 </main>
 @endblock
+
+@section('scripts')
+<script>
+    $('select[name="sort_by"]').change(function() {
+        $('#page-preloader').show();
+        $(this).closest('form').submit();
+    });
+</script>
+@endsection
