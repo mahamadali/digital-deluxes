@@ -167,4 +167,18 @@
             'cant_be_activated_in' => 'No se puede activar en',
             'left_in_stock' => 'quedaban en almacenaje',
         ],
+
+         'support' => [
+            'report' => 'Reporte',
+            'ticket' => 'Boleto',
+            'title' => 'Título',
+            'is_read' => 'Es leído',
+            'ticket_info' => 'Información del boleto',
+            'order_number' => 'Número de orden',
+            'details' => 'Detalles',
+            'attachments' => 'Archivos adjuntos',
+            'messages' => 'Mensajes',
+            'type_message' => 'Escriba un mensaje',
+            'please_wait_for_administrator' => 'Por favor espera a la administradora',
+        ],
     ];

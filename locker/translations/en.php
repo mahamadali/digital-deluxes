@@ -168,4 +168,18 @@
             'cant_be_activated_in' => 'Cannot be activated in',
             'left_in_stock' => 'left in stock',
         ],
+
+         'support' => [
+            'report' => 'Report',
+            'ticket' => 'Ticket',
+            'title' => 'Title',
+            'is_read' => 'Is Read',
+            'ticket_info' => 'Ticket Info',
+            'order_number' => 'Order Number',
+            'details' => 'Details',
+            'attachments' => 'Attachments',
+            'messages' => 'Messages',
+            'type_message' => 'Type a message',
+            'please_wait_for_administrator' => 'Please wait for Administrator',
+        ],
     ];

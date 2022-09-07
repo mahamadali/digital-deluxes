@@ -8,19 +8,19 @@
             <div class="widjet --filters">
                 <div class="widjet__head">
                     <h3 class="uk-text-lead">{{ trans('menu.support_tickets') }}</h3>
-                    <a href="#modal-report" class="uk-button uk-button-danger" data-uk-toggle><i class="ico_report"></i> <span>Report</span></a>
+                    <a href="#modal-report" class="uk-button uk-button-danger" data-uk-toggle><i class="ico_report"></i> <span>{{ trans('support.report') }}</span></a>
                 </div>
             </div>
             <div class="game-card__box">
             <table class="uk-table">
                 <thead>
                     <tr>
-                    <td>Ticket #</td>
-                    <td>Title #</td>
-                    <td>Status</td>
-                    <td>Is Read?</td>
-                    <td>Created At</td>
-                    <td>Action</td>
+                    <td>{{ trans('support.ticket') }} #</td>
+                    <td>{{ trans('support.title') }} #</td>
+                    <td>{{ trans('orders.status') }}</td>
+                    <td>{{ trans('support.is_read') }}?</td>
+                    <td>{{ trans('orders.created_at') }}</td>
+                    <td>{{ trans('orders.action') }}</td>
                     </tr>
                 </thead>
             <tbody>
@@ -32,7 +32,7 @@
                     <td>{{ $ticket->is_read }}</td>
                     <td>{{ date('M d, Y, H:i', strtotime($ticket->created_at)) }}</td>
                     <td>
-                        <a href="{{ route('frontend.support-tickets.view', ['ticket' => $ticket->id]) }}" class="uk-button uk-button-danger uk-button-sm">View</a>
+                        <a href="{{ route('frontend.support-tickets.view', ['ticket' => $ticket->id]) }}" class="uk-button uk-button-danger uk-button-sm">{{ trans('orders.view') }}</a>
                     </td>
                 </tr>
             @endforeach

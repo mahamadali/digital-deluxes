@@ -184,28 +184,28 @@
             <div class="game-card --horizontal favourites-game">
                 <div class="game-card__box">
                     <div class="game-card__info" style="width: 100%;">
-                        <h4 class="game-card__title" href="#">Ticket Info</h4>
+                        <h4 class="game-card__title" href="#">{{ trans('support.ticket_info') }}</h4>
 
                         
                          
                         <div class="game-card__bottom">
                             <div class="game-card__rating-and-price">
-                                <div class="order-info-label">Title: <span>{{ $ticket->title }} </span></div>
+                                <div class="order-info-label">{{ trans('support.title') }}: <span>{{ $ticket->title }} </span></div>
                             </div>
                             <div class="game-card__rating-and-price">
-                                <div class="order-info-label">Order Number: <span>{{ $ticket->order_number }} </span></div>
+                                <div class="order-info-label">{{ trans('support.order_number') }}: <span>{{ $ticket->order_number }} </span></div>
                             </div>
                         </div>
                         
                         <div class="game-card__bottom">
                             <div class="game-card__rating-and-price">
-                                <div class="order-info-label">Details: <span>{{ $ticket->details }} </span></div>
+                                <div class="order-info-label">{{ trans('support.details') }}: <span>{{ $ticket->details }} </span></div>
                             </div>
                         </div>
 
                         <div class="game-card__bottom">
                             <div class="game-card__rating-and-price">
-                                <div class="order-info-label">Attachments: </div>
+                                <div class="order-info-label">{{ trans('support.attachments') }}: </div>
                                 <div class="order-info-label">
                                 @foreach($attachments as $attachment):
                                     <a href="{{ url($attachment) }}" class="attachment-link" target="_blank">{{ basename($attachment) }}</a>
@@ -216,10 +216,10 @@
 
                         <div class="game-card__bottom">
                             <div class="game-card__rating-and-price">
-                                <div class="order-info-label">Status: <a>{{ $ticket->status }} </a></div>
+                                <div class="order-info-label">{{ trans('orders.status') }}: <a>{{ $ticket->status }} </a></div>
                             </div>
                             <div class="game-card__rating-and-price">
-                                <div class="order-info-label">Created At: <span>{{ date('M d, Y, H:i', strtotime($ticket->created_at)) }} </span></div>
+                                <div class="order-info-label">{{ trans('orders.created_at') }}: <span>{{ date('M d, Y, H:i', strtotime($ticket->created_at)) }} </span></div>
                             </div>
                         </div>
                     </div>
@@ -228,7 +228,7 @@
 
             <div class="game-card --horizontal favourites-game">
                 <div class="messaging-box">
-                    <h4 class="game-card__title" href="#">Messages</h4>
+                    <h4 class="game-card__title" href="#">{{ trans('support.messages') }}</h4>
                     <div class="messaging">
                         <div class="inbox_msg">
                             @if(count($ticket->messages) > 0):
@@ -258,7 +258,7 @@
                                 <div class="input_msg_write">
                                     <form method="post" action="{{ route('admin.support-tickets.message', ['ticket' => $ticket->id]) }}">
                                     {{ prevent_csrf() }}
-                                    <input type="text" class="write_msg" name="message" placeholder="Type a message" autocomplete="off" />
+                                    <input type="text" class="write_msg" name="message" placeholder="{{ trans('support.type_message') }}" autocomplete="off" />
                                     <button class="msg_send_btn" type="submit"><i class="ico_arrow-circle-right" aria-hidden="true"></i></button>
                                     </form>
                                 </div>
@@ -266,7 +266,7 @@
                             @endif
                             </div>
                             @else
-                            <center>Please wait for Administrator</center>
+                            <center>{{ trans('support.please_wait_for_administrator') }}</center>
                             @endif
                         </div>
                     </div>
