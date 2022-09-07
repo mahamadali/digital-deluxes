@@ -83,7 +83,16 @@
             'regionalLimitations' => 'Limitation Region',
             'languages' => 'Languages',
             'tags' => 'Tags',
-            'clear' => 'Clear'
+            'clear' => 'Clear',
+            'choose' => 'Choose',
+            'operating_system' => 'Operating system',
+            'sort_by' => 'Sort By',
+            'best_match' => 'Best Match',
+            'newest' => 'Newest',
+            'price_lowest' => 'Price Lowest',
+            'price_highest' => 'Price Highest',
+            'language' => 'Language',
+            'genre' => 'Genre',
         ],
 
          'cart' => [
@@ -139,5 +148,14 @@
             'available' => 'Available',
             'recharge' => 'Recharge',
             'activities' => 'Activities',
+            'add_to_wallet' => 'Add to Wallet',
+            'add' => 'ADD',
+        ],
+
+        'cart_popup' => [
+            'shopping_cart' => 'SHOPPING CART',
+            'remove' => 'Remove',
+            'no_item_cart' => 'No item in cart',
+            'continue_shopping' => 'Continue Shopping',
         ],
     ];

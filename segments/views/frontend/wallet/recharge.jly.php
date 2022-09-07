@@ -7,7 +7,7 @@
     <div class="uk-width-1-3@l">
         <div class="widjet --payment-method">
             <div class="widjet__head">
-                <h3 class="uk-text-lead">Wallet</h3>
+                <h3 class="uk-text-lead">{{ trans('menu.wallet') }}</h3>
             </div>
             <div class="widjet__body">
                 <div class="payment-card">
@@ -16,7 +16,7 @@
                         <div class="payment-card__logo"><img src="{{ url('assets/frontend/img/payment-logos/'.$paymentMethod->title.'.png') }}" alt="logo"></div>
                     </div>
                     <div class="payment-card__number">{{ $paymentMethod->title }}</div>
-                    <div class="payment-card__value" style="text-align: center;">{{ $paymentMethod->currency }} currency</div>
+                    <div class="payment-card__value" style="text-align: center;">{{ $paymentMethod->currency }} {{ trans('orders.currency') }}</div>
                 </div>
             </div>
         </div>
@@ -24,7 +24,7 @@
     <div class="uk-width-2-3@l">
     <div class="widjet --bio">
         <div class="widjet__head">
-            <h3 class="uk-text-lead">Add to Wallet</h3>
+            <h3 class="uk-text-lead">{{ trans('wallet.add_to_wallet') }}</h3>
         </div>
         <div class="widjet__body">
             @if (session()->hasFlash('error')):
@@ -51,7 +51,7 @@
                 </select>
                 
             </div>
-            <div class="uk-margin"><button class="uk-button uk-button-danger uk-width-1-1" type="submit">ADD</button></div>
+            <div class="uk-margin"><button class="uk-button uk-button-danger uk-width-1-1" type="submit">{{ trans('wallet.add') }}</button></div>
             </form>
             <div class="cho-container"></div>
         </div>

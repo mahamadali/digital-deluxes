@@ -58,9 +58,18 @@
             'remove_from_wishlist' => 'Eliminar de la lista de deseos',
             'add_to_wishlist' => 'Añadir a la lista de deseos',
             'regionalLimitations' => 'Limitation Region',
-            'languages' => 'Languages',
-            'tags' => 'Tags',
-            'clear' => 'Clara'
+            'languages' => 'Idiomas',
+            'tags' => 'Etiquetas',
+            'clear' => 'Clara',
+            'choose' => 'Elegir',
+            'operating_system' => 'Sistema operativo',
+            'sort_by' => 'Ordenar por',
+            'best_match' => 'Mejor partido',
+            'newest' => 'La mas nueva',
+            'price_lowest' => 'precio más bajo',
+            'price_highest' => 'Precio más alto',
+            'language' => 'Idioma',
+            'genre' => 'Género',
         ],
 
         'orders' => [
@@ -133,9 +142,19 @@
             'already_have_an_account' => 'Ya tienes una cuenta',
             'log_in' => 'Iniciar sesión',
         ],
+
          'wallet' => [
             'available' => 'Disponible',
             'recharge' => 'Recargar',
             'activities' => 'Actividades',
+            'add_to_wallet' => 'Agregar a la billetera',
+            'add' => 'AGREGAR',
+        ],
+
+         'cart_popup' => [
+            'shopping_cart' => 'CARRITO DE COMPRAS',
+            'remove' => 'Remover',
+            'no_item_cart' => 'No hay artículo en el carrito',
+            'continue_shopping' => 'Seguir comprando',
         ],
     ];

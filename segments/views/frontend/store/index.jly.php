@@ -25,7 +25,7 @@
         <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-3@l uk-child-width-1-2@s uk-flex-middle uk-grid-small" data-uk-grid>
             <div class="uk-width-1-5">
                 <select class="search-category-input-store" name="category">
-                    <option value="">Choose</option>
+                    <option value="">{{ trans('store.choose') }}</option>
                     @foreach(platforms() as $productPlatform):
                         <option value="{{ $productPlatform['platform'] }}" {{ (isset($_GET["category"]) && $_GET["category"] == $productPlatform['platform']) ? 'selected' : '' }}>{{ $productPlatform['platform'] }}</option>
                     @endforeach
@@ -39,7 +39,7 @@
             </div>
             <div class="uk-width-1-5" style="display: flex;">
                 <select class="search-category-input-store" name="system">
-                    <option value="">Operating system</option>
+                    <option value="">{{ trans('store.operating_system') }}</option>
                     @foreach($operatingSystems as $operatingSystem):
                         @if(!empty($operatingSystem->system)):
                         <option value="{{ $operatingSystem->system }}" {{ (isset($_GET["system"]) && $_GET["system"] == $operatingSystem->system) ? 'selected' : '' }}>{{ $operatingSystem->system }}</option>
@@ -48,11 +48,11 @@
                 </select>
 
                 <select class="" name="sort_by">
-                    <option value="">Sort By</option>
-                    <option {{ (isset($_GET["sort_by"]) && $_GET["sort_by"] == "Best Match") ? 'selected' : '' }} value="Best Match">Best Match</option>
-                    <option {{ (isset($_GET["sort_by"]) && $_GET["sort_by"] == "Newest") ? 'selected' : '' }} value="Newest">Newest</option>
-                    <option {{ (isset($_GET["sort_by"]) && $_GET["sort_by"] == "Price Lowest") ? 'selected' : '' }} value="Price Lowest">Price Lowest</option>
-                    <option {{ (isset($_GET["sort_by"]) && $_GET["sort_by"] == "Price Highest") ? 'selected' : '' }} value="Price Highest">Price Highest</option>
+                    <option value="">{{ trans('store.sort_by') }}</option>
+                    <option {{ (isset($_GET["sort_by"]) && $_GET["sort_by"] == "Best Match") ? 'selected' : '' }} value="Best Match">{{ trans('store.best_match') }}</option>
+                    <option {{ (isset($_GET["sort_by"]) && $_GET["sort_by"] == "Newest") ? 'selected' : '' }} value="Newest">{{ trans('store.newest') }}</option>
+                    <option {{ (isset($_GET["sort_by"]) && $_GET["sort_by"] == "Price Lowest") ? 'selected' : '' }} value="Price Lowest">{{ trans('store.price_lowest') }}</option>
+                    <option {{ (isset($_GET["sort_by"]) && $_GET["sort_by"] == "Price Highest") ? 'selected' : '' }} value="Price Highest">{{ trans('store.price_highest') }}</option>
                 </select>
             </div>
         </div>
@@ -62,7 +62,7 @@
                
                 <div class="uk-width-1-5">
                     <select class="search-category-input-store" name="language">
-                        <option value="">Language</option>
+                        <option value="">{{ trans('store.language') }}</option>
                         @foreach(productLanguages() as $productLanguageEach):
                             <option value="{{ $productLanguageEach }}" {{ (isset($_GET["language"]) && $_GET["language"] == $productLanguageEach) ? 'selected' : '' }}>{{ $productLanguageEach }}</option>
                         @endforeach
@@ -74,7 +74,7 @@
                 @if(count(productGenres()) != 0):
                 <div class="uk-width-1-4">
                     <select class="search-category-input-store" name="genre">
-                        <option value="">Genre</option>
+                        <option value="">{{ trans('store.genre') }}</option>
                         @foreach(productGenres() as $productGenreEach):
                             <option value="{{ $productGenreEach }}" {{ (isset($_GET["genre"]) && $_GET["genre"] == $productGenreEach) ? 'selected' : '' }}>{{ $productGenreEach }}</option>
                         @endforeach
