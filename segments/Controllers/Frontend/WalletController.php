@@ -39,7 +39,7 @@ class WalletController
 			$item = new \MercadoPago\Item();
 			$item->title = 'Wallet Recharge';
 			$item->quantity = 1;
-			$item->unit_price = $request->balance;
+			$item->unit_price = (int) $request->balance;
 
 			$preference->items = array($item);
 
