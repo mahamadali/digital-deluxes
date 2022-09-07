@@ -14,7 +14,10 @@
             'login' => 'Login',
             'support_tickets' => 'Tickets',
             'wallet' => 'Wallet',
-            'terms' => 'Terms & Conditions'
+            'terms' => 'Terms & Conditions',
+            'my_account' => 'My Account',
+            'logout' => 'Log Out',
+            'follow_us_media' => 'Follow us on social media',
         ],
 
         'validation' => [

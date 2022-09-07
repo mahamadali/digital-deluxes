@@ -9,12 +9,12 @@
 
     <div data-v-3c12640f="" class="cnt-social">
         <div class="ui-landing__footer-inner"><span class="footer-logo__span"><img src="{{ url('assets/frontend/img/logo.png') }}" alt="logo" class="footer-logo"></span></div>
-        <p>Follow us on social media</p>
+        <p>{{ trans('menu.follow_us_media') }}</p>
         <div data-v-3c12640f="">
             <a data-v-3c12640f="" href="javascript:void(0)" class="follow-ic follow-ic__fb"></a>
             <a data-v-3c12640f="" href="javascript:void(0)" class="follow-ic follow-ic__ig"></a>
             <a data-v-3c12640f="" href="javascript:void(0)" class="follow-ic follow-ic__in"></a>
-            <p><a href="{{ route('terms-condition')}}" target="_blank" class="text-white">Terms & Conditions</a></p>
+            <p><a href="{{ route('terms-condition')}}" target="_blank" class="text-white">{{ trans('menu.terms') }}</a></p>
         </div>
     </div>
     </div>

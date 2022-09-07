@@ -13,7 +13,7 @@
                <form method="GET" action="{{ route('frontend.store.list') }}">
                   <div class="search search-input">
                      <select class="search-category-input" name="category">
-                        <option value="">Choose</option>
+                        <option value="">{{ trans('store.choose') }}</option>
                         @foreach(platforms() as $productPlatform):
                            <option value="{{ $productPlatform['platform'] }}" {{ (isset($_GET["category"]) && $_GET["category"] == $productPlatform['platform']) ? 'selected' : '' }}>{{ $productPlatform['platform'] }}</option>
                         @endforeach
@@ -93,14 +93,14 @@
                            <span uk-icon="icon: triangle-down" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
                            <div uk-dropdown="mode: click" class="uk-dropdown uk-dropdown-bottom-right" style="left: -54.9876px; top: 42px;">
                                  <ul class="uk-nav uk-dropdown-nav">
-                                    <li><a href="{{ route('frontend.profile.index') }}">My Account</a></li>
+                                    <li><a href="{{ route('frontend.profile.index') }}">{{ trans('menu.my_account') }}</a></li>
                                     <li class="uk-nav-divider"></li>
-                                    <li><a href="{{ route('frontend.logout') }}">Log Out</a></li>
+                                    <li><a href="{{ route('frontend.logout') }}">{{ trans('menu.logout') }}</a></li>
                                  </ul>
                            </div>
                         </a>
                      @else
-                        <a href="{{ route('frontend.auth.login') }}" class="login-btn" aria-expanded="false">Login</a>
+                        <a href="{{ route('frontend.auth.login') }}" class="login-btn" aria-expanded="false">{{ trans('menu.login') }}</a>
                      @endif
                      
                   </li>

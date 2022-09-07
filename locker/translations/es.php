@@ -14,7 +14,10 @@
             'login' => 'Acceso',
             'support_tickets' => 'Entradas',
             'wallet' => 'Cartera',
-            'terms' => 'Términos y condiciones'
+            'terms' => 'Términos y condiciones',
+            'my_account' => 'Mi cuenta',
+            'logout' => 'Cerrar sesión',
+            'follow_us_media' => 'Síguenos en las redes sociales',
         ],
 
         'validation' => [
