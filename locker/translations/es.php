@@ -71,6 +71,18 @@
             'status' => 'Estado',
             'created_at' => 'Creado en',
             'action' => 'Acción',
+            'order_info'=> 'Información de pedido', 
+            'payment_method'=> 'Método de pago', 
+            'transaction_id'=> 'ID de transacción', 
+            'currency'=> 'Divisa',
+             'order_items'=> 'Encargar artículos',  
+             'id'=> 'IDENTIFICACIÓN', 
+             'name'=> 'Nombre', 
+             'qty'=> 'Cantidad', 
+             'game_serial_keys'=> 'Claves de serie del juego', 
+             'serial'=> 'De serie', 
+             'offer_id'=> 'Identificación de la oferta', 
+             'customer_bill_info'=> 'Información de facturación del cliente', 
         ],
 
          'cart' => [
@@ -97,6 +109,9 @@
             'country' => 'País',
             'select' => 'Seleccione',
             'city' => 'Ciudad',
+            'age' => 'Años',
+            'national_identification_id' => 'Cédula de Identidad Nacional',
+            'cpassword' => 'Confirmar contraseña',
         ],
 
          'login_page' => [

@@ -48,6 +48,18 @@
             'status' => 'Status',
             'created_at' => 'Created At',
             'action' => 'Action',
+            'order_info'=> 'Order Info', 
+            'payment_method'=> 'Payment Method', 
+            'transaction_id'=> 'Transaction ID', 
+            'currency'=> 'Currency', 
+            'order_items'=> 'Order Items', 
+            'id'=> 'ID', 
+            'name'=> 'Name', 
+            'qty'=> 'Qty', 
+            'game_serial_keys'=> 'Game Serial Keys', 
+            'serial'=> 'Serial', 
+            'offer_id'=> 'Offer Id', 
+            'customer_bill_info'=> 'Customer Billing Information', 
         ],
 
          'store' => [
@@ -97,6 +109,9 @@
             'country' => 'Country',
             'select' => 'Select',
             'city' => 'City',
+            'age' => 'Age',
+            'national_identification_id' => 'National Identification ID',
+            'cpassword' => 'Confirm Password',
             
         ],
 

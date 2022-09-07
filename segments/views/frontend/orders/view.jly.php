@@ -39,27 +39,27 @@
             <div class="game-card --horizontal favourites-game">
                 <div class="game-card__box">
                     <div class="game-card__info" style="width: 100%;">
-                        <a class="game-card__title" href="#">Order Info</a>
+                        <a class="game-card__title" href="#">{{ trans('orders.order_info') }}</a>
                          
                         <div class="game-card__bottom">
                             <div class="game-card__rating-and-price">
-                                <div class="order-info-label">Payment Method: <span>{{ $order->payment_method_type }} </span></div>
+                                <div class="order-info-label">{{ trans('orders.payment_method') }}: <span>{{ $order->payment_method_type }} </span></div>
                             </div>
                             <div class="game-card__rating-and-price">
-                                <div class="order-info-label">Transaction ID: <span>{{ $order->transaction_id }} </span></div>
-                            </div>
-                        </div>
-                        <div class="game-card__bottom">
-                            <div class="game-card__rating-and-price">
-                                <div class="order-info-label">Status: <span>{{ $order->status }} </span></div>
-                            </div>
-                            <div class="game-card__rating-and-price">
-                                <div class="order-info-label">Currency: <span>{{ $order->currency }} </span></div>
+                                <div class="order-info-label">{{ trans('orders.transaction_id') }}: <span>{{ $order->transaction_id }} </span></div>
                             </div>
                         </div>
                         <div class="game-card__bottom">
                             <div class="game-card__rating-and-price">
-                                <div class="order-info-label">Total: 
+                                <div class="order-info-label">{{ trans('orders.status') }}: <span>{{ $order->status }} </span></div>
+                            </div>
+                            <div class="game-card__rating-and-price">
+                                <div class="order-info-label">{{ trans('orders.currency') }}: <span>{{ $order->currency }} </span></div>
+                            </div>
+                        </div>
+                        <div class="game-card__bottom">
+                            <div class="game-card__rating-and-price">
+                                <div class="order-info-label">{{ trans('cart.total') }}: 
                                     @if($order->currency == 'COP'):
                                     <span>{{ $order->amount_in_cents/100 }} COP</span>
                                     @else
@@ -68,7 +68,7 @@
                                 </div>
                             </div>
                             <div class="game-card__rating-and-price">
-                                <div class="order-info-label">Created At: <span>{{ date('M d, Y, H:i', strtotime($order->created_at)) }} </span></div>
+                                <div class="order-info-label">{{ trans('orders.created_at') }}: <span>{{ date('M d, Y, H:i', strtotime($order->created_at)) }} </span></div>
                             </div>
                         </div>
                     </div>
@@ -103,16 +103,16 @@
             <div class="game-card --horizontal favourites-game">
                 <div class="game-card__box">
                     <div class="game-card__info" style="width: 100%;">
-                        <a class="game-card__title" href="#"> Order Items</a>
+                        <a class="game-card__title" href="#">{{ trans('orders.order_items') }}</a>
                          
                         <div class="game-card__bottom">
                             <table class="uk-table">
                                 <thead>
                                     <tr>
-                                        <td>ID</td>
-                                        <td>Name</td>
-                                        <td>Price</td>
-                                        <td>Qty</td>
+                                        <td>{{ trans('orders.id') }}</td>
+                                        <td>{{ trans('orders.name') }}</td>
+                                        <td>{{ trans('cart.price') }}</td>
+                                        <td>{{ trans('orders.qty') }}</td>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -134,15 +134,15 @@
             <div class="game-card --horizontal favourites-game">
                 <div class="game-card__box">
                     <div class="game-card__info" style="width: 100%;">
-                        <a class="game-card__title" href="#"> Game Serial Keys</a>
+                        <a class="game-card__title" href="#"> {{ trans('orders.game_serial_keys') }}</a>
                          
                         <div class="game-card__bottom">
                             <table class="uk-table">
                                 <thead>
                                     <tr>
-                                        <td>Name</td>
-                                        <td>Serial</td>
-                                        <td>Offer Id</td>
+                                        <td>{{ trans('orders.name') }}</td>
+                                        <td>{{ trans('orders.serial') }}</td>
+                                        <td>{{ trans('orders.offer_id') }}</td>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -166,15 +166,15 @@
             <div class="game-card --horizontal favourites-game">
                 <div class="game-card__box">
                     <div class="game-card__info" style="width: 100%;">
-                        <a class="game-card__title" href="#"> Customer Billing Information</a>
+                        <a class="game-card__title" href="#"> {{ trans('orders.customer_bill_info') }}</a>
                          
                         <div class="game-card__bottom">
                             <table class="uk-table customer-info-tbl">
                                 <tbody>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Phone Number</th>
+                                        <th>{{ trans('orders.name') }}</th>
+                                        <th>{{ trans('login_page.email') }}</th>
+                                        <th>{{ trans('checkout.phone') }}</th>
                                     </tr>
                                     <tr>
                                         <td>{{ $customer_billing_infos->first_name." ".$customer_billing_infos->last_name }}</td>
@@ -188,8 +188,8 @@
                             <table class="uk-table customer-info-tbl">
                                 <tbody>
                                     <tr style="margin-top: 20px;">
-                                        <th>Address</th>
-                                        <th colspan="2">Additional Note</th>
+                                        <th>{{ trans('checkout.address') }}</th>
+                                        <th colspan="2">{{ trans('checkout.additional_note') }}</th>
                                     </tr>
                                 <tr>
                                     <td>

@@ -55,25 +55,25 @@
                                 @endif
                                 <form method="post" action="{{ route('frontend.profile.update') }}"  enctype="multipart/form-data">
                                 {{ prevent_csrf() }}
-                                <div class="uk-margin"><input type="email" class="uk-input" name="email" placeholder="Email" value="{{ $user->email }}" required></div>
-                                <div class="uk-margin"><input type="text" class="uk-input" name="first_name" placeholder="First Name" value="{{ $user->first_name }}" required></div>
-                                <div class="uk-margin"><input type="text" class="uk-input" name="last_name" placeholder="Last Name" value="{{ $user->last_name }}" required></div>
-                                <div class="uk-margin"><input type="hidden" name="country_code" id="country_code" value="{{ $user->country_code }}"><input type="text" class="uk-input" name="phone" id="phone" placeholder="Phone Number" value="{{ $user->phone }}" required></div>
-                                <div class="uk-margin"><input type="text" class="uk-input" name="age" placeholder="Age" value="{{ $user->age }}" required></div>
-                                <div class="uk-margin"><input type="text" class="uk-input" name="address" placeholder="Address" value="{{ $user->address }}" required></div>
-                                <div class="uk-margin"><input type="text" class="uk-input" name="national_identification_id" placeholder="National Identification ID" value="{{ $user->national_identification_id }}" required></div>
+                                <div class="uk-margin"><input type="email" class="uk-input" name="email" placeholder="{{ trans('checkout.email') }}" value="{{ $user->email }}" required></div>
+                                <div class="uk-margin"><input type="text" class="uk-input" name="first_name" placeholder="{{ trans('checkout.first_name') }}" value="{{ $user->first_name }}" required></div>
+                                <div class="uk-margin"><input type="text" class="uk-input" name="last_name" placeholder="{{ trans('checkout.last_name') }}" value="{{ $user->last_name }}" required></div>
+                                <div class="uk-margin"><input type="hidden" name="country_code" id="country_code" value="{{ $user->country_code }}"><input type="text" class="uk-input" name="phone" id="phone" placeholder="{{ trans('checkout.phone') }}" value="{{ $user->phone }}" required></div>
+                                <div class="uk-margin"><input type="text" class="uk-input" name="age" placeholder="{{ trans('checkout.age') }}" value="{{ $user->age }}" required></div>
+                                <div class="uk-margin"><input type="text" class="uk-input" name="address" placeholder="{{ trans('checkout.address') }}" value="{{ $user->address }}" required></div>
+                                <div class="uk-margin"><input type="text" class="uk-input" name="national_identification_id" placeholder="{{ trans('checkout.national_identification_id') }}" value="{{ $user->national_identification_id }}" required></div>
                                 <div class="uk-margin">
                                     <select class="uk-input" name="country" required>
-                                        <option value="">Select</option>
+                                        <option value="">{{ trans('checkout.select') }}</option>
                                         @foreach($countries as $country):
                                             <option value="{{ $country->id }}" {{ $user->country == $country->id ? 'selected' : '' }}>{{ $country->country_name }}</option>
                                         @endforeach
                                     </select>
                                     
                                 </div>
-                                <div class="uk-margin"><input type="text" class="uk-input" name="city" placeholder="City" value="{{ $user->city }}" required></div>
-                                <div class="uk-margin"><input type="password" class="uk-input" name="password" placeholder="Password"></div>
-                                <div class="uk-margin"><input type="password" class="uk-input" name="confirm_password" placeholder="Confirm Password"></div>
+                                <div class="uk-margin"><input type="text" class="uk-input" name="city" placeholder="{{ trans('checkout.city') }}" value="{{ $user->city }}" required></div>
+                                <div class="uk-margin"><input type="password" class="uk-input" name="password" placeholder="{{ trans('login_page.password') }}"></div>
+                                <div class="uk-margin"><input type="password" class="uk-input" name="confirm_password" placeholder="{{ trans('checkout.cpassword') }}"></div>
                                 <div class="uk-margin">
                                     {{ trans('profile.upload_profile_image') }}: 
                                     <input type="file" class="uk-input-file" name="profile_image">
