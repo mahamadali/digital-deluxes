@@ -14,6 +14,7 @@ use Models\Order;
 use Models\OrderItem;
 use Models\PaymentMethod;
 use Models\ProductKeys;
+use Models\UserPaymentMethod;
 
 class CheckoutController
 {
@@ -40,7 +41,17 @@ class CheckoutController
 		$order_reference = strtoupper(random_strings(12));
         $user = user();
         $countries = Country::get();
-		$payment_methods = PaymentMethod::where('status', 'ACTIVE')->where('type', 'both')->get();
+		$user_active_payments = UserPaymentMethod::where('user_id', auth()->id)->where('status', 1)->pluck('payment_method_id');
+		
+		if(empty($user_active_payments)) {
+			$payment_methods = PaymentMethod::where('status', 'ACTIVE')->where('type', 'both')->get();
+		} else {
+			$user_active_payments = array_map(function($element) {
+				return $element->payment_method_id;
+			},$user_active_payments);
+			$payment_methods = PaymentMethod::where('status', 'ACTIVE')->whereIn('id', $user_active_payments)->where('type', 'both')->get();
+		}
+		
 		return render('frontend/checkout/index', ['countries' => $countries, 'user' => $user, 'payment_methods' =>  $payment_methods, 'total_amount' => $total_amount, 'order_reference' => $order_reference, 'walletEnable' => $walletEnable, 'wallet_in_cop' => $wallet_in_cop]);
 	}
 

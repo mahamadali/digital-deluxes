@@ -31,7 +31,12 @@
             </div>
 
             <div class="col-md-8">
+              @if($setting->key == 'block_email_domains'):
+                <textarea class="form-control" name="setting_values[]">{{ $setting->value }}</textarea>
+              @else
               <input type="text" class="form-control" name="setting_values[]" value="{{ $setting->value }}" >
+              @endif
+              
             </div>
           </div>
           
