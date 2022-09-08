@@ -87,7 +87,7 @@ class PaymentController
 
     public function notify(Request $request)
 	{
-        //$raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1662466272-10847","created_at":"2022-09-06T12:11:12.583Z","finalized_at":"2022-09-06T12:11:13.094Z","amount_in_cents":5245944,"reference":"GOJYI1QIHF3Z","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"BANCOLOMBIA_TRANSFER","payment_method":{"type":"BANCOLOMBIA_TRANSFER","extra":{"async_payment_url":"https://sandbox.wompi.co/v1/payment_methods/redirect/bancolombia_transfer?transferCode=HZFlOPlZCJjDmZ43-approved","external_identifier":"HZFlOPlZCJjDmZ43-approved"},"user_type":"PERSON","sandbox_status":"APPROVED","payment_description":"Pago a digitaldeluxes, ref: GOJYI1QIHF3Z"},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"https://127.0.0.1/digital-deluxes/payment/check","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"2423423","full_name":"Akbar Husen","phone_number":"+573534543535","legal_id_type":"CC"},"billing_data":null}},"sent_at":"2022-09-06T12:11:13.172Z","timestamp":1662466273,"signature":{"checksum":"a575da2a7ff2a701b18953a539529ecaaa4271daf48c22ca72d7bcd151aa6cdc","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
+        //$raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1662623141-89231","created_at":"2022-09-08T07:45:41.327Z","finalized_at":"2022-09-08T07:45:41.632Z","amount_in_cents":24082487,"reference":"782XDV0WBWGE","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"BANCOLOMBIA_TRANSFER","payment_method":{"type":"BANCOLOMBIA_TRANSFER","extra":{"async_payment_url":"https://sandbox.wompi.co/v1/payment_methods/redirect/bancolombia_transfer?transferCode=O9q2lMmgHw9Z2Ip0-approved","external_identifier":"O9q2lMmgHw9Z2Ip0-approved"},"user_type":"PERSON","sandbox_status":"APPROVED","payment_description":"Pago a digitaldeluxes, ref: 782XDV0WBWGE"},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"https://127.0.0.1/digital-deluxes/payment/check","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"24234","full_name":"Akbar Husen","phone_number":"+57523423","legal_id_type":"CC"},"billing_data":null}},"sent_at":"2022-09-08T07:45:41.675Z","timestamp":1662623141,"signature":{"checksum":"9b6693e3b40eb58a345d358024b0fad49a5f62944cbe3cddd02dde08aba14394","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
         $raw_post_data = file_get_contents('php://input'); 
         file_put_contents('ipn.txt', $raw_post_data);
 
@@ -104,6 +104,8 @@ class PaymentController
             $transaction = $data->data->transaction;
             
             $cartItems = cartItems($user->id);
+            $cartTotal = cartTotalOriginal($user->id);
+		    $total_amount = currencyConverter('EUR', "COP", $cartTotal);
             
             $manualOrderItems = [];
             $manualOrderTotalPrice = 0;
@@ -112,11 +114,11 @@ class PaymentController
             foreach($cartItems as $item) {
                 if($item->product()->product_type == 'M') {
                     $manualOrderItems[] = $item;
-                    $manualOrderTotalPrice += remove_format($item->product()->price);
+                    $manualOrderTotalPrice += currencyConverter('EUR', 'COP', $item->product()->price_original);
                 }
                 if($item->product()->product_type == 'K') {
                     $kinguinOrderItems[] = $item;
-                    $kinguinOrderTotalPrice += remove_format($item->product()->price);
+                    $kinguinOrderTotalPrice += currencyConverter('EUR', 'COP', $item->product()->price_original);
                 }
             }
             
@@ -130,8 +132,8 @@ class PaymentController
                 $mannual_order->status = $result->status;
                 $mannual_order->status_message = $result->status_message;
                 $mannual_order->currency = $result->currency;
-                $mannual_order->amount_in_cents = $result->amount_in_cents;
-                $mannual_order->order_amount = $kinguinOrderTotalPrice;
+                $mannual_order->amount_in_cents = $manualOrderTotalPrice * 100;
+                $mannual_order->order_amount = $manualOrderTotalPrice;
                 $mannual_order->user_id = $user->id;
                 $mannual_order->order_type = 'M';
                 $mannual_order = $mannual_order->save();
@@ -140,8 +142,8 @@ class PaymentController
                     $mannual_order_item->order_id = $mannual_order->id;
                     $mannual_order_item->product_id = $manualOrderItems->product_id;
                     $mannual_order_item->product_name = $manualOrderItems->product_name;
-                    $mannual_order_item->product_price = $manualOrderItems->product_price;
-                    $mannual_order_item->product_price_profit = getProfitCommission(remove_format($manualOrderItems->product()->price), $result->currency);
+                    $mannual_order_item->product_price = currencyConverter('EUR', 'COP', $manualOrderItems->product_price);
+                    $mannual_order_item->product_price_profit = getProfitCommission(remove_format($manualOrderItems->product()->price_original));
                     $mannual_order_item->product_qty = $manualOrderItems->product_qty;
                     $mannual_order_item->save();
 
@@ -167,21 +169,7 @@ class PaymentController
             }
             
 
-            $paymentMethod = PaymentMethod::where('title', 'Wompi')->first();
             
-            $transaction = new TransactionLog();
-            $transaction->user_id = $user->id;
-            $transaction->tx_id = $result->id;
-            $transaction->currency = $result->currency;
-            $transaction->type = 'order';
-            $transaction->amount = cartTotal($user->id);
-            $transaction->status = 'COMPLETED';
-            $transaction->payment_method = $paymentMethod->title;
-            $transaction->payment_method_id = $paymentMethod->id;
-            $transaction->kind_of_tx = 'DEBIT';
-            $transaction = $transaction->save();
-
-            Cart::where('user_id',$user->id)->delete();
 
             if(!empty($kinguinOrderItems)) {
                 $result = $transaction;
@@ -193,7 +181,7 @@ class PaymentController
                 $order->status = $result->status;
                 $order->status_message = $result->status_message;
                 $order->currency = $result->currency;
-                $order->amount_in_cents = $result->amount_in_cents;
+                $order->amount_in_cents = $kinguinOrderTotalPrice * 100;
                 $order->order_amount = $kinguinOrderTotalPrice;
                 $order->user_id = $user->id;
                 $order->order_type = 'K';
@@ -204,7 +192,7 @@ class PaymentController
                     $orderItem->product_id = $kinguinOrderItem->product_id;
                     $orderItem->product_name = $kinguinOrderItem->product_name;
                     $orderItem->product_price = $kinguinOrderItem->product_price;
-                    $orderItem->product_price_profit = getProfitCommission(remove_format($kinguinOrderItem->product()->price), $result->currency);
+                    $orderItem->product_price_profit = getProfitCommission(remove_format($kinguinOrderItem->product()->price_original));
                     $orderItem->product_qty = $kinguinOrderItem->product_qty;
                     $orderItem->save();
                 }
@@ -252,20 +240,34 @@ class PaymentController
                 $headers[] = 'Content-Type: application/json';
                 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-                $result = curl_exec($ch);
+                $order_result = curl_exec($ch);
                 if (curl_errno($ch)) {
                     echo 'Error:' . curl_error($ch);
                 }
                 curl_close($ch);
-                file_put_contents('create-order.txt', $result);
+                file_put_contents('create-order.txt', $order_result);
 
-                $orderData = json_decode($result);
+                $orderData = json_decode($order_result);
                 
-                $order->kg_orderid = $orderData->orderId;
+                $order->kg_orderid = $orderData->orderId ?? '';
                 $order->save();
             }
-                
-            // Order placed on kinguin
+
+            $paymentMethod = PaymentMethod::where('title', 'Wompi')->first();
+            
+            $transaction = new TransactionLog();
+            $transaction->user_id = $user->id;
+            $transaction->tx_id = $result->id;
+            $transaction->currency = $result->currency;
+            $transaction->type = 'order';
+            $transaction->amount = $total_amount;
+            $transaction->status = 'COMPLETED';
+            $transaction->payment_method = $paymentMethod->title;
+            $transaction->payment_method_id = $paymentMethod->id;
+            $transaction->kind_of_tx = 'DEBIT';
+            $transaction = $transaction->save();
+            Cart::where('user_id',$user->id)->delete();   
+            // Order placed
             die(204);
         }
     }
@@ -559,6 +561,9 @@ class PaymentController
         $user = user();
         $cartItems = cartItems($user->id);
         
+        $cartTotal = cartTotalOriginal($user->id);
+		$total_amount = currencyConverter('EUR', "COP", $cartTotal);
+        
         $manualOrderItems = [];
         $manualOrderTotalPrice = 0;
         $kinguinOrderItems = [];
@@ -566,14 +571,13 @@ class PaymentController
         foreach($cartItems as $item) {
             if($item->product()->product_type == 'M') {
                 $manualOrderItems[] = $item;
-                $manualOrderTotalPrice += remove_format($item->product()->price);
+                $manualOrderTotalPrice += currencyConverter('EUR', 'COP', $item->product()->price_original);
             }
             if($item->product()->product_type == 'K') {
                 $kinguinOrderItems[] = $item;
-                $kinguinOrderTotalPrice += remove_format($item->product()->price);
+                $kinguinOrderTotalPrice += currencyConverter('EUR', 'COP', $item->product()->price_original);
             }
         }
-
         
         
         if(!empty($manualOrderItems)) {
@@ -585,8 +589,8 @@ class PaymentController
             $mannual_order->status = 'APPROVED';
             $mannual_order->status_message = NULL;
             $mannual_order->currency = $paymentMethod->currency;
-            $mannual_order->amount_in_cents = $request->amount * 100;
-            $mannual_order->order_amount = cartTotal();
+            $mannual_order->amount_in_cents = $manualOrderTotalPrice * 100;
+            $mannual_order->order_amount = $manualOrderTotalPrice;
             $mannual_order->user_id = auth()->id;
             $mannual_order->order_type = 'M';
             $mannual_order = $mannual_order->save();
@@ -595,8 +599,8 @@ class PaymentController
                 $mannual_order_item->order_id = $mannual_order->id;
                 $mannual_order_item->product_id = $manualOrderItems->product_id;
                 $mannual_order_item->product_name = $manualOrderItems->product_name;
-                $mannual_order_item->product_price = $manualOrderItems->product_price;
-                $mannual_order_item->product_price_profit = getProfitCommission(remove_format($manualOrderItems->product()->price), $paymentMethod->currency);
+                $mannual_order_item->product_price = currencyConverter('EUR', 'COP', $manualOrderItems->product_price);;
+                $mannual_order_item->product_price_profit = getProfitCommission(remove_format($manualOrderItems->product()->price_original));
                 $mannual_order_item->product_qty = $manualOrderItems->product_qty;
                 $mannual_order_item->save();
 
@@ -635,8 +639,8 @@ class PaymentController
             $order->status = 'APPROVED';
             $order->status_message = NULL;
             $order->currency = $paymentMethod->currency;
-            $order->amount_in_cents = $request->amount * 100;
-            $order->order_amount = cartTotal();
+            $order->amount_in_cents = $kinguinOrderTotalPrice * 100;
+            $order->order_amount = $kinguinOrderTotalPrice;
             $order->user_id = auth()->id;
             $order->order_type = 'K';
             $order = $order->save();
@@ -645,8 +649,8 @@ class PaymentController
                 $orderItem->order_id = $order->id;
                 $orderItem->product_id = $kinguinOrderItem->product_id;
                 $orderItem->product_name = $kinguinOrderItem->product_name;
-                $orderItem->product_price = $kinguinOrderItem->product_price;
-                $orderItem->product_price_profit = getProfitCommission(remove_format($kinguinOrderItem->product()->price), $paymentMethod->currency);
+                $orderItem->product_price = currencyConverter('EUR', 'COP', $kinguinOrderItem->product_price);
+                $orderItem->product_price_profit = getProfitCommission(remove_format($kinguinOrderItem->product()->price_original));
                 $orderItem->product_qty = $kinguinOrderItem->product_qty;
                 $orderItem->save();
             }
@@ -706,6 +710,19 @@ class PaymentController
             $order->kg_orderid = $orderData->orderId;
             $order->save();
         }
+
+            
+        $transaction = new TransactionLog();
+        $transaction->user_id = $user->id;
+        $transaction->tx_id = $paymentId;
+        $transaction->currency = $paymentMethod->currency;
+        $transaction->type = 'order';
+        $transaction->amount = $total_amount;
+        $transaction->status = 'COMPLETED';
+        $transaction->payment_method = $paymentMethod->title;
+        $transaction->payment_method_id = $paymentMethod->id;
+        $transaction->kind_of_tx = 'DEBIT';
+        $transaction = $transaction->save();
 
         Cart::where('user_id',$user->id)->delete();
 

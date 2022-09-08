@@ -137,7 +137,7 @@ class ProductController
 		$product_screenshots = ProductScreenshot::where('product_id',$product->id)->get();
 		$product_videos = ProductVideo::where('product_id',$product->id)->get();
 		$product_system_requirements = ProductSystemRequirement::where('product_id',$product->id)->get();
-		$product_keys = ProductKeys::where('product_id',$product->id)->get();
+		$product_keys = ProductKeys::where('product_id',$product->id)->where('is_used', 0)->get();
 		
 		return render('backend/products/edit', [
 			'product' => $product,
@@ -192,7 +192,7 @@ class ProductController
 		ProductScreenshot::where('product_id',$product->id)->delete();
 		ProductVideo::where('product_id',$product->id)->delete();
 		ProductSystemRequirement::where('product_id',$product->id)->delete();
-		ProductKeys::where('product_id',$product->id)->delete();
+		ProductKeys::where('product_id',$product->id)->where('is_used', 0)->delete();
 
 		if(count($request->screenshot_url) != 0){
 			foreach($request->screenshot_url as $key => $screenshot){

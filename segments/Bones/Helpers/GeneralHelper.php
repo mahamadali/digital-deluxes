@@ -4,6 +4,7 @@ use Bones\Str;
 use Google\Service\AdExchangeBuyerII\Price;
 use Models\User;
 use Models\Cart;
+use Models\CurrencyRate;
 use Models\PriceProfit;
 use Models\Product;
 use Models\Setting;
@@ -167,6 +168,24 @@ if (! function_exists('cartTotal')) {
     }
 }
 
+if (! function_exists('cartTotalOriginal')) {
+    function cartTotalOriginal($userId = '')
+    {
+        if(empty(auth()->id)) {
+            return 0;
+        }
+        if(empty($userId)) {
+            $userId = auth()->id;
+        }
+        $cart_details  = Cart::where('user_id', $userId)->orderBy('id')->get();
+        $total = 0;
+        foreach($cart_details as $cart) {
+            $total += remove_format($cart->product()->price_original) * $cart->product_qty;
+        }
+        return $total;
+    }
+}
+
 if (! function_exists('random_strings')) {
     function random_strings($length_of_string)
     {
@@ -223,39 +242,64 @@ if (! function_exists('getProduct')) {
 
 function currencyConverter($from_Currency,$to_Currency,$amount, $exchange_rate = true) {
     
-    if(session()->has('currency_'.$from_Currency.'_'.$to_Currency) && !empty(session()->get('currency_'.$from_Currency.'_'.$to_Currency))) {
-        $currency_expire_time = session()->get('currency_expire_time');
-        $now = strtotime(date('Y-m-d H:i:s'));
-        $min_diff = round(abs($now - $currency_expire_time) / 60,2);
+    // if(session()->has('currency_'.$from_Currency.'_'.$to_Currency) && !empty(session()->get('currency_'.$from_Currency.'_'.$to_Currency))) {
+    //     $currency_expire_time = session()->get('currency_expire_time');
+    //     $now = strtotime(date('Y-m-d H:i:s'));
+    //     $min_diff = round(abs($now - $currency_expire_time) / 60,2);
         
-        if($min_diff > 60) {
-            $base_price = callCurrencyApi($from_Currency, $to_Currency , 1, $exchange_rate);
-            session()->set('currency_'.$from_Currency.'_'.$to_Currency, $base_price);
-            session()->set('currency_expire_time', $now);
-            $value = $base_price * $amount;
-        } else {
-            $base_price = session()->get('currency_'.$from_Currency.'_'.$to_Currency);
-            $value = $amount * (float) $base_price;
-        }
-    } else {
+    //     if($min_diff > 60) {
+    //         $base_price = callCurrencyApi($from_Currency, $to_Currency , 1, $exchange_rate);
+    //         saveCurrencyrate($from_Currency, $to_Currency, $base_price);
+    //         session()->set('currency_expire_time', $now);
+    //         $value = $base_price * $amount;
+    //     } else {
+    //         $base_price = getCurrencyrate($from_Currency, $to_Currency);
+    //         $value = $amount * (float) $base_price;
+    //     }
+    // } else {
         
-        $currency_expire_time = strtotime(date('Y-m-d H:i:s'));
-        $base_price = callCurrencyApi($from_Currency, $to_Currency, 1, $exchange_rate);
+    //     $currency_expire_time = strtotime(date('Y-m-d H:i:s'));
+    //     $base_price = callCurrencyApi($from_Currency, $to_Currency, 1, $exchange_rate);
+
+    //     saveCurrencyrate($from_Currency, $to_Currency, $base_price);
         
-        session()->set('currency_'.$from_Currency.'_'.$to_Currency, $base_price);
-        session()->set('currency_expire_time', $currency_expire_time);
-        $value = $amount * (float) $base_price;
-    }
+    //     $value = $amount * (float) $base_price;
+    // }
+
+    $base_price = getCurrencyrate($from_Currency, $to_Currency);
+    $value = $amount * (float) $base_price;
 
     return $value;        
 }
 
+function saveCurrencyrate($from_Currency, $to_Currency, $base_price) {
+    $currencyRate = CurrencyRate::where('`from`', $from_Currency)->where('`to`', $to_Currency)->first();
+    if(empty($currencyRate)) {
+        $currencyRate = new CurrencyRate();
+    }
+    $currencyRate->from = $from_Currency;
+    $currencyRate->to = $to_Currency;
+    $currencyRate->rate = $base_price;
+    $currencyRate = $currencyRate->save();
+    return $currencyRate;
+}
+
+function getCurrencyrate($from, $to) {
+    $currencyRate = CurrencyRate::where('`from`', $from)->where('`to`', $to)->first();
+    if(empty($currencyRate)) {
+        $base_price = callCurrencyApi($from, $to, 1);
+        $currencyRate = saveCurrencyrate($from, $to, $base_price);
+    }
+    return $currencyRate->rate;
+}
+
 function callCurrencyApi($from_Currency,$to_Currency,$amount, $exchange_rate = true) {
     // return $amount;
+    
     if($from_Currency == $to_Currency) {
         return $amount;
     }
-    $apikey = 'c31293d496c3c4ccaa092f72';
+    $apikey = '833df5053ec167b5379e197e';
     $req_url = 'https://v6.exchangerate-api.com/v6/'.$apikey.'/latest/'.$from_Currency;
     $response_json = file_get_contents($req_url);
     

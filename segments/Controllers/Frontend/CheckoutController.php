@@ -21,18 +21,16 @@ class CheckoutController
 
 	public function index(Request $request)
 	{
-		$cartTotal = cartTotal();
+		$cartTotal = cartTotalOriginal();
+		
 		if(empty($cartTotal)) {
 			return redirect(route('frontend.store.list'))->withFlashError('No items in cart')->go();
 		}
-		if(strtoupper(session()->getCurrency()) != "COP") {
-			$total_amount = currencyConverter(strtoupper(session()->getCurrency()), "COP", $cartTotal);
-		} else {
-			$total_amount = $cartTotal;
-		}
-
+		
+		$total_amount = currencyConverter('EUR', "COP", $cartTotal);
+		
 		$wallet_in_cop = currencyConverter('EUR', 'COP', user()->wallet_amount);
-		if($wallet_in_cop > $cartTotal) {
+		if($wallet_in_cop > $total_amount) {
 			$walletEnable = true;
 		} else {
 			$walletEnable = false;
@@ -57,6 +55,9 @@ class CheckoutController
 
 	public function createOrder(Request $request) {
 
+		$cartTotal = cartTotalOriginal();
+		$total_amount = currencyConverter('EUR', "COP", $cartTotal);
+
 		CustomerBillingInfo::where('user_id', auth()->id)->where('order_reference', $request->order_reference)->delete();
 		$customerBillingInfo = new CustomerBillingInfo();
 		$customerBillingInfo->user_id = auth()->id;
@@ -73,13 +74,7 @@ class CheckoutController
 
 		$paymentMethod = PaymentMethod::find($request->payment_method);
 		if(!empty($paymentMethod) && $paymentMethod->title == 'Mercado Pago') {
-
-			if(strtoupper(session()->getCurrency()) != "COP") {
-				$total_amount = currencyConverter(strtoupper(session()->getCurrency()), "COP", cartTotal());
-			} else {
-				$total_amount = cartTotal();
-			}
-			// dd($total_amount);
+			
 			
 			\MercadoPago\SDK::setAccessToken(setting('mercadopago.access_token'));
 			$preference = new \MercadoPago\Preference();
@@ -122,7 +117,7 @@ class CheckoutController
 			
 			$cartItems = cartItems($user->id);
 
-			$total_amount = cartTotal();
+			
 			$wallet_in_cop = currencyConverter('EUR', 'COP', $user->wallet_amount);
 			if($wallet_in_cop < $total_amount) {
 				return response()->json(['status' => 304, 'message' => 'Insufficient funds in wallet!']);
@@ -137,11 +132,11 @@ class CheckoutController
 			foreach($cartItems as $item) {
 				if($item->product()->product_type == 'M') {
 					$manualOrderItems[] = $item;
-					$manualOrderTotalPrice += remove_format($item->product()->price);
+					$manualOrderTotalPrice += currencyConverter('EUR', 'COP', $item->product()->price_original);
 				}
 				if($item->product()->product_type == 'K') {
 					$kinguinOrderItems[] = $item;
-					$kinguinOrderTotalPrice += remove_format($item->product()->price);
+					$kinguinOrderTotalPrice += currencyConverter('EUR', 'COP', $item->product()->price_original);
 				}
 			}
 
@@ -156,8 +151,8 @@ class CheckoutController
 				$mannual_order->status = 'APPROVED';
 				$mannual_order->status_message = NULL;
 				$mannual_order->currency = 'COP';
-				$mannual_order->amount_in_cents = $total_amount * 100;
-				$mannual_order->order_amount = $total_amount;
+				$mannual_order->amount_in_cents = $manualOrderTotalPrice * 100;
+				$mannual_order->order_amount = $manualOrderTotalPrice;
 				$mannual_order->user_id = auth()->id;
 				$mannual_order->order_type = 'M';
 				$mannual_order = $mannual_order->save();
@@ -166,8 +161,8 @@ class CheckoutController
 					$mannual_order_item->order_id = $mannual_order->id;
 					$mannual_order_item->product_id = $manualOrderItems->product_id;
 					$mannual_order_item->product_name = $manualOrderItems->product_name;
-					$mannual_order_item->product_price = $manualOrderItems->product_price;
-					$mannual_order_item->product_price_profit = getProfitCommission(remove_format($manualOrderItems->product()->price), 'COP');
+					$mannual_order_item->product_price = currencyConverter('EUR', 'COP', $manualOrderItems->product_price);
+					$mannual_order_item->product_price_profit = getProfitCommission(remove_format($manualOrderItems->product()->price_original));
 					$mannual_order_item->product_qty = $manualOrderItems->product_qty;
 					$mannual_order_item->save();
 
@@ -206,8 +201,8 @@ class CheckoutController
 				$order->status = 'APPROVED';
 				$order->status_message = NULL;
 				$order->currency = 'COP';
-				$order->amount_in_cents = $total_amount * 100;
-				$order->order_amount = $total_amount;
+				$order->amount_in_cents = $kinguinOrderTotalPrice * 100;
+				$order->order_amount = $kinguinOrderTotalPrice;
 				$order->user_id = auth()->id;
 				$order->order_type = 'K';
 				$order = $order->save();
@@ -216,8 +211,8 @@ class CheckoutController
 					$orderItem->order_id = $order->id;
 					$orderItem->product_id = $kinguinOrderItem->product_id;
 					$orderItem->product_name = $kinguinOrderItem->product_name;
-					$orderItem->product_price = $kinguinOrderItem->product_price;
-					$orderItem->product_price_profit = getProfitCommission(remove_format($kinguinOrderItem->product()->price), 'COP');
+					$orderItem->product_price = currencyConverter('EUR', 'COP', $kinguinOrderItem->product_price);
+					$orderItem->product_price_profit = getProfitCommission(remove_format($kinguinOrderItem->product()->price_original));
 					$orderItem->product_qty = $kinguinOrderItem->product_qty;
 					$orderItem->save();
 				}

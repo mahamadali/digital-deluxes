@@ -14,7 +14,7 @@ class Product extends Model
     protected $table = 'products';
 	protected $attach = ['price', 'price_original'];
 
-	public $price_original = 0;
+	public $price_original_value = 0;
 
     public function offers(){
 		return $this->hasMany(ProductOffer::class, 'product_id')->get();
@@ -46,12 +46,13 @@ class Product extends Model
 	}
 
 	public function getPriceOriginalProperty() {
-		return $this->price_original;
+		$profitPrice = getProfitPrice($this->price_original_value);
+		return $profitPrice;
 	}
 	
 	public function getPriceProperty() {
 		$price = $this->price;
-		$this->price_original = $price;
+		$this->price_original_value = $price;
 		
 		if(!session()->has('base_price') && empty(session()->get('base_price'))) {
 			session()->setCurrency('cop');
@@ -59,9 +60,9 @@ class Product extends Model
 			session()->set('base_price', $base_price);
 		}
 		
-		$currenctCurrencyPrice = (float) session()->get('base_price') * $price;
+		$currenctCurrencyPrice = (float) session()->get('base_price') * getProfitPrice($price);
 		
-		$profitPrice = getProfitPrice($currenctCurrencyPrice);
+		$profitPrice = $currenctCurrencyPrice;
 		return $profitPrice;
 	}
 

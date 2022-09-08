@@ -23,13 +23,13 @@ class CartController
 		$is_cart_exist = Cart::where('product_id',$product_id)->where('user_id',auth()->id)->first();
 
 		$product = Product::where('id',$product_id)->first();
-
+		
 		if(empty($is_cart_exist)){
 			$cart = new Cart();
 			$cart->user_id = auth()->id;
 			$cart->product_id = $product_id;
 			$cart->product_name = $product->name;
-			$cart->product_price = remove_format($product->price);
+			$cart->product_price = remove_format($product->price_original);
 			$cart->product_qty = 1;
 			$checkItemAvailableInstore = getProduct($product->kinguinId);
 			$kinguinproduct = json_decode($checkItemAvailableInstore);

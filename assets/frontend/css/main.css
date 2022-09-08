@@ -6188,6 +6188,12 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
             display: none;
         }
     }
+
+    @media only screen and (min-width: 992px) {
+        .widjet-game__media img {
+            width: 175px;
+        }
+    }
   
 
     .decore-lt {

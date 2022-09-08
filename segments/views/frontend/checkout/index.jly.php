@@ -132,13 +132,13 @@
                 <div class="custom__body">
                  <div class="col-custom-row-12">
                     <div class="col-custom-12">
-                    {{ trans('cart.subtotal') }}  <b class="custom-right subtotal_count"></b><b class="custom-right">{{ currencySymbol() }}</b>
+                    {{ trans('cart.subtotal') }}  <small class="custom-right" style="margin-left: 5px;">COP</small><b class="custom-right">{{ round($total_amount, 2,) }}</b>
                     </div>
                  </div>
 
                  <div class="col-custom-row-12">
                     <div class="col-custom-12">
-                    {{ trans('cart.total') }}  <b class="custom-right total_count"></b><b class="custom-right">{{ currencySymbol() }}</b>
+                    {{ trans('cart.total') }}  <small class="custom-right" style="margin-left: 5px;">COP</small><b class="custom-right">{{ round($total_amount, 2) }}</b>
                     </div>
                  </div>
                 </div>
@@ -151,7 +151,7 @@
                 @if($walletEnable):
                 <div class="col-custom-row-12">
                     <div class="col-custom-12">
-                    <label><input type="radio" name="payment_method" data-value="Wallet" value="Wallet" required> {{ trans('menu.wallet') }} <small>{{ $wallet_in_cop }} COP</small></label>
+                    <label><input type="radio" name="payment_method" data-value="Wallet" value="Wallet" required> {{ trans('menu.wallet') }} <small>{{ round($wallet_in_cop, 2) }} COP</small></label>
                     </div>
                  </div>
                  @endif

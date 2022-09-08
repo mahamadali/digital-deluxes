@@ -38,7 +38,7 @@
                         <td>{{ $order->user->fullName }} #{{ $order->user->id }}</td>
                         <td>{{ $order->kg_orderid }}</td>
                         <td>{{ $order->transaction_id }}</td>
-                        <td>${{ $order->order_total() }}</td>
+                        <td>${{ number_format($order->order_amount, 2) }}</td>
                         <td>{{ $order->status }}</td>
                         <td>{{ $order->order_type }}</td>
                         <td>{{ date('M d, Y, H:i', strtotime($order->created_at)) }}</td>
