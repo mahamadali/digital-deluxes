@@ -67,6 +67,10 @@ class Product extends Model
 		if(session()->getCurrency() == 'cop') {
 			$profitPrice = (int) $profitPrice;
 		}
+
+		if(session()->getCurrency() == 'usd' || session()->getCurrency() == 'eur') {
+			$profitPrice = round($profitPrice, 2);
+		}
 		return $profitPrice;
 	}
 
