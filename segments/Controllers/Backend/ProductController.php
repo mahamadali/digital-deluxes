@@ -4,6 +4,7 @@ namespace Controllers\Backend;
 
 use Bones\Request;
 use Models\Product;
+use Models\HomeSliderProduct;
 use Models\ProductScreenshot;
 use Models\ProductVideo;
 use Models\ProductSystemRequirement;
@@ -20,7 +21,7 @@ class ProductController
 		} else {
 			$products = Product::orderBy('id')->paginate(10);
 		}
-        
+
 		return render('backend/products/index', [
 			'products' => $products
 		]);
@@ -116,7 +117,7 @@ class ProductController
 
 
 
-    public function view(Request $request, Product $product) {
+	public function view(Request $request, Product $product) {
 		
 		return render('backend/products/view', [
 			'product' => $product
@@ -133,7 +134,7 @@ class ProductController
 
 
 
-		 
+
 		$product_screenshots = ProductScreenshot::where('product_id',$product->id)->get();
 		$product_videos = ProductVideo::where('product_id',$product->id)->get();
 		$product_system_requirements = ProductSystemRequirement::where('product_id',$product->id)->get();
@@ -237,5 +238,29 @@ class ProductController
 		}
 
 		return redirect()->withFlashSuccess('Product updated successfully!')->with('old', $request->all())->back();
+	}
+
+	public function updatesliderstatus(Request $request, Product $product , $status) {
+		
+		if(!empty($status) && $status == 1)
+		{
+			$homeSlider = HomeSliderProduct::where('product_id',$product->id)->delete();
+			if (!empty($product)) {
+				return redirect(route('admin.products.index'))->withFlashSuccess('Product remove from home slider successfully!')->go();
+			} else {
+				return redirect()->withFlashError('Something went wrong!')->back();
+			}
+		}
+		else
+		{
+			$homeSliderData['product_id'] = $product->id ??  null;
+			$homeSlider = HomeSliderProduct::create($homeSliderData);
+			if (!empty($product)) {
+				return redirect(route('admin.products.index'))->withFlashSuccess('Product Added to home slider successfully!')->go();
+			} else {
+				return redirect()->withFlashError('Something went wrong!')->back();
+			}
+		}
+
 	}
 }

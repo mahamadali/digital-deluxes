@@ -47,6 +47,13 @@
                         <td>€{{ $product->price }}</td>
                         <td>{{ $product->qty }}</td>
                         <td>
+
+                          @if(!empty($product->home_slider()->first())):
+                           <a href="{{ route('admin.products.update_slider_status', ['product' => $product->id , 'status' => 1]) }}" class="btn btn-sm btn-danger">Remove to home slider</a> 
+                          @else
+                          <a href="{{ route('admin.products.update_slider_status', ['product' => $product->id ,  'status' => 0]) }}" class="btn btn-sm btn-success">Add to home slider</a>
+                          @endif 
+
                           @if($product->product_type == 'M'):
                             <a href="{{ route('admin.products.edit', ['product' => $product->id]) }}" class="btn btn-sm btn-success">Edit</a>
                           @endif  
