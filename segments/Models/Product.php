@@ -63,6 +63,10 @@ class Product extends Model
 		$currenctCurrencyPrice = (float) session()->get('base_price') * getProfitPrice($price);
 		
 		$profitPrice = $currenctCurrencyPrice;
+		
+		if(session()->getCurrency() == 'cop') {
+			$profitPrice = (int) $profitPrice;
+		}
 		return $profitPrice;
 	}
 

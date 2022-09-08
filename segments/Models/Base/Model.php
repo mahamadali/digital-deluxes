@@ -604,7 +604,7 @@ class Model extends Database
         if (method_exists($this->model, $attributeMehod)) {
             return $this->$attributeMehod();
         }
-
+        return null;
         throw new BadMethodException('Property {'.Str::camelize($attribute).'} not found in '.$this->model);
     }
 
