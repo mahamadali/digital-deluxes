@@ -15,6 +15,7 @@ use Models\OrderItem;
 use Models\PaymentMethod;
 use Models\ProductKeys;
 use Models\UserPaymentMethod;
+use Omnipay\Omnipay;
 
 class CheckoutController
 {
@@ -55,9 +56,6 @@ class CheckoutController
 
 	public function createOrder(Request $request) {
 
-		$cartTotal = cartTotalOriginal();
-		$total_amount = currencyConverter('EUR', "COP", $cartTotal);
-
 		CustomerBillingInfo::where('user_id', auth()->id)->where('order_reference', $request->order_reference)->delete();
 		$customerBillingInfo = new CustomerBillingInfo();
 		$customerBillingInfo->user_id = auth()->id;
@@ -75,6 +73,8 @@ class CheckoutController
 		$paymentMethod = PaymentMethod::find($request->payment_method);
 		if(!empty($paymentMethod) && $paymentMethod->title == 'Mercado Pago') {
 			
+			$cartTotal = cartTotalOriginal();
+			$total_amount = currencyConverter('EUR', "COP", $cartTotal);
 			
 			\MercadoPago\SDK::setAccessToken(setting('mercadopago.access_token'));
 			$preference = new \MercadoPago\Preference();
@@ -113,6 +113,10 @@ class CheckoutController
 		}
 
 		if($request->payment_method == 'Wallet') {
+
+			$cartTotal = cartTotalOriginal();
+			$total_amount = currencyConverter('EUR', "COP", $cartTotal);
+
 			$user = user();
 			
 			$cartItems = cartItems($user->id);
@@ -281,6 +285,38 @@ class CheckoutController
 			return response()->json(['status' => 200, 'message' => 'Order placed successfully!', 'redirectUrl' => route('frontend.orders.index')]);
 
 
+		}
+
+		if(!empty($paymentMethod) && $paymentMethod->title == 'Paypal') {
+
+			$cartTotal = cartTotalOriginal();
+			$total_amount = currencyConverter('EUR', $paymentMethod->currency, $cartTotal);
+			
+			$gateway = Omnipay::create('PayPal_Rest');
+			$gateway->setClientId(setting('paypal.CLIENT_ID'));
+			$gateway->setSecret(setting('paypal.CLIENT_SECRET'));
+			$gateway->setTestMode(setting('paypal.sandbox')); //set it to 'false' when go live
+			try {
+				$response = $gateway->purchase(array(
+					'amount' => round($total_amount, 2),
+					'description' => 'Order for Digital Deluxes',
+					'currency' => setting('paypal.PAYPAL_CURRENCY'),
+					'returnUrl' => route('frontend.payment.paypal-order.success', ['payment_method' => $paymentMethod->id, 'order_reference' => $request->order_reference]),
+					'cancelUrl' => route('frontend.payment.paypal-order.cancel', ['payment_method' => $paymentMethod->id]),
+				))->send();
+		 
+				if ($response->isRedirect()) {
+					$redirectUrl = $response->getData()['links'][1]['href'];
+					return response()->json(['status' => 200, 'redirectUrl' => $redirectUrl]);
+					// $response->redirect(); // this will automatically forward the customer
+				} else {
+					// not successful
+					echo $response->getMessage();
+				}
+			} catch(Exception $e) {
+				echo $e->getMessage();
+				exit;
+			}
 		}
 
 		

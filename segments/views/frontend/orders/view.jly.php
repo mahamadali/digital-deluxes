@@ -61,9 +61,9 @@
                             <div class="game-card__rating-and-price">
                                 <div class="order-info-label">{{ trans('cart.total') }}: 
                                     @if($order->currency == 'COP'):
-                                    <span>{{ $order->amount_in_cents/100 }} COP</span>
+                                    <span>{{ number_format($order->amount_in_cents/ 100) }} {{ $order->currency }}</span>
                                     @else
-                                    <span>{{ $order->amount_in_cents/100 }} {{ $order->currency }}</span>
+                                    <span>{{ round($order->order_amount, 2) }} {{ $order->currency }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -120,7 +120,7 @@
                                     <tr>
                                         <th>{{ $item->product_id }}</th>
                                         <th>{{ $item->product_name }}</th>
-                                        <th>${{ $item->product_price }}</th>
+                                        <th>${{ round($item->product_price, 2) }}</th>
                                         <th>{{ $item->product_qty }}</th>
                                     </tr>
                                 @endforeach

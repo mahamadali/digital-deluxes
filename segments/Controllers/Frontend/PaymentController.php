@@ -747,7 +747,7 @@ class PaymentController
             $gateway = Omnipay::create('PayPal_Rest');
 			$gateway->setClientId(setting('paypal.CLIENT_ID'));
 			$gateway->setSecret(setting('paypal.CLIENT_SECRET'));
-			$gateway->setTestMode(true); //set it to 'false' when go live
+			$gateway->setTestMode(setting('paypal.sandbox')); //set it to 'false' when go live
             $transaction = $gateway->completePurchase(array(
                 'payer_id'             => $_GET['PayerID'],
                 'transactionReference' => $_GET['paymentId'],
@@ -792,6 +792,213 @@ class PaymentController
 
     public function paypal_wallet_cancel(Request $request) {
         return redirect(route('frontend.wallet.recharge', ['payment_method' => $request->payment_method]))->withFlashError('Payment cancelled! Please try again.')->go();
+    }
+
+    public function paypal_order_success(Request $request, PaymentMethod $paymentMethod, $order_reference) {
+        if (array_key_exists('paymentId', $_GET) && array_key_exists('PayerID', $_GET)) {
+            $gateway = Omnipay::create('PayPal_Rest');
+			$gateway->setClientId(setting('paypal.CLIENT_ID'));
+			$gateway->setSecret(setting('paypal.CLIENT_SECRET'));
+			$gateway->setTestMode(setting('paypal.sandbox')); //set it to 'false' when go live
+            $transaction = $gateway->completePurchase(array(
+                'payer_id'             => $_GET['PayerID'],
+                'transactionReference' => $_GET['paymentId'],
+            ));
+            $response = $transaction->send();
+            
+        
+            if ($response->isSuccessful()) {
+                // The customer has successfully paid.
+                $arr_body = $response->getData();
+                
+                $payment_id = $arr_body['id'];
+                $payer_id = $arr_body['payer']['payer_info']['payer_id'];
+                $payer_email = $arr_body['payer']['payer_info']['email'];
+                $amount = $arr_body['transactions'][0]['amount']['total'];
+                $currency = $arr_body['transactions'][0]['amount']['currency'];
+                $payment_status = $arr_body['state'];
+                
+                $this->saveOrderInfo($amount, $paymentMethod, $payment_id, $order_reference);
+                
+                return redirect(route('frontend.orders.index'))->withFlashSuccess('Order placed successfully!')->go();
+            } else {
+                return redirect(route('frontend.checkout.index'))->withFlashError($response->getMessage())->go();
+            }
+        } else {
+            return redirect(route('frontend.checkout.index'))->withFlashError('Transaction is declined')->go();
+        }
+    }
+
+    public function paypal_order_cancel(Request $request, PaymentMethod $paymentMethod) {
+        return redirect(route('frontend.checkout.index', ['payment_method' => $paymentMethod->id]))->withFlashError('Payment cancelled! Please try again.')->go();
+    }
+
+    public function saveOrderInfo($amount, $paymentMethod, $payment_id, $order_reference) {
+        $user = user();
+        $cartItems = cartItems($user->id);
+        
+		$total_amount = $amount;
+        $manualOrderItems = [];
+        $manualOrderTotalPrice = 0;
+        $kinguinOrderItems = [];
+        $kinguinOrderTotalPrice = 0;
+        foreach($cartItems as $item) {
+            if($item->product()->product_type == 'M') {
+                $manualOrderItems[] = $item;
+                $manualOrderTotalPrice += currencyConverter('EUR', $paymentMethod->currency, $item->product()->price_original);
+            }
+            if($item->product()->product_type == 'K') {
+                $kinguinOrderItems[] = $item;
+                $kinguinOrderTotalPrice += currencyConverter('EUR', $paymentMethod->currency, $item->product()->price_original);
+            }
+        }
+        
+        
+        if(!empty($manualOrderItems)) {
+            $mannual_order = new Order();
+            $mannual_order->reference = $order_reference;
+            $mannual_order->transaction_id = $payment_id;
+            $mannual_order->payment_method_type = $paymentMethod->title;
+            $mannual_order->payment_method = $paymentMethod->title;
+            $mannual_order->status = 'APPROVED';
+            $mannual_order->status_message = NULL;
+            $mannual_order->currency = $paymentMethod->currency;
+            $mannual_order->amount_in_cents = $manualOrderTotalPrice * 100;
+            $mannual_order->order_amount = $manualOrderTotalPrice;
+            $mannual_order->user_id = auth()->id;
+            $mannual_order->order_type = 'M';
+            $mannual_order = $mannual_order->save();
+            foreach($manualOrderItems as $manualOrderItems) {
+                $mannual_order_item = new OrderItem();
+                $mannual_order_item->order_id = $mannual_order->id;
+                $mannual_order_item->product_id = $manualOrderItems->product_id;
+                $mannual_order_item->product_name = $manualOrderItems->product_name;
+                $mannual_order_item->product_price = currencyConverter('EUR', $paymentMethod->currency, $manualOrderItems->product_price);;
+                $mannual_order_item->product_price_profit = getProfitCommission(remove_format($manualOrderItems->product()->price_original));
+                $mannual_order_item->product_qty = $manualOrderItems->product_qty;
+                $mannual_order_item->save();
+
+                $productKeys = ProductKeys::where('product_id', $manualOrderItems->product_id)->where('is_used', 0)->get($manualOrderItems->product_qty);
+
+                if(!empty($productKeys)) {
+                    foreach($productKeys as $productKey) {
+                        $game_key = new GameKey();
+                        $game_key->order_id = $mannual_order->id;
+                        $game_key->product_id = $manualOrderItems->product_id;
+                        $game_key->serial = $productKey->key;
+                        $game_key->type = 'text/plain';
+                        $game_key->name = $manualOrderItems->product()->name;
+                        $game_key->kinguinId = NULL;
+                        $game_key->offerId = NULL;
+                        $game_key->save();
+
+                        $productKey->is_used = 1;
+						$productKey->save();
+                    }
+                }
+            }
+
+            $order = Order::find($mannual_order->id);
+            Alert::as(new KeysEmail($order))->notify();
+            Alert::as(new NewOrderAdminEmail($order))->notify();
+        }
+
+        
+        if(!empty($kinguinOrderItems)) {
+            $order = new Order();
+            $order->reference = $order_reference;
+            $order->transaction_id = $payment_id;
+            $order->payment_method_type = $paymentMethod->title;
+            $order->payment_method = $paymentMethod->title;
+            $order->status = 'APPROVED';
+            $order->status_message = NULL;
+            $order->currency = $paymentMethod->currency;
+            $order->amount_in_cents = $kinguinOrderTotalPrice * 100;
+            $order->order_amount = $kinguinOrderTotalPrice;
+            $order->user_id = auth()->id;
+            $order->order_type = 'K';
+            $order = $order->save();
+            foreach($kinguinOrderItems as $kinguinOrderItem) {
+                $orderItem = new OrderItem();
+                $orderItem->order_id = $order->id;
+                $orderItem->product_id = $kinguinOrderItem->product_id;
+                $orderItem->product_name = $kinguinOrderItem->product_name;
+                $orderItem->product_price = currencyConverter('EUR', $paymentMethod->currency, $kinguinOrderItem->product_price);
+                $orderItem->product_price_profit = getProfitCommission(remove_format($kinguinOrderItem->product()->price_original));
+                $orderItem->product_qty = $kinguinOrderItem->product_qty;
+                $orderItem->save();
+            }
+
+            $orderProducts = OrderItem::where('order_id', $order->id)->get();
+    
+            $products = [];
+            foreach($orderProducts as $orderProduct) {
+                // $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
+                // $keyTypeResponse = $this->fetchKeyType($orderProduct);
+                // $keyTypeResponse = json_decode($keyTypeResponse);
+                // $offerId = $this->fetchOfferId($keyTypeResponse);
+                // $offer = json_decode($offerId);
+                $products[] = (object) [
+                    'kinguinId' => $orderProduct->product->kinguinId,
+                    'qty' => $orderProduct->product_qty,
+                    'name' => $orderProduct->product_name,
+                    'price' => $orderProduct->product_price,
+                    // 'keyType' => 'text',
+                    // 'offerId' => $offerId,
+                ];
+            }
+            
+            // $orderExternalId = $this->orderExternalId($keyTypeResponse);
+            // $orderExternalId = json_decode($orderExternalId);
+            $params = (object) [
+                'products' => $products,
+                'orderExternalId' => $order->reference
+            ];
+
+            // dd(json_decode("{\"products\":[{\"kinguinId\":1949,\"qty\":1,\"name\":\"Counter-Strike: Source Steam CD Key\",\"price\":5.79}]}"));
+
+            // dd($params);
+
+            // Generated by curl-to-PHP: http://incarnate.github.io/curl-to-php/
+            $ch = curl_init();
+
+            curl_setopt($ch, CURLOPT_URL, setting('kinguin.endpoint').'/v1/order');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+
+            $headers = array();
+            $headers[] = 'X-Api-Key: '.setting('kinguin.api_key');
+            $headers[] = 'Content-Type: application/json';
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+                echo 'Error:' . curl_error($ch);
+            }
+            curl_close($ch);
+            file_put_contents('create-order.txt', $result);
+
+            $orderData = json_decode($result);
+            
+            $order->kg_orderid = $orderData->orderId;
+            $order->save();
+        }
+
+            
+        $transaction = new TransactionLog();
+        $transaction->user_id = $user->id;
+        $transaction->tx_id = $payment_id;
+        $transaction->currency = $paymentMethod->currency;
+        $transaction->type = 'order';
+        $transaction->amount = $total_amount;
+        $transaction->status = 'COMPLETED';
+        $transaction->payment_method = $paymentMethod->title;
+        $transaction->payment_method_id = $paymentMethod->id;
+        $transaction->kind_of_tx = 'DEBIT';
+        $transaction = $transaction->save();
+
+        Cart::where('user_id',$user->id)->delete();
     }
     
 }

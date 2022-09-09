@@ -80,6 +80,11 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
       Router::any('/success', [PaymentController::class, 'paypal_wallet_success'])->name('success')->withOutBarrier('is-front-auth');
       Router::get('/cancel', [PaymentController::class, 'paypal_wallet_cancel'])->name('cancel')->withOutBarrier('is-front-auth');
     });
+
+    Router::bunch('/paypal-order', ['as' => 'paypal-order.'], function () {
+      Router::any('/success/{payment_method}/{order_reference}', [PaymentController::class, 'paypal_order_success'])->name('success')->withOutBarrier('is-front-auth');
+      Router::get('/cancel/{payment_method}', [PaymentController::class, 'paypal_order_cancel'])->name('cancel')->withOutBarrier('is-front-auth');
+    });
     
   });
 

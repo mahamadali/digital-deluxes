@@ -28,9 +28,9 @@
                     <td>{{ $order->id }}</td>
                     <td>{{ $order->transaction_id }}</td>
                     @if($order->currency == 'COP'):
-                        <td>{{ $order->amount_in_cents/ 100 }} {{ $order->currency }}</td>
+                        <td>{{ number_format($order->amount_in_cents/ 100) }} {{ $order->currency }}</td>
                     @else
-                    <td>{{ $order->order_amount }} {{ $order->currency }}</td>
+                    <td>{{ round($order->order_amount, 2) }} {{ $order->currency }}</td>
                     @endif
                     
                     <td>{{ $order->status }}</td>
