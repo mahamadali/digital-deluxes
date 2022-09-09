@@ -79,7 +79,7 @@
         <div class="card card-tale">
           <div class="card-body">
             <p class="mb-4">Monthly Profit</p>
-            <p class="fs-30 mb-2">€</p>
+            <p class="fs-30 mb-2">€{{ $monthly_profit }}</p>
           </div>
         </div>
       </div>
@@ -88,7 +88,7 @@
         <div class="card card-tale">
           <div class="card-body">
             <p class="mb-4">Total Profit</p>
-            <p class="fs-30 mb-2">€</p>
+            <p class="fs-30 mb-2">€{{ $total_profit }}</p>
           </div>
         </div>
       </div>
