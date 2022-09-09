@@ -56,6 +56,42 @@
           </div>
         </div>
       </div>
+
+      <div class="col-md-3 mb-4 stretch-card transparent">
+        <div class="card card-tale">
+          <div class="card-body">
+            <p class="mb-4">Total Users Balance</p>
+            <p class="fs-30 mb-2">€{{ $total_wallet_amount }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-4 stretch-card transparent">
+        <div class="card card-tale">
+          <div class="card-body">
+            <p class="mb-4">Today Profit</p>
+            <p class="fs-30 mb-2">€{{ $today_profit }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-4 stretch-card transparent">
+        <div class="card card-tale">
+          <div class="card-body">
+            <p class="mb-4">Monthly Profit</p>
+            <p class="fs-30 mb-2">€</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-4 stretch-card transparent">
+        <div class="card card-tale">
+          <div class="card-body">
+            <p class="mb-4">Total Profit</p>
+            <p class="fs-30 mb-2">€</p>
+          </div>
+        </div>
+      </div>
       
     </div>
   </div>
