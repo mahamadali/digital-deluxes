@@ -1027,7 +1027,8 @@ class PaymentController
         //           "metadata": {
         //             "user_id": "2",
         //             "price": "15",
-        //             "payment_method_id": "5"
+        //             "payment_method_id": "5",
+        //             "payment_type": "wallet"
         //           },
         //           "pricing_type": "fixed_price",
         //           "payments": [],
@@ -1046,38 +1047,41 @@ class PaymentController
             $data = $data->event->data;
             $paymentId = $data->code;
             
-            $payment_method_id = $data->metadata->payment_method_id ?? '';
-            if(!empty($payment_method_id)) {
-                $amount = $data->metadata->price ?? '';
-                $user_id = $data->metadata->user_id ?? '';
-                $paymentMethod = PaymentMethod::find($payment_method_id);
-                $currencyInEur = currencyConverter($paymentMethod->currency, 'EUR', $amount);
-                $user = User::find($user_id);
-                $user->wallet_amount = $user->wallet_amount + $currencyInEur;
-                $user->save();
-                
-                $transaction = new TransactionLog();
-                $transaction->user_id = $user_id;
-                $transaction->tx_id = $paymentId;
-                $transaction->currency = $paymentMethod->currency;
-                $transaction->type = 'wallet';
-                $transaction->amount = $amount;
-                $transaction->status = 'COMPLETED';
-                $transaction->payment_method = $paymentMethod->title;
-                $transaction->payment_method_id = $paymentMethod->id;
-                $transaction->kind_of_tx = 'CREDIT';
-                $transaction->save();
-
-                ob_start();
-
-                header("HTTP/1.1 200 NO CONTENT");
-
-                header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
-                header("Pragma: no-cache"); // HTTP 1.0.
-                header("Expires: 0"); // Proxies.
-
-                ob_end_flush(); //now the headers are sent
-                exit;
+            $payment_type = $data->metadata->payment_type ?? '';
+            if($payment_type == 'wallet') {
+                $payment_method_id = $data->metadata->payment_method_id ?? '';
+                if(!empty($payment_method_id)) {
+                    $amount = $data->metadata->price ?? '';
+                    $user_id = $data->metadata->user_id ?? '';
+                    $paymentMethod = PaymentMethod::find($payment_method_id);
+                    $currencyInEur = currencyConverter($paymentMethod->currency, 'EUR', $amount);
+                    $user = User::find($user_id);
+                    $user->wallet_amount = $user->wallet_amount + $currencyInEur;
+                    $user->save();
+                    
+                    $transaction = new TransactionLog();
+                    $transaction->user_id = $user_id;
+                    $transaction->tx_id = $paymentId;
+                    $transaction->currency = $paymentMethod->currency;
+                    $transaction->type = 'wallet';
+                    $transaction->amount = $amount;
+                    $transaction->status = 'COMPLETED';
+                    $transaction->payment_method = $paymentMethod->title;
+                    $transaction->payment_method_id = $paymentMethod->id;
+                    $transaction->kind_of_tx = 'CREDIT';
+                    $transaction->save();
+    
+                    ob_start();
+    
+                    header("HTTP/1.1 200 NO CONTENT");
+    
+                    header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
+                    header("Pragma: no-cache"); // HTTP 1.0.
+                    header("Expires: 0"); // Proxies.
+    
+                    ob_end_flush(); //now the headers are sent
+                    exit;
+                }
             }
         }
     }

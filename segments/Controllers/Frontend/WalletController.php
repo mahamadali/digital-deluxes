@@ -146,7 +146,8 @@ class WalletController
 			"metadata":{
 				"user_id": '.auth()->id.',
 				"price": '.$request->balance.',
-				"payment_method_id": "'.$paymentMethod->id.'"
+				"payment_method_id": "'.$paymentMethod->id.'",
+				"payment_type": "wallet"
 			}
 			}',
 			CURLOPT_HTTPHEADER => array(
