@@ -46,6 +46,14 @@
     small {
         font-size: 10px;
     }
+
+    .payment_method_info {
+        border: 1px solid #f4d919;
+        padding: 10px;
+    }
+    .payment_method_info label {
+        cursor: pointer;
+    }
 </style>
 @block("content")
 <main class="page-main">
@@ -153,16 +161,21 @@
                     <h6 class="uk-text-sub-lead">{{ trans('checkout.payment_methods') }}</h6>
                 </div>
                 @if($walletEnable):
-                <div class="col-custom-row-12">
+                <div class="col-custom-row-12 payment_method_info">
                     <div class="col-custom-12">
                     <label><input type="radio" name="payment_method" data-value="Wallet" value="Wallet" required> {{ trans('menu.wallet') }} <small>{{ round($wallet_in_cop, 2) }} COP</small></label>
                     </div>
                  </div>
                  @endif
                 @foreach($payment_methods as $key => $payment_method):
-                 <div class="col-custom-row-12">
+                 <div class="col-custom-row-12 payment_method_info">
                     <div class="col-custom-12">
-                    <label><input type="radio" name="payment_method" data-value="{{ $payment_method->title }}" value="{{ $payment_method->id }}" {{ ($key == 0) ? 'required' : '' }}> {{ $payment_method->title }} <small>{{ $payment_method->currency }}</small></label>
+                    <label><input type="radio" name="payment_method" data-value="{{ $payment_method->title }}" value="{{ $payment_method->id }}" {{ ($key == 0) ? 'required' : '' }}> {{ $payment_method->title }} <small>{{ $payment_method->currency }}</small> 
+                    
+                    @if(file_exists($payment_method->main_logo)):
+                    <div class="payment-card__logo"><img src="{{ url($payment_method->main_logo) }}" alt="logo"></div>
+                    @endif
+                    </label>
                     </div>
                  </div>
                  @endforeach
