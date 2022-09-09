@@ -150,7 +150,7 @@
 
         'wallet' => [
             'available' => 'Available',
-            'recharge' => 'Recharge',
+            'recharge' => 'Add Fund',
             'activities' => 'Activities',
             'add_to_wallet' => 'Add to Wallet',
             'add' => 'ADD',

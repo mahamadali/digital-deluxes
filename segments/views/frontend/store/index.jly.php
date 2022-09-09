@@ -13,6 +13,9 @@
     .add_to_cart{
         cursor: pointer;
     }
+    .game-card__genre .platform-logos {
+        height: 25px;
+    }
 </style>
 @block("content")
 <main class="page-main">
@@ -117,8 +120,13 @@
             <div class="game-card">
                 <div class="game-card__box">
                     <div class="game-card__media"><a href="{{ url('store/view/'.$product->id) }}"><img src="{{ $product->coverImageOriginal }}" alt="{{ $product->name }}" /></a></div>
-                    <div class="game-card__info"><a class="game-card__title" href="{{ url('frontend/store/view/'.$product->id) }}"> {{ $product->name }}</a>
-                        <div class="game-card__genre">{{ $product->platform }}</div>
+                    <div class="game-card__info"><a class="game-card__title" href="{{ route('frontend.store.view', ['product' => $product->id]) }}"> {{ $product->name }}</a>
+                        <div class="game-card__genre">
+                            {{ $product->platform }}
+                            @foreach($product->platform_logos()->get() as $logo):
+                                <img class="platform-logos" src="{{ url($logo->path) }}">
+                            @endforeach
+                        </div>
                         <div class="game-card__rating-and-price">
                             <div class="game-card__price"><span>{{ currencySymbol() }}{{ $product->price }} </span></div>
                             <div class="game-card__rating add_to_cart" ><a href="{{ route('frontend.cart.add',[$product->id]) }}"><i class="ico_shopping-cart"></i></a></div>

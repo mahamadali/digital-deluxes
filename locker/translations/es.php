@@ -149,7 +149,7 @@
 
          'wallet' => [
             'available' => 'Disponible',
-            'recharge' => 'Recargar',
+            'recharge' => 'Agregar fondo',
             'activities' => 'Actividades',
             'add_to_wallet' => 'Agregar a la billetera',
             'add' => 'AGREGAR',

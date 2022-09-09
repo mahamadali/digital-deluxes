@@ -2262,12 +2262,12 @@ body.dark-theme a:hover {
     -o-text-overflow: ellipsis;
     overflow: hidden;
     color: #353535;
-    font-size: 18px;
+    font-size: 14px;
     font-style: normal;
     font-weight: 500;
     line-height: 1.31;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    /* text-overflow: ellipsis; */
+    /* white-space: nowrap; */
     padding-top: 10px;
 }
 
@@ -3799,9 +3799,10 @@ body.dark-theme a:hover {
     margin: 0 auto;
     padding: 20px 30px;
     border-radius: 5px;
-    background: -o-linear-gradient(192.83deg, #00A911 0%, #009456 100%);
-    background: linear-gradient(257.17deg, #00A911 0%, #009456 100%);
+    /* background: -o-linear-gradient(192.83deg, #00A911 0%, #009456 100%);
+    background: linear-gradient(257.17deg, #00A911 0%, #009456 100%); */
     box-shadow: 0px 0px 50px rgba(65, 220, 13, 0.1);
+    background: linear-gradient(257.17deg, #f65100 0%, #fb7603 100%);
 }
 
 .payment-card__head {

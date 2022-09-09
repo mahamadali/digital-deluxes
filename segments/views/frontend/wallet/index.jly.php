@@ -22,7 +22,7 @@
     @foreach($paymentMethods as $paymentMethod):
     <div class="uk-width-1-3@l">
         <div class="widjet --payment-method">
-            <div class="widjet__body">
+            <div class="">
                 <div class="payment-card">
                     <div class="payment-card__head">
                         <!-- <div class="payment-card__chip"><img src="{{ url('assets/frontend/img/payment-logos/'.$paymentMethod->title.'.png') }}" alt="chip"></div> -->

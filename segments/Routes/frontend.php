@@ -75,6 +75,11 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
       Router::any('/success/{payment_method}', [PaymentController::class, 'stripe_success'])->name('success')->withOutBarrier('is-front-auth');
       Router::get('/failure/{payment_method}', [PaymentController::class, 'stripe_failure'])->name('failure')->withOutBarrier('is-front-auth');
     });
+
+    Router::bunch('/paypal-wallet', ['as' => 'paypal-wallet.'], function () {
+      Router::any('/success', [PaymentController::class, 'paypal_wallet_success'])->name('success')->withOutBarrier('is-front-auth');
+      Router::get('/cancel', [PaymentController::class, 'paypal_wallet_cancel'])->name('cancel')->withOutBarrier('is-front-auth');
+    });
     
   });
 

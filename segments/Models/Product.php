@@ -77,4 +77,8 @@ class Product extends Model
 	public function manual_keys() {
 		return $this->hasMany(ProductKeys::class, 'product_id');
 	}
+
+	public function platform_logos() {
+		return $this->hasMany(PlatformLogo::class, 'platform', 'platform');
+	}
 }

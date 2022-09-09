@@ -16,6 +16,7 @@ use Models\Product;
 use Models\ProductKeys;
 use Models\TransactionLog;
 use Models\User;
+use Omnipay\Omnipay;
 
 class PaymentController
 {
@@ -737,6 +738,60 @@ class PaymentController
     public function mercadopago_order_pending(Request $request)
     {
         return redirect(route('frontend.checkout.index'))->withFlashSuccess('Payment gone into pending.')->go();
+    }
+
+    public function paypal_wallet_success(Request $request) {
+        // Once the transaction has been approved, we need to complete it.
+        $paymentMethod = PaymentMethod::find($request->payment_method);
+        if (array_key_exists('paymentId', $_GET) && array_key_exists('PayerID', $_GET)) {
+            $gateway = Omnipay::create('PayPal_Rest');
+			$gateway->setClientId(setting('paypal.CLIENT_ID'));
+			$gateway->setSecret(setting('paypal.CLIENT_SECRET'));
+			$gateway->setTestMode(true); //set it to 'false' when go live
+            $transaction = $gateway->completePurchase(array(
+                'payer_id'             => $_GET['PayerID'],
+                'transactionReference' => $_GET['paymentId'],
+            ));
+            $response = $transaction->send();
+            
+        
+            if ($response->isSuccessful()) {
+                // The customer has successfully paid.
+                $arr_body = $response->getData();
+                
+                $payment_id = $arr_body['id'];
+                $payer_id = $arr_body['payer']['payer_info']['payer_id'];
+                $payer_email = $arr_body['payer']['payer_info']['email'];
+                $amount = $arr_body['transactions'][0]['amount']['total'];
+                $payment_status = $arr_body['state'];
+
+                $currencyInEur = currencyConverter($paymentMethod->currency, 'EUR', $amount);
+                $user = user();
+                $user->wallet_amount = $user->wallet_amount + $currencyInEur;
+                $user->save();
+                
+                $transaction = new TransactionLog();
+                $transaction->user_id = auth()->id;
+                $transaction->tx_id = $payment_id;
+                $transaction->currency = $paymentMethod->currency;
+                $transaction->type = 'wallet';
+                $transaction->amount = $amount;
+                $transaction->status = 'COMPLETED';
+                $transaction->payment_method = $paymentMethod->title;
+                $transaction->payment_method_id = $paymentMethod->id;
+                $transaction->kind_of_tx = 'CREDIT';
+                $transaction->save();
+                return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashSuccess('$'.$amount. ' '.$paymentMethod->currency.' added in your wallet successfully')->go();
+            } else {
+                return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashError($response->getMessage())->go();
+            }
+        } else {
+            return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashError('Transaction is declined')->go();
+        }
+    }
+
+    public function paypal_wallet_cancel(Request $request) {
+        return redirect(route('frontend.wallet.recharge', ['payment_method' => $request->payment_method]))->withFlashError('Payment cancelled! Please try again.')->go();
     }
     
 }

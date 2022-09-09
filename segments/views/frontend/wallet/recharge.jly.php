@@ -186,6 +186,20 @@
                     
                     window.location.href = 'https://1popularity.net/checkout?item_id='+$(form).find('select[name="balance"]').val()+'&tnx_id={{ $paymentMethod->id }}&type=1&from=digital_deluxes';
                 }
+
+                if($(form).find('input[name="payment_method"]').val() == 'Paypal') {
+                    $(form).find('button[type="submit"]').html('<i class="fa fa-spinner fa-spin"></i>Processing...');
+                    $(form).find('button[type="submit"]').prop('disabled', true);
+                    $.ajax({
+                        url : $(form).attr('action'),
+                        type : 'POST',
+                        data : $(form).serializeArray(),
+                        dataType: 'json',
+                        success: function(response) {
+                            window.location.href = response.redirectUrl;
+                        }
+                    });
+                }
                 
                 }
             });

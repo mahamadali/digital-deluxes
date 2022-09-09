@@ -8,6 +8,7 @@ use Bones\Session;
 use Google\Service\Adsense\Payment;
 use Models\PaymentMethod;
 use Models\TransactionLog;
+use Omnipay\Omnipay;
 
 class WalletController
 {
@@ -93,6 +94,33 @@ class WalletController
 					'payment_method' => $paymentMethod->title
 				);
 			  return response()->json($response);
+		}
+		
+		if($paymentMethod->title == 'Paypal') {
+			$gateway = Omnipay::create('PayPal_Rest');
+			$gateway->setClientId(setting('paypal.CLIENT_ID'));
+			$gateway->setSecret(setting('paypal.CLIENT_SECRET'));
+			$gateway->setTestMode(true); //set it to 'false' when go live
+			try {
+				$response = $gateway->purchase(array(
+					'amount' => $request->balance,
+					'currency' => setting('paypal.PAYPAL_CURRENCY'),
+					'returnUrl' => setting('paypal.PAYPAL_RETURN_URL')."?payment_method=".$paymentMethod->id,
+					'cancelUrl' => setting('paypal.PAYPAL_CANCEL_URL')."?payment_method=".$paymentMethod->id,
+				))->send();
+		 
+				if ($response->isRedirect()) {
+					$redirectUrl = $response->getData()['links'][1]['href'];
+					return response()->json(['status' => 200, 'redirectUrl' => $redirectUrl]);
+					// $response->redirect(); // this will automatically forward the customer
+				} else {
+					// not successful
+					echo $response->getMessage();
+				}
+			} catch(Exception $e) {
+				echo $e->getMessage();
+				exit;
+			}
 		}
 	}
 

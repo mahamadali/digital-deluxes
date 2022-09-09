@@ -3,6 +3,8 @@
         "google/apiclient": "^2.0",
         "facebook/graph-sdk": "^5.1",
         "mercadopago/dx-php": "^2.4",
-        "stripe/stripe-php": "^9.4"
+        "stripe/stripe-php": "^9.4",
+        "league/omnipay": "^3.2",
+        "omnipay/paypal": "^3.0"
     }
 }
