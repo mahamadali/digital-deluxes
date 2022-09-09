@@ -85,7 +85,7 @@
   });
 
   $(document).ready(function() {
-    $('.delete_transaction').on('change',function(){
+    $("#transaction-listing tbody").on("change", ".delete_transaction", function() {
       if($('.delete_transaction:checked').length > 0) {
         $('.delete_transactions_btn').show();
       } else {

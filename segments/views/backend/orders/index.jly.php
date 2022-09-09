@@ -87,7 +87,7 @@
   });
 
   $(document).ready(function() {
-    $('.delete_order').on('change',function(){
+    $("#order-listing tbody").on("change", ".delete_order", function() {
       if($('.delete_order:checked').length > 0) {
         $('.delete_orders_btn').show();
       } else {
