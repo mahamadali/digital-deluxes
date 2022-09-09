@@ -3795,7 +3795,7 @@ body.dark-theme a:hover {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     max-width: 320px;
-    height: 170px;
+    /* height: 170px; */
     margin: 0 auto;
     padding: 20px 30px;
     border-radius: 5px;
@@ -6323,10 +6323,13 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
         height: 22px;
     }
 
-    .payment-card__logo img {
-        height: 40px;
-        width: 90px;
+    .payment-card__logo {
+        margin-right: 5px;
     }
+
+    /* .payment-card__logo img {
+        height: 50px;
+    } */
     .recharge-button {
         color: white;
         border: 1px solid;

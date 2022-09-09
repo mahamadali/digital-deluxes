@@ -3,6 +3,7 @@
 namespace Controllers;
 
 use Bones\Request;
+use Models\CurrencyRate;
 use Models\Product;
 use Models\ProductDeveloper;
 use Models\ProductPublisher;
@@ -315,5 +316,16 @@ class ProductController
 	public function regionCountries(Request $request) {
 		$region = $request->region;
 		return getRegionCountries($region);
+	}
+
+	public function updateCurrencyRate() {
+		file_put_contents('currency_rates_api_executed.txt', 1);
+		$currencyRates = CurrencyRate::get();
+		foreach($currencyRates as $currencyRate):
+			$base_price = callCurrencyApi($currencyRate->from, $currencyRate->to, 1);
+			saveCurrencyrate($currencyRate->from, $currencyRate->to, $base_price);
+		endforeach;
+
+		die('Currency Rates Updated.');
 	}
 }

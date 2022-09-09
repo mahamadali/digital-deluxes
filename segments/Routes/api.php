@@ -11,5 +11,6 @@ Router::bunch('/api', ['as' => 'api.'], function() {
 	Router::any('/product-update', [ ProductController::class, 'productUpdate' ])->name('product-update');
 	Router::get('/search-product', [ProductController::class, 'search'])->name('search-product');
 	Router::get('/region-countries', [ProductController::class, 'regionCountries'])->name('region-countries');
+	Router::get('/update-currency-rate', [ProductController::class, 'updateCurrencyRate'])->name('update-currency-rate');
 });
 

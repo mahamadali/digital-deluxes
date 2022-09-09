@@ -26,7 +26,15 @@
                 <div class="payment-card">
                     <div class="payment-card__head">
                         <!-- <div class="payment-card__chip"><img src="{{ url('assets/frontend/img/payment-logos/'.$paymentMethod->title.'.png') }}" alt="chip"></div> -->
-                        <div class="payment-card__logo"><img src="{{ url('assets/frontend/img/payment-logos/'.$paymentMethod->title.'.png') }}" alt="logo"></div>
+                        @if(file_exists($paymentMethod->main_logo)):
+                        <div class="payment-card__logo"><img src="{{ url($paymentMethod->main_logo) }}" alt="logo"></div>
+                        @endif
+
+                        @foreach($paymentMethod->little_logos()->get() as $littileLogo):
+                            @if(file_exists($littileLogo->logo)):
+                            <div class="payment-card__logo"><img src="{{ url($littileLogo->logo) }}" alt="chip"></div>
+                            @endif
+                        @endforeach
                     </div>
                     <div class="payment-card__number">{{ $paymentMethod->title }}</div>
                     <div class="payment-card__value" style="text-align: center;"><a href="{{ route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]) }}" class="recharge-button">{{ trans('wallet.recharge') }}</a></div>
