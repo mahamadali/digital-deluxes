@@ -61,7 +61,7 @@
         <div class="card card-tale">
           <div class="card-body">
             <p class="mb-4">Total Users Balance</p>
-            <p class="fs-30 mb-2">€{{ $total_wallet_amount }}</p>
+            <p class="fs-30 mb-2">€{{ !empty($total_wallet_amount) ? $total_wallet_amount : 0.00 }}</p>
           </div>
         </div>
       </div>
@@ -70,7 +70,7 @@
         <div class="card card-tale">
           <div class="card-body">
             <p class="mb-4">Today Profit</p>
-            <p class="fs-30 mb-2">€{{ $today_profit }}</p>
+            <p class="fs-30 mb-2">€{{ !empty($today_profit) ? $today_profit : 0.00 }}</p>
           </div>
         </div>
       </div>
@@ -79,7 +79,7 @@
         <div class="card card-tale">
           <div class="card-body">
             <p class="mb-4">Monthly Profit</p>
-            <p class="fs-30 mb-2">€{{ $monthly_profit }}</p>
+            <p class="fs-30 mb-2">€{{ !empty($monthly_profit) ? $monthly_profit : 0.00 }}</p>
           </div>
         </div>
       </div>
@@ -88,7 +88,7 @@
         <div class="card card-tale">
           <div class="card-body">
             <p class="mb-4">Total Profit</p>
-            <p class="fs-30 mb-2">€{{ $total_profit }}</p>
+            <p class="fs-30 mb-2">€{{ !empty($total_profit) ? $total_profit : 0.00 }}</p>
           </div>
         </div>
       </div>
