@@ -36,6 +36,7 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 			Router::get('/edit', [ProductController::class, 'edit'])->name('edit');
 			Router::post('/update', [ ProductController::class, 'update' ])->name('update');
 		});
+			Router::get('/update_slider_status/{product}/{status}', [ ProductController::class, 'updatesliderstatus' ])->name('update_slider_status');
 	});
 
 	Router::bunch('/orders', ['as' => 'orders.'], function () {

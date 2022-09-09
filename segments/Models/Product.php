@@ -81,4 +81,7 @@ class Product extends Model
 	public function platform_logos() {
 		return $this->hasMany(PlatformLogo::class, 'platform', 'platform');
 	}
+	public function home_slider() {
+    	return $this->hasOne(HomeSliderProduct::class, 'product_id');
+    }
 }

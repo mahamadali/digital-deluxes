@@ -7,6 +7,7 @@ use Bones\Session;
 use Models\CMS;
 use Models\Country;
 use Models\Product;
+use Models\HomeSliderProduct;
 use Models\User;
 
 
@@ -14,7 +15,18 @@ class WelcomeController
 {
     public function index()
     {
-		$latest_products = Product::whereNotNull('coverImageOriginal')->orderBy('RAND()')->limit(3)->get();
+    	$latest_products_slider = HomeSliderProduct::selectSet(['product_id'])->pluck('product_id');
+    	if(!empty($latest_products_slider))
+    	{
+    		$productIds = array_map(function($element) {
+				return $element->product_id;
+			},$latest_products_slider);
+    		$latest_products = Product::whereIn('id',$productIds)->whereNotNull('coverImageOriginal')->get();
+    	}
+    	else
+    	{
+			$latest_products = Product::whereNotNull('coverImageOriginal')->orderBy('RAND()')->limit(3)->get();
+    	}
 
         $tranding_products = Product::whereNotNull('coverImageOriginal')->orderBy('RAND()')->limit(3)->get();
 
