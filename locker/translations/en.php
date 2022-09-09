@@ -37,7 +37,8 @@
             'edit_profile' => 'Edit Profile',
             'upload_profile_image' => 'Upload Profile Image',
             'save' => 'Save',
-            'customer_info' => 'Customer Information'
+            'customer_info' => 'Customer Information',
+            'change_password' => 'Update Password'
         ],
 
          'wishlist' => [

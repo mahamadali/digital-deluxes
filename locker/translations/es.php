@@ -37,7 +37,8 @@
             'edit_profile' => 'Editar perfil',
             'upload_profile_image' => 'Subir imagen de perfil',
             'save' => 'Ahorrar',
-            'customer_info' => 'Información al cliente'
+            'customer_info' => 'Información al cliente',
+            'change_password' => 'Actualiza contraseña'
         ],
 
          'wishlist' => [

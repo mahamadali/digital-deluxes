@@ -19,6 +19,7 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
   Router::bunch('/profile', ['as' => 'profile.'], function () {
     Router::get('/', [WelcomeController::class, 'Profile'])->name('index');
     Router::post('/update', [WelcomeController::class, 'update'])->name('update');
+    Router::post('/updatepassword', [WelcomeController::class, 'updatepassword'])->name('updatepassword');
   });
 
   Router::bunch('/orders', ['as' => 'orders.'], function () {

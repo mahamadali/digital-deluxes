@@ -61,7 +61,6 @@ class WelcomeController
 			'email' => 'required|unique:users,email,'.auth()->id,
 			'first_name' => 'required|min:2|max:18',
 			'last_name' => 'required|min:2|max:18',
-            'password' => ['eqt:confirm_password'],
 			'phone' => 'required|min:10|max:20',
 			'country' => 'required',
 			'national_identification_id' => 'required',
@@ -72,7 +71,7 @@ class WelcomeController
 			return redirect()->withFlashError(implode('<br>', $validator->errors()))->with('old', $request->all())->back();
         }
 
-		$userData = $request->getOnly(['first_name', 'last_name',  'password','phone','profile_image', 'country_code', 'age', 'address', 'national_identification_id', 'country', 'city']);
+		$userData = $request->getOnly(['first_name', 'last_name','phone','profile_image', 'country_code', 'age', 'address', 'national_identification_id', 'country', 'city']);
 
 		$logoPath = null;
 		if ($request->hasFile('profile_image')) {
@@ -95,16 +94,35 @@ class WelcomeController
 		}
 
 
+		if (User::where('id', auth()->id)->update($userData)) {
+			return redirect()->withFlashSuccess('Profile updated successfully!')->with('old', $request->all())->back();
+		} else {
+			return redirect()->withFlashError('Oops! Something went wrong!')->back();
+		}
+
+	}
+
+    
+    public function updatepassword(Request $request)
+	{
+		$validator = $request->validate([
+            'password' => ['eqt:confirm_password'],
+		]);
+
+		if ($validator->hasError()) {
+			return redirect()->withFlashError(implode('<br>', $validator->errors()))->with('old', $request->all())->back();
+        }
+
+		$userData = $request->getOnly(['password']);
+
 		if (!empty($userData['password'])) {
 			$userData['password'] = md5($userData['password']);
 		} else {
 			unset($userData['password']);
 		}
 
-    //    print_r($userData);
-    //     exit;
 		if (User::where('id', auth()->id)->update($userData)) {
-			return redirect()->withFlashSuccess('Profile updated successfully!')->with('old', $request->all())->back();
+			return redirect()->withFlashSuccess('Profile password updated successfully!')->with('old', $request->all())->back();
 		} else {
 			return redirect()->withFlashError('Oops! Something went wrong!')->back();
 		}
