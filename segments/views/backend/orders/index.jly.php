@@ -16,10 +16,20 @@
           <h4 class="card-title">My Orders</h4>
         </div>
       </div>
+      <div class="row">
+          <div class="col-md-4">
+            
+          </div>
+          <div class="col-md-8 text-right">
+            <a href="#" class="btn btn-primary delete_orders_btn mb-1" style="display:none;"><i class="ti-trash"></i>Delete</a>
+          </div>
+
+        </div>
       <div class="table-responsive">
         <table id="order-listing" class="table">
           <thead>
             <tr>
+                <td>#</td>
                 <td>Order #</td>
                 <td>User</td>
                 <td>Kinguin Order #</td>
@@ -34,6 +44,7 @@
           <tbody>
             @foreach($orders as $order):
                     <tr>
+                        <td><input type="checkbox" name="delete_order" id="delete_order" class="delete_order" value="{{$order->id}}"></td>
                         <td>{{ $order->id }}</td>
                         <td>{{ $order->user->fullName }} #{{ $order->user->id }}</td>
                         <td>{{ $order->kg_orderid }}</td>
@@ -73,6 +84,39 @@
 
     table.buttons().container()
       .appendTo('#order-listing_wrapper .col-md-6:eq(0)');
+  });
+
+  $(document).ready(function() {
+    $('.delete_order').on('change',function(){
+      if($('.delete_order:checked').length > 0) {
+        $('.delete_orders_btn').show();
+      } else {
+        $('.delete_orders_btn').hide();
+      }
+    });
+
+    $('.delete_orders_btn').on('click', function() {
+      var orderIds = [];
+      $(".delete_order:checked").each(function ()
+      {
+        orderIds.push(parseInt($(this).val()));
+      });
+      
+      $.ajax({
+        url : '{{ route("admin.orders.delete") }}',
+        type : 'POST',
+        data: {
+          'prevent_csrf_token': '{{ prevent_csrf_token() }}',
+          'orderIds': orderIds,
+        },
+        dataType: 'json',
+        success: function(response) {
+          toastr.success(response.msg);
+          location.reload();
+        }
+      });  
+
+    })
   });
 </script>
 @endblock

@@ -14,4 +14,11 @@ class TransactionController
 			'transactions' => $transactions
 		]);
 	}
+
+	public function delete(Request $request)
+	{
+		
+		TransactionLog::whereIn('id',$request->transactionIds)->delete();
+		return response()->json(['stauts'=> 'success', 'msg' => 'Transaction deleted successfully']);
+	}
 }

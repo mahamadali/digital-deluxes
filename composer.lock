@@ -1196,16 +1196,16 @@
         },
         {
             "name": "mercadopago/dx-php",
-            "version": "2.4.9",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mercadopago/sdk-php.git",
-                "reference": "8389608ab859e5f9394910ec1bd74d603d7c17a6"
+                "reference": "ac68e2c357a552e612a67f28347b66cd06416dc2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mercadopago/sdk-php/zipball/8389608ab859e5f9394910ec1bd74d603d7c17a6",
-                "reference": "8389608ab859e5f9394910ec1bd74d603d7c17a6",
+                "url": "https://api.github.com/repos/mercadopago/sdk-php/zipball/ac68e2c357a552e612a67f28347b66cd06416dc2",
+                "reference": "ac68e2c357a552e612a67f28347b66cd06416dc2",
                 "shasum": ""
             },
             "require": {
@@ -1241,9 +1241,9 @@
             "description": "Mercado Pago PHP SDK",
             "homepage": "https://github.com/mercadopago/sdk-php",
             "support": {
-                "source": "https://github.com/mercadopago/sdk-php/tree/2.4.9"
+                "source": "https://github.com/mercadopago/sdk-php/tree/2.5.0"
             },
-            "time": "2022-07-18T13:33:02+00:00"
+            "time": "2022-09-08T18:24:33+00:00"
         },
         {
             "name": "moneyphp/money",
@@ -2084,16 +2084,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.15",
+            "version": "3.0.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "c96e250238e88bf1040e9f7715efab1d6bc7f622"
+                "reference": "7181378909ed8890be4db53d289faac5b77f8b05"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/c96e250238e88bf1040e9f7715efab1d6bc7f622",
-                "reference": "c96e250238e88bf1040e9f7715efab1d6bc7f622",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/7181378909ed8890be4db53d289faac5b77f8b05",
+                "reference": "7181378909ed8890be4db53d289faac5b77f8b05",
                 "shasum": ""
             },
             "require": {
@@ -2174,7 +2174,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.15"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.16"
             },
             "funding": [
                 {
@@ -2190,7 +2190,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-09-02T17:05:08+00:00"
+            "time": "2022-09-05T18:03:08+00:00"
         },
         {
             "name": "psr/cache",
@@ -2497,16 +2497,16 @@
         },
         {
             "name": "stripe/stripe-php",
-            "version": "v9.4.0",
+            "version": "v9.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "a759cccb477ed8acad7c379d45fc8be5bc69636e"
+                "reference": "e3ea7f8ea7d6e96ef4253e3c5290d548fb89835c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/a759cccb477ed8acad7c379d45fc8be5bc69636e",
-                "reference": "a759cccb477ed8acad7c379d45fc8be5bc69636e",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/e3ea7f8ea7d6e96ef4253e3c5290d548fb89835c",
+                "reference": "e3ea7f8ea7d6e96ef4253e3c5290d548fb89835c",
                 "shasum": ""
             },
             "require": {
@@ -2552,9 +2552,9 @@
             ],
             "support": {
                 "issues": "https://github.com/stripe/stripe-php/issues",
-                "source": "https://github.com/stripe/stripe-php/tree/v9.4.0"
+                "source": "https://github.com/stripe/stripe-php/tree/v9.5.0"
             },
-            "time": "2022-08-26T17:25:01+00:00"
+            "time": "2022-09-06T21:09:15+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",

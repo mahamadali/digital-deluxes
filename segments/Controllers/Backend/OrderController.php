@@ -27,4 +27,12 @@ class OrderController
 			'customer_billing_infos' => $customer_billing_infos
 		]);
 	}
+
+	public function delete(Request $request)
+	{
+		
+		OrderItem::whereIn('order_id',$request->orderIds)->delete();
+		Order::whereIn('id',$request->orderIds)->delete();
+		return response()->json(['stauts'=> 'success', 'msg' => 'Orders deleted successfully']);
+	}
 }

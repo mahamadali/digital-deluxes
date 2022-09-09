@@ -36,6 +36,7 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 			Router::get('/edit', [ProductController::class, 'edit'])->name('edit');
 			Router::post('/update', [ ProductController::class, 'update' ])->name('update');
 		});
+			Router::post('/delete', [ ProductController::class, 'delete' ])->name('delete');
 			Router::get('/update_slider_status/{product}/{status}', [ ProductController::class, 'updatesliderstatus' ])->name('update_slider_status');
 	});
 
@@ -44,10 +45,12 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 		Router::bunch('/{order}', ['as' => ''], function () {
 			Router::get('/view', [OrderController::class, 'view'])->name('view');
 		});
+		Router::post('/delete', [ OrderController::class, 'delete' ])->name('delete');
 	});
 
 	Router::bunch('/transactions', ['as' => 'transactions.'], function () {
 		Router::get('/', [TransactionController::class, 'index'])->name('index');
+		Router::post('/delete', [ TransactionController::class, 'delete' ])->name('delete');
 	});
 
 	Router::bunch('/settings', ['as' => 'settings.'], function() {

@@ -9,6 +9,7 @@ use Models\ProductScreenshot;
 use Models\ProductVideo;
 use Models\ProductSystemRequirement;
 use Models\ProductKeys;
+use Models\ProductOffer;
 
 
 
@@ -262,5 +263,18 @@ class ProductController
 			}
 		}
 
+	}
+
+	public function delete(Request $request)
+	{
+
+		HomeSliderProduct::whereIn('product_id',$request->productIds)->delete();
+		ProductScreenshot::whereIn('product_id',$request->productIds)->delete();
+		ProductVideo::whereIn('product_id',$request->productIds)->delete();
+		ProductSystemRequirement::whereIn('product_id',$request->productIds)->delete();
+		ProductOffer::whereIn('product_id',$request->productIds)->delete();
+		ProductKeys::whereIn('product_id',$request->productIds)->delete();
+		Product::whereIn('id',$request->productIds)->delete();
+		return response()->json(['stauts'=> 'success', 'msg' => 'Products deleted successfully']);
 	}
 }

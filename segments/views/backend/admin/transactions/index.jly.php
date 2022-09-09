@@ -16,11 +16,21 @@
           <h4 class="card-title">Transactions</h4>
         </div>
       </div>
+      <div class="row">
+          <div class="col-md-4">
+            
+          </div>
+          <div class="col-md-8 text-right">
+            <a href="#" class="btn btn-primary delete_transactions_btn mb-1" style="display:none;"><i class="ti-trash"></i>Delete</a>
+          </div>
+
+        </div>
       <div class="table-responsive">
         <table id="transaction-listing" class="table">
           <thead>
             <tr>
                 <td>#</td>
+                <td>ID</td>
                 <td>User</td>
                 <td>TX ID</td>
                 <td>Currency</td>
@@ -34,6 +44,7 @@
           <tbody>
             @foreach($transactions as $transaction):
                     <tr>
+                        <td><input type="checkbox" name="delete_transaction" id="delete_transaction" class="delete_transaction" value="{{$transaction->id}}"></td>
                         <td>{{ $transaction->id }}</td>
                         <td>{{ $transaction->user->fullName }} #{{ $transaction->user->id }}</td>
                         <td>{{ $transaction->tx_id }}</td>
@@ -71,6 +82,39 @@
 
     table.buttons().container()
       .appendTo('#transaction-listing_wrapper .col-md-6:eq(0)');
+  });
+
+  $(document).ready(function() {
+    $('.delete_transaction').on('change',function(){
+      if($('.delete_transaction:checked').length > 0) {
+        $('.delete_transactions_btn').show();
+      } else {
+        $('.delete_transactions_btn').hide();
+      }
+    });
+
+    $('.delete_transactions_btn').on('click', function() {
+      var transactionIds = [];
+      $(".delete_transaction:checked").each(function ()
+      {
+        transactionIds.push(parseInt($(this).val()));
+      });
+      
+      $.ajax({
+        url : '{{ route("admin.transactions.delete") }}',
+        type : 'POST',
+        data: {
+          'prevent_csrf_token': '{{ prevent_csrf_token() }}',
+          'transactionIds': transactionIds,
+        },
+        dataType: 'json',
+        success: function(response) {
+          toastr.success(response.msg);
+          location.reload();
+        }
+      });  
+
+    })
   });
 </script>
 @endblock
