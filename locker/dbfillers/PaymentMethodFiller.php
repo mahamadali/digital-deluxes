@@ -29,6 +29,18 @@ return new class
 				'currency' => 'COP',
 				'status' => 'ACTIVE'
 			],
+			[
+				'title' => 'Paypal',
+				'type' => 'both',
+				'currency' => 'USD',
+				'status' => 'ACTIVE'
+			],
+			[
+				'title' => 'Coinbase',
+				'type' => 'both',
+				'currency' => 'USD',
+				'status' => 'ACTIVE'
+			],
 		], null, $this->table);
 	}
 

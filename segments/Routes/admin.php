@@ -66,7 +66,13 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 		Router::bunch('/payment-methods', ['as' => 'payment-methods.'], function() {
 			Router::get('/', [ PaymentMethodController::class, 'index' ])->name('index');
 			Router::post('/change-status', [ PaymentMethodController::class, 'changeStatus' ])->name('change-status');
+			Router::get('/add-payment-logo/{payment}', [ PaymentMethodController::class, 'addpaymentLogos' ])->name('add-payment-logo');
+			Router::post('/add-payment-logo-post', [ PaymentMethodController::class, 'addpaymentLogosPost' ])->name('add-payment-logo-post');
+			Router::bunch('/{logo}', ['as' => ''], function() {
+				Router::get('/remove-logo', [ PaymentMethodController::class, 'paymentLogoRemove' ])->name('remove-payment-logo');
+			});
 		});
+
 	});
 
 	Router::bunch('/blogs', ['as' => 'blogs.'], function () {
