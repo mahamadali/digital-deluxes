@@ -100,7 +100,7 @@ class WalletController
 			$gateway = Omnipay::create('PayPal_Rest');
 			$gateway->setClientId(setting('paypal.CLIENT_ID'));
 			$gateway->setSecret(setting('paypal.CLIENT_SECRET'));
-			$gateway->setTestMode(true); //set it to 'false' when go live
+			$gateway->setTestMode(setting('paypal.sandbox')); //set it to 'false' when go live
 			try {
 				$response = $gateway->purchase(array(
 					'amount' => $request->balance,

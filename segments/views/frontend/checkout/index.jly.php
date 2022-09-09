@@ -42,6 +42,10 @@
     {
         width: 100% !important;
     }
+
+    small {
+        font-size: 10px;
+    }
 </style>
 @block("content")
 <main class="page-main">
@@ -158,7 +162,7 @@
                 @foreach($payment_methods as $key => $payment_method):
                  <div class="col-custom-row-12">
                     <div class="col-custom-12">
-                    <label><input type="radio" name="payment_method" data-value="{{ $payment_method->title }}" value="{{ $payment_method->id }}" {{ ($key == 0) ? 'required' : '' }}> {{ $payment_method->title }}</label>
+                    <label><input type="radio" name="payment_method" data-value="{{ $payment_method->title }}" value="{{ $payment_method->id }}" {{ ($key == 0) ? 'required' : '' }}> {{ $payment_method->title }} <small>{{ $payment_method->currency }}</small></label>
                     </div>
                  </div>
                  @endforeach
@@ -293,6 +297,33 @@
                                 $(form).find('button[type="submit"]').prop('disabled', false);
                             } else {
                                 toastr.success(response.message);
+                                window.location.href = response.redirectUrl;
+                            }
+                        },
+                        error: function() {
+                            $(form).find('button[type="submit"]').prop('disabled', false);
+                            toastr.error('Something went wrong! Please refresh page and try again!');
+                            $('#page-preloader').hide();
+                        }
+                    });
+                }
+
+                if($(form).find('input[name="payment_method"]:checked').data('value') == 'Paypal') {
+                    $(form).find('button[type="submit"]').prop('disabled', true);
+                    $('#page-preloader').show();
+                    var formData = new FormData(form);
+                    $.ajax({
+                        url : $(form).attr('action'),
+                        type : 'POST',
+                        data : formData,
+                        dataType: 'json',
+                        contentType: false, processData: false,
+                        success: function(response) {
+                            $('#page-preloader').hide();
+                            if(response.status == 304) {
+                                toastr.error(response.message);
+                                $(form).find('button[type="submit"]').prop('disabled', false);
+                            } else {
                                 window.location.href = response.redirectUrl;
                             }
                         },
