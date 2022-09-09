@@ -106,7 +106,7 @@ class WelcomeController
     public function updatepassword(Request $request)
 	{
 		$validator = $request->validate([
-            'password' => ['eqt:confirm_password'],
+            'password' => 'required|eqt:confirm_password',
 		]);
 
 		if ($validator->hasError()) {
