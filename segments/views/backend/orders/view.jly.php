@@ -148,6 +148,7 @@
     </div>
     </div>
 
+    @if(!empty($customer_billing_infos)):
     <div class="col-md-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
@@ -170,7 +171,8 @@
                         </tbody>
                     </table>
                 </div>
-
+                
+                
                 <div class="row">
                     <table class="table table-borderless">
                         <tbody>
@@ -195,6 +197,7 @@
         </div>
     </div>
     </div>
+    @endif
 </div>
 
 @endblock
