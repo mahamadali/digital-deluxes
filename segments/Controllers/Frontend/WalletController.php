@@ -122,6 +122,47 @@ class WalletController
 				exit;
 			}
 		}
+
+		if($paymentMethod->title == 'Coinbase') {
+			$curl = curl_init();
+
+			curl_setopt_array($curl, array(
+			CURLOPT_URL => 'https://api.commerce.coinbase.com/charges/',
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => '',
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 0,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => 'POST',
+			CURLOPT_POSTFIELDS =>'{
+			"name":"Wallet",
+			"description":"Wallet - Digital Deluxes",
+			"pricing_type":"fixed_price",
+			"local_price": {
+				"amount": "'.$request->balance.'",
+					"currency": "'.$paymentMethod->currency.'"
+			},
+			"metadata":{
+				"user_id": '.auth()->id.',
+				"price": '.$request->balance.',
+				"payment_method_id": "'.$paymentMethod->id.'"
+			}
+			}',
+			CURLOPT_HTTPHEADER => array(
+				'Content-Type: application/json',
+				'X-Cc-Api-Key: '.setting('coinbase.key'),
+				'X-Cc-Version: 2018-03-22',
+				'Cookie: _session_id=ff3a6e8bb8343e984ffdaf9e18e3e5a3'
+			),
+			));
+
+			$response = curl_exec($curl);
+
+			curl_close($curl);
+			$response = json_decode($response);
+			return response()->json(['status' => 200, 'redirectUrl' => $response->data->hosted_url]);
+		}
 	}
 
 	public function rechargeSuccess(Request $request, PaymentMethod $paymentMethod)

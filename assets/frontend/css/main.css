@@ -6372,3 +6372,8 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
         text-align: center;
         margin-top: 17px;
     }
+
+    .coinbase-pay-link {
+        border: 1px solid;
+        padding: 10px;
+    }

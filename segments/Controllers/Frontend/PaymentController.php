@@ -1000,5 +1000,86 @@ class PaymentController
 
         Cart::where('user_id',$user->id)->delete();
     }
+
+    public function coinbase_notify() {
+        // $payload = '{
+        //     "id": 1,
+        //     "scheduled_for": "2017-01-31T20:50:02Z",
+        //     "event": {
+        //         "id": "24934862-d980-46cb-9402-43c81b0cdba6",
+        //         "resource": "event",
+        //         "type": "charge:created",
+        //         "api_version": "2018-03-22",
+        //         "created_at": "2017-01-31T20:49:02Z",
+        //         "data": {
+        //           "code": "NAQ5NVHH",
+        //           "name": "The Sovereign Individual",
+        //           "description": "Mastering the Transition to the Information Age",
+        //           "hosted_url": "https://commerce.coinbase.com/charges/NAQ5NVHH",
+        //           "created_at": "2017-01-31T20:49:02Z",
+        //           "expires_at": "2017-01-31T21:49:02Z",
+        //           "timeline": [
+        //             {
+        //               "time": "2017-01-31T20:49:02Z",
+        //               "status": "NEW"
+        //             }
+        //           ],
+        //           "metadata": {
+        //             "user_id": "2",
+        //             "price": "15",
+        //             "payment_method_id": "5"
+        //           },
+        //           "pricing_type": "fixed_price",
+        //           "payments": [],
+        //           "addresses": {
+        //             "bitcoin": "mymZkiXhQNd6VWWG7VGSVdDX9bKmviti3U",
+        //             "ethereum": "0x419f91df39951fd4e8acc8f1874b01c0c78ceba6"
+        //           }
+        //         }
+        //     }
+        // }';
+        $payload = file_get_contents('php://input'); 
+        file_put_contents('coinbase-ipn.txt', $payload);
+
+        $data = json_decode($payload);
+        if(isset($data->event) && $data->event->type == 'charge:confirmed') {
+            $data = $data->event->data;
+            $paymentId = $data->code;
+            
+            $payment_method_id = $data->metadata->payment_method_id ?? '';
+            if(!empty($payment_method_id)) {
+                $amount = $data->metadata->price ?? '';
+                $user_id = $data->metadata->user_id ?? '';
+                $paymentMethod = PaymentMethod::find($payment_method_id);
+                $currencyInEur = currencyConverter($paymentMethod->currency, 'EUR', $amount);
+                $user = User::find($user_id);
+                $user->wallet_amount = $user->wallet_amount + $currencyInEur;
+                $user->save();
+                
+                $transaction = new TransactionLog();
+                $transaction->user_id = $user_id;
+                $transaction->tx_id = $paymentId;
+                $transaction->currency = $paymentMethod->currency;
+                $transaction->type = 'wallet';
+                $transaction->amount = $amount;
+                $transaction->status = 'COMPLETED';
+                $transaction->payment_method = $paymentMethod->title;
+                $transaction->payment_method_id = $paymentMethod->id;
+                $transaction->kind_of_tx = 'CREDIT';
+                $transaction->save();
+
+                ob_start();
+
+                header("HTTP/1.1 200 NO CONTENT");
+
+                header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
+                header("Pragma: no-cache"); // HTTP 1.0.
+                header("Expires: 0"); // Proxies.
+
+                ob_end_flush(); //now the headers are sent
+                exit;
+            }
+        }
+    }
     
 }

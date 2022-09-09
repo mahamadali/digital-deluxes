@@ -138,7 +138,7 @@
                     dataType: 'json',
                     success: function(response) {
 
-                        $(form).find('button[type="submit"]').html('ADD');
+                        $(form).find('button[type="submit"]').html('{{ trans("wallet.add") }}');
                         $(form).find('button[type="submit"]').prop('disabled', false);
 
                         $('#messages').html('');
@@ -186,7 +186,7 @@
                         // }
                     },
                     error: function() {
-                        $(form).find('button[type="submit"]').html('ADD');
+                        $(form).find('button[type="submit"]').html('{{ trans("wallet.add") }}');
                         $(form).find('button[type="submit"]').prop('disabled', false);
                     }
                     });
@@ -207,6 +207,23 @@
                         dataType: 'json',
                         success: function(response) {
                             window.location.href = response.redirectUrl;
+                        }
+                    });
+                }
+
+                if($(form).find('input[name="payment_method"]').val() == 'Coinbase') {
+                    $(form).find('button[type="submit"]').html('<i class="fa fa-spinner fa-spin"></i>Processing...');
+                    $(form).find('button[type="submit"]').prop('disabled', true);
+                    $.ajax({
+                        url : $(form).attr('action'),
+                        type : 'POST',
+                        data : $(form).serializeArray(),
+                        dataType: 'json',
+                        success: function(response) {
+                            form.reset();
+                            $(form).find('button[type="submit"]').html('{{ trans("wallet.add") }}');
+                            $(form).find('button[type="submit"]').prop('disabled', false);
+                            $(form).after('<p>Please click on below link to Pay. Amount will be added in your wallet once we received confirmation.</p><p><a href="'+response.redirectUrl+'" class="coinbase-pay-link">Click Here to Pay via Coinbase</a></p>');
                         }
                     });
                 }
