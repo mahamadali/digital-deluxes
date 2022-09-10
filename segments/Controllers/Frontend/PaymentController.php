@@ -1088,11 +1088,13 @@ class PaymentController
 
     public function coinbase_wallet_cancel(Request $request, PaymentMethod $paymentMethod) {
         $payload = file_get_contents('php://input'); 
-        file_put_contents('coinbase-success.txt', $payload);
+        file_put_contents('coinbase-cancel.txt', $payload);
         return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashError('Payment cancelled! Please try again.')->go();
     }
 
     public function coinbase_wallet_success(Request $request, PaymentMethod $paymentMethod) {
+        $payload = file_get_contents('php://input'); 
+        file_put_contents('coinbase-success.txt', $payload);
         return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashSuccess('Thanks for payment. we will update wallet shortly.')->go();
     }
     
