@@ -347,6 +347,33 @@
                         }
                     });
                 }
+
+                if($(form).find('input[name="payment_method"]:checked').data('value') == 'Coinbase') {
+                    $(form).find('button[type="submit"]').prop('disabled', true);
+                    $('#page-preloader').show();
+                    var formData = new FormData(form);
+                    $.ajax({
+                        url : $(form).attr('action'),
+                        type : 'POST',
+                        data : formData,
+                        dataType: 'json',
+                        contentType: false, processData: false,
+                        success: function(response) {
+                            $('#page-preloader').hide();
+                            if(response.status == 304) {
+                                toastr.error(response.message);
+                                $(form).find('button[type="submit"]').prop('disabled', false);
+                            } else {
+                                window.location.href = response.redirectUrl;
+                            }
+                        },
+                        error: function() {
+                            $(form).find('button[type="submit"]').prop('disabled', false);
+                            toastr.error('Something went wrong! Please refresh page and try again!');
+                            $('#page-preloader').hide();
+                        }
+                    });
+                }
             }
         });
     })

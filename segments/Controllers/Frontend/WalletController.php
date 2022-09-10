@@ -140,7 +140,7 @@ class WalletController
 			"description":"Wallet - Digital Deluxes",
 			"pricing_type":"fixed_price",
 			"local_price": {
-				"amount": 0.1,
+				"amount": '.$request->balance.',
 					"currency": "'.$paymentMethod->currency.'"
 			},
 			"metadata":{

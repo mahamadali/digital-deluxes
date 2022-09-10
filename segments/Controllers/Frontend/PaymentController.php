@@ -833,8 +833,13 @@ class PaymentController
         return redirect(route('frontend.checkout.index', ['payment_method' => $paymentMethod->id]))->withFlashError('Payment cancelled! Please try again.')->go();
     }
 
-    public function saveOrderInfo($amount, $paymentMethod, $payment_id, $order_reference) {
-        $user = user();
+    public function saveOrderInfo($amount, $paymentMethod, $payment_id, $order_reference, $user_id = '') {
+        if(!empty($user_id)) {
+            $user = User::find($user_id);
+        } else {
+            $user = user();
+        }
+        
         $cartItems = cartItems($user->id);
         
 		$total_amount = $amount;
@@ -865,7 +870,7 @@ class PaymentController
             $mannual_order->currency = $paymentMethod->currency;
             $mannual_order->amount_in_cents = $manualOrderTotalPrice * 100;
             $mannual_order->order_amount = $manualOrderTotalPrice;
-            $mannual_order->user_id = auth()->id;
+            $mannual_order->user_id = $user->id;
             $mannual_order->order_type = 'M';
             $mannual_order = $mannual_order->save();
             foreach($manualOrderItems as $manualOrderItems) {
@@ -915,7 +920,7 @@ class PaymentController
             $order->currency = $paymentMethod->currency;
             $order->amount_in_cents = $kinguinOrderTotalPrice * 100;
             $order->order_amount = $kinguinOrderTotalPrice;
-            $order->user_id = auth()->id;
+            $order->user_id = $user->id;
             $order->order_type = 'K';
             $order = $order->save();
             foreach($kinguinOrderItems as $kinguinOrderItem) {
@@ -999,55 +1004,23 @@ class PaymentController
         $transaction = $transaction->save();
 
         Cart::where('user_id',$user->id)->delete();
+
+        return true;
     }
 
     public function coinbase_wallet_notify() {
-        // $payload = '{
-        //     "id": 1,
-        //     "scheduled_for": "2017-01-31T20:50:02Z",
-        //     "event": {
-        //         "id": "24934862-d980-46cb-9402-43c81b0cdba6",
-        //         "resource": "event",
-        //         "type": "charge:created",
-        //         "api_version": "2018-03-22",
-        //         "created_at": "2017-01-31T20:49:02Z",
-        //         "data": {
-        //           "code": "NAQ5NVHH",
-        //           "name": "The Sovereign Individual",
-        //           "description": "Mastering the Transition to the Information Age",
-        //           "hosted_url": "https://commerce.coinbase.com/charges/NAQ5NVHH",
-        //           "created_at": "2017-01-31T20:49:02Z",
-        //           "expires_at": "2017-01-31T21:49:02Z",
-        //           "timeline": [
-        //             {
-        //               "time": "2017-01-31T20:49:02Z",
-        //               "status": "NEW"
-        //             }
-        //           ],
-        //           "metadata": {
-        //             "user_id": "2",
-        //             "price": "15",
-        //             "payment_method_id": "5",
-        //             "payment_type": "wallet"
-        //           },
-        //           "pricing_type": "fixed_price",
-        //           "payments": [],
-        //           "addresses": {
-        //             "bitcoin": "mymZkiXhQNd6VWWG7VGSVdDX9bKmviti3U",
-        //             "ethereum": "0x419f91df39951fd4e8acc8f1874b01c0c78ceba6"
-        //           }
-        //         }
-        //     }
-        // }';
+        // $payload = '{"attempt_number":1,"event":{"api_version":"2018-03-22","created_at":"2022-09-10T09:47:04Z","data":{"id":"60022c4b-8b56-4e9b-b9eb-9f511d55c75f","code":"X2YMCBEZ","name":"Order","utxo":false,"pricing":{"dai":{"amount":"144.517225933530000000","currency":"DAI"},"local":{"amount":"144.51","currency":"USD"},"tether":{"amount":"144.442112","currency":"USDT"},"apecoin":{"amount":"28.741050119331742243","currency":"APE"},"bitcoin":{"amount":"0.00676202","currency":"BTC"},"dogecoin":{"amount":"2251.63602368","currency":"DOGE"},"ethereum":{"amount":"0.083848000","currency":"ETH"},"litecoin":{"amount":"2.35588523","currency":"LTC"},"shibainu":{"amount":"11069322.098812681950000000","currency":"SHIB"},"bitcoincash":{"amount":"1.09051805","currency":"BCH"}},"fee_rate":0.01,"logo_url":"https://res.cloudinary.com/commerce/image/upload/v1647322968/k4ghtfoai2a4lhquym1o.jpg","metadata":{"price":"144.51","user_id":"2","payment_type":"order","order_reference":"CHZHPTO2I6IM","payment_method_id":"5"},"payments":[],"resource":"charge","timeline":[{"time":"2022-09-10T09:47:04Z","status":"NEW"}],"addresses":{"dai":"0x5485d1144b466f6d9caedcdb20bb6b2da7947ac2","tether":"0x5485d1144b466f6d9caedcdb20bb6b2da7947ac2","apecoin":"0x5485d1144b466f6d9caedcdb20bb6b2da7947ac2","bitcoin":"3Duu5vYNMP9oPSgzYVAKfnEDAtExPgsALZ","dogecoin":"DJxjUU18hyfGKYTMVHXeDxCZdN9qQ3vH7i","ethereum":"0x5485d1144b466f6d9caedcdb20bb6b2da7947ac2","litecoin":"MVuBn4iLcCQsQB8B3XjSuR8qjf63R7PneK","shibainu":"0x5485d1144b466f6d9caedcdb20bb6b2da7947ac2","bitcoincash":"qz3vmzzf5c7p7h40yg8m705agt97qe7r8ykhjr8yee"},"pwcb_only":false,"cancel_url":"https://127.0.0.1/digital-deluxes/payment/coinbase-order/cancel/5","created_at":"2022-09-10T09:47:04Z","expires_at":"2022-09-10T10:47:04Z","hosted_url":"https://commerce.coinbase.com/charges/X2YMCBEZ","brand_color":"#5A97C4","description":"Digital Deluxes","fees_settled":true,"pricing_type":"fixed_price","redirect_url":"https://127.0.0.1/digital-deluxes/payment/coinbase-order/success/5","support_email":"landaetta@live.com","brand_logo_url":"https://res.cloudinary.com/commerce/image/upload/v1647322968/k4ghtfoai2a4lhquym1o.jpg","exchange_rates":{"APE-USD":"5.028","BCH-USD":"132.515","BTC-USD":"21370.825","DAI-USD":"0.99995","ETH-USD":"1723.475","LTC-USD":"61.34","DOGE-USD":"0.06418","SHIB-USD":"0.000013055","USDT-USD":"1.00047"},"offchain_eligible":false,"organization_name":"1Popularity","payment_threshold":{"overpayment_absolute_threshold":{"amount":"5.00","currency":"USD"},"overpayment_relative_threshold":"0.005","underpayment_relative_threshold":"0.005"},"local_exchange_rates":{"APE-USD":"5.028","BCH-USD":"132.515","BTC-USD":"21370.825","DAI-USD":"0.99995","ETH-USD":"1723.475","LTC-USD":"61.34","DOGE-USD":"0.06418","SHIB-USD":"0.000013055","USDT-USD":"1.00047"}},"id":"85078d74-7553-4712-a3c3-2d099703f867","resource":"event","type":"charge:created"},"id":"5d901ac1-14b4-4167-946c-3b578e54bc2f","scheduled_for":"2022-09-10T09:47:04Z"}';
         $payload = file_get_contents('php://input'); 
         file_put_contents('coinbase-ipn.txt', $payload);
 
         $data = json_decode($payload);
+        
         if(isset($data->event) && $data->event->type == 'charge:confirmed') {
             $data = $data->event->data;
             $paymentId = $data->code;
             
             $payment_type = $data->metadata->payment_type ?? '';
+            
             if($payment_type == 'wallet') {
                 $payment_method_id = $data->metadata->payment_method_id ?? '';
                 if(!empty($payment_method_id)) {
@@ -1070,32 +1043,47 @@ class PaymentController
                     $transaction->payment_method_id = $paymentMethod->id;
                     $transaction->kind_of_tx = 'CREDIT';
                     $transaction->save();
-    
-                    ob_start();
-    
-                    header("HTTP/1.1 200 NO CONTENT");
-    
-                    header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
-                    header("Pragma: no-cache"); // HTTP 1.0.
-                    header("Expires: 0"); // Proxies.
-    
-                    ob_end_flush(); //now the headers are sent
-                    exit;
+                }
+            }
+            if($payment_type == 'order') {
+                $payment_method_id = $data->metadata->payment_method_id ?? '';
+                
+                if(!empty($payment_method_id)) {
+                    $amount = $data->metadata->price ?? '';
+                    $user_id = $data->metadata->user_id ?? '';
+                    $order_reference = $data->metadata->order_reference ?? '';
+                    $paymentMethod = PaymentMethod::find($payment_method_id);
+                    $this->saveOrderInfo($amount, $paymentMethod, $paymentId, $order_reference, $user_id);
                 }
             }
         }
+
+        ob_start();
+    
+        header("HTTP/1.1 200 NO CONTENT");
+
+        header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
+        header("Pragma: no-cache"); // HTTP 1.0.
+        header("Expires: 0"); // Proxies.
+
+        ob_end_flush(); //now the headers are sent
+        exit;
     }
 
     public function coinbase_wallet_cancel(Request $request, PaymentMethod $paymentMethod) {
-        $payload = file_get_contents('php://input'); 
-        file_put_contents('coinbase-cancel.txt', $payload);
         return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashError('Payment cancelled! Please try again.')->go();
     }
 
     public function coinbase_wallet_success(Request $request, PaymentMethod $paymentMethod) {
-        $payload = file_get_contents('php://input'); 
-        file_put_contents('coinbase-success.txt', $payload);
         return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashSuccess('Thanks for payment. we will update wallet shortly.')->go();
+    }
+
+    public function coinbase_order_cancel(Request $request, PaymentMethod $paymentMethod) {
+        return redirect(route('frontend.checkout.index'))->withFlashError('Payment cancelled! Please try again.')->go();
+    }
+
+    public function coinbase_order_success(Request $request, PaymentMethod $paymentMethod) {
+        return redirect(route('frontend.orders.index'))->withFlashSuccess('Thanks for payment. we will update your order shortly.')->go();
     }
     
 }
