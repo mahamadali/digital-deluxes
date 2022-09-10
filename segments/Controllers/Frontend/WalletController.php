@@ -140,7 +140,7 @@ class WalletController
 			"description":"Wallet - Digital Deluxes",
 			"pricing_type":"fixed_price",
 			"local_price": {
-				"amount": "'.$request->balance.'",
+				"amount": 0.1,
 					"currency": "'.$paymentMethod->currency.'"
 			},
 			"metadata":{
@@ -148,7 +148,9 @@ class WalletController
 				"price": '.$request->balance.',
 				"payment_method_id": "'.$paymentMethod->id.'",
 				"payment_type": "wallet"
-			}
+			},
+			"redirect_url": "'.route('frontend.payment.coinbase-wallet.success', ['payment_method' => $paymentMethod->id]).'",
+			"cancel_url": "'.route('frontend.payment.coinbase-wallet.cancel', ['payment_method' => $paymentMethod->id]).'"
 			}',
 			CURLOPT_HTTPHEADER => array(
 				'Content-Type: application/json',
@@ -159,7 +161,7 @@ class WalletController
 			));
 
 			$response = curl_exec($curl);
-
+			
 			curl_close($curl);
 			$response = json_decode($response);
 			return response()->json(['status' => 200, 'redirectUrl' => $response->data->hosted_url]);

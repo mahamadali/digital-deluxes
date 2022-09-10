@@ -1001,7 +1001,7 @@ class PaymentController
         Cart::where('user_id',$user->id)->delete();
     }
 
-    public function coinbase_notify() {
+    public function coinbase_wallet_notify() {
         // $payload = '{
         //     "id": 1,
         //     "scheduled_for": "2017-01-31T20:50:02Z",
@@ -1084,6 +1084,16 @@ class PaymentController
                 }
             }
         }
+    }
+
+    public function coinbase_wallet_cancel(Request $request, PaymentMethod $paymentMethod) {
+        $payload = file_get_contents('php://input'); 
+        file_put_contents('coinbase-success.txt', $payload);
+        return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashError('Payment cancelled! Please try again.')->go();
+    }
+
+    public function coinbase_wallet_success(Request $request, PaymentMethod $paymentMethod) {
+        return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashSuccess('Thanks for payment. we will update wallet shortly.')->go();
     }
     
 }

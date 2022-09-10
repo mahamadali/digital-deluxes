@@ -89,7 +89,9 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
 
 
     Router::bunch('/coinbase-wallet', ['as' => 'coinbase-wallet.'], function () {
-      Router::any('/notify', [PaymentController::class, 'coinbase_notify'])->name('notify')->withOutBarrier('is-front-auth');
+      Router::any('/notify', [PaymentController::class, 'coinbase_wallet_notify'])->name('notify')->withOutBarrier('is-front-auth');
+      Router::any('/success/{payment_method}', [PaymentController::class, 'coinbase_wallet_success'])->name('success')->withOutBarrier('is-front-auth');
+      Router::any('/cancel/{payment_method}', [PaymentController::class, 'coinbase_wallet_cancel'])->name('cancel')->withOutBarrier('is-front-auth');
     });
     
   });
