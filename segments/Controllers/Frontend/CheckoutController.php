@@ -340,7 +340,7 @@ class CheckoutController
 			"description":"Digital Deluxes",
 			"pricing_type":"fixed_price",
 			"local_price": {
-				"amount": 0.01,
+				"amount": '.round($total_amount, 2).',
 					"currency": "'.$paymentMethod->currency.'"
 			},
 			"metadata":{
