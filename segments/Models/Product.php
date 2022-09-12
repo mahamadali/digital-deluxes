@@ -60,7 +60,7 @@ class Product extends Model
 			session()->set('base_price', $base_price);
 		}
 		
-		$currenctCurrencyPrice = (float) session()->get('base_price') * getProfitPrice($price);
+		$currenctCurrencyPrice = (float) session()->get('base_price') * (float) getProfitPrice($price);
 		
 		$profitPrice = $currenctCurrencyPrice;
 		
