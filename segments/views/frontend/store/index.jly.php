@@ -13,9 +13,7 @@
     .add_to_cart{
         cursor: pointer;
     }
-    .game-card__genre .platform-logos {
-        height: 25px;
-    }
+    
 </style>
 @block("content")
 <main class="page-main">
@@ -50,7 +48,7 @@
                     @endforeach
                 </select>
 
-                <select class="" name="sort_by">
+                <select class="search-category-input-store" name="sort_by" style="min-width: 110px;">
                     <option value="">{{ trans('store.sort_by') }}</option>
                     <option {{ (isset($_GET["sort_by"]) && $_GET["sort_by"] == "Best Match") ? 'selected' : '' }} value="Best Match">{{ trans('store.best_match') }}</option>
                     <option {{ (isset($_GET["sort_by"]) && $_GET["sort_by"] == "Newest") ? 'selected' : '' }} value="Newest">{{ trans('store.newest') }}</option>
@@ -85,24 +83,20 @@
                 </div>
                 @endif
 
-                <div class="uk-width-1-6">
+                <div class="uk-width-1-6 d-w-38" style="display: flex;">
                     <div class="search">
                         <div class="search__input">
                         <input type="text" name="min_price" placeholder="{{ trans('store.min_price') }}" value="{{ $_GET['min_price'] ?? '' }}"></div>
                     </div>
-                </div>
-
-                <div class="uk-width-1-6">
-                    <div class="search">
+                    <div class="search" style="margin-left: 10px;">
                         <div class="search__input">
                         <input type="text" name="max_price" placeholder="{{ trans('store.max_price') }}" value="{{ $_GET['max_price'] ?? '' }}"></div>
                     </div>
                 </div>
-
                 
                 <div class="uk-width-1-6">
                     <div class="">
-                        <button class="search_btn" type="submit">{{ trans('store.search') }}</button>
+                        <button class="search_btn uk-button" type="submit">{{ trans('store.search') }}</button>
                         <a class="" href="{{ route('frontend.store.list') }}">{{ trans('store.clear') }}</a>
                     </div>
                 </div>

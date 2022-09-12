@@ -82,6 +82,9 @@
                                     <div class="game-card__info"><a class="game-card__title" href="{{ url('store/view/'.$product->id) }}"> {{ $product->name }}</a>
                                         <div class="game-card__genre">
                                         {{ $product->platform }}
+                                        @foreach($product->platform_logos()->get() as $logo):
+                                            <img class="platform-logos" src="{{ url($logo->path) }}">
+                                        @endforeach
                                         </div>
                                         <div class="game-card__rating-and-price">
                                             <!-- <div class="game-card__rating"><span>4.8</span><i class="ico_star"></i></div> -->

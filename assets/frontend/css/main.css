@@ -6396,9 +6396,34 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
         background: #0c1826;
     }
 
+    body.dark-theme .search-category-input-store {
+        background: #1A2634;
+    }
+
+    .game-card__genre .platform-logos {
+        height: 25px;
+    }
+
+    @media only screen and (max-width: 600px) {
+        .uk-width-1-5, .search-category-input-store {
+            width: 100%;
+        }
+        * + .uk-grid-margin, .uk-grid + .uk-grid, .uk-grid > .uk-grid-margin {
+            margin-top: 10px;
+            width: 100%;
+        }
+        .search_btn {
+            width: 85%;
+        }
+    }
+
     @media only screen and (min-width: 768px) {
         .game-card .game-card__box {
             height: 339.61px;
             width: 239.5px;
+        }
+
+        .d-w-38 {
+            width: 38%;
         }
     }
