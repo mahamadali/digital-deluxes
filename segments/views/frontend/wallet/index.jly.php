@@ -4,14 +4,20 @@
 @block("content")
 <main class="page-main">
 <div class="uk-grid" data-uk-grid="">
-    <div class="uk-width-1-3@l uk-first-column">
+    <div class="uk-width-1-2@l uk-first-column">
         <div class="widjet --wallet">
             <div class="widjet__head">
                 <h3 class="uk-text-lead">{{ trans('menu.wallet') }}</h3>
             </div>
             <div class="widjet__body">
                 <div class="wallet-info">
-                    <div class="wallet-value">{{ user()->wallet_amount }} EUR</div>
+                    <div class="wallet-value">
+                        @if(session()->getCurrency() == 'cop'):
+                        {{ (int) currencyConverter('EUR', strtoupper(session()->getCurrency()), user()->wallet_amount) }} {{ strtoupper(session()->getCurrency()) }}
+                        @else
+                        {{ round(currencyConverter('EUR', strtoupper(session()->getCurrency()), user()->wallet_amount), 2) }} {{ strtoupper(session()->getCurrency()) }}
+                        @endif
+                    </div>
                     <div class="wallet-label"><i class="icon-wallet"></i> {{ trans('wallet.available') }}</div>
                 </div>
             </div>
