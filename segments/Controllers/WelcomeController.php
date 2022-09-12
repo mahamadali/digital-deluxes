@@ -148,6 +148,16 @@ class WelcomeController
 			'page' => $page
 		]);
 	}
+
+	public function updateScreenMode(Request $request) {
+		if(session()->has('dark-mode') && session()->get('dark-mode') == 1) {
+			session()->set('dark-mode', 0);
+		} else {
+			session()->set('dark-mode', 1);
+		}
+
+		return response()->json(['status' => 200, 'dark-mode' => session()->get('dark-mode')]);
+	}
     
     
 }

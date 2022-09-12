@@ -2272,9 +2272,9 @@ body.dark-theme a:hover {
 }
 
 
-.js-popular .game-card__title {
+/* .js-popular .game-card__title {
     font-size: 16px;
-}
+} */
 
 .game-card__genre {
     margin: -5px 0 10px 0;
@@ -5539,6 +5539,7 @@ html body.dark-theme #youzify-groups-list .action {
 
 html body.dark-theme .uk-button-danger {
     background: #F46119;
+    color: #fff;
 }
 
 
@@ -6376,4 +6377,28 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     .coinbase-pay-link {
         border: 1px solid;
         padding: 10px;
+    }
+
+    body.dark-theme #cd-cart.speed-in {
+        background: #040615;
+        color: #fff;
+    }
+
+    body.dark-theme #cd-cart.speed-in h2 {
+        color: #fff;
+    }
+
+    body.dark-theme .uk-text-sub-lead {
+        color: #fff;
+    }
+
+    body.dark-theme .custom__body {
+        background: #0c1826;
+    }
+
+    @media only screen and (min-width: 768px) {
+        .game-card .game-card__box {
+            height: 339.61px;
+            width: 239.5px;
+        }
     }

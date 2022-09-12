@@ -42,6 +42,20 @@
         <script type="text/javascript">
             document.getElementById("toggle").addEventListener("click", function() {
                 document.getElementsByTagName('body')[0].classList.toggle("dark-theme");
+                $.ajax({
+                    url : '{{ route("update-screen-mode") }}',
+                    type : 'POST',
+                    data: {
+                        'prevent_csrf_token': '{{ prevent_csrf_token() }}'
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        
+                    },
+                    error: function() {
+                        
+                    }
+                });
             });
         </script>
         </div>
