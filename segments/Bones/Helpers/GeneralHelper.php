@@ -356,9 +356,9 @@ function getKinguinBalance() {
 if (! function_exists('getProfitPrice')) {
     function getProfitPrice($price)
     {
-        if(!empty($priceProfit = PriceProfit::selectSet(['max(min_price) as maximum_price', 'profit_perc'])->orderBy('id')->first())) {
+        if(!empty($priceProfit = PriceProfit::selectSet(['max(min_price) as maximum_price', 'profit_perc', 'max_price'])->orderBy('id')->first())) {
             if($priceProfit->maximum_price <= $price) {
-                $profit_prices = $priceProfit;
+                $profit_prices = PriceProfit::where('min_price', (float) $priceProfit->maximum_price)->first();
             } else {
                 $profit_prices = PriceProfit::where('max_price', (float) $price, '>=')->first();
             }
