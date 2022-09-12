@@ -4775,9 +4775,9 @@ body.dark-theme #modal-help ul li {
         padding: 0 15px 0 10px;
     }
 
-    .search__btn {
+    /* .search__btn {
         display: none;
-    }
+    } */
 
     .page-header__action {
         -webkit-box-flex: 1;
@@ -6404,6 +6404,10 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
         height: 25px;
     }
 
+    .mb-top-search-section {
+        display: none;
+    }
+
     @media only screen and (max-width: 600px) {
         .uk-width-1-5, .search-category-input-store {
             width: 100%;
@@ -6415,12 +6419,20 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
         .search_btn {
             width: 85%;
         }
+
+        .page-wrapper .page-content {
+            padding-top: 0px;
+        }
+
+        .mb-top-search-section {
+            display: block;
+            margin-top: 70px;
+        }
     }
 
     @media only screen and (min-width: 768px) {
-        .game-card .game-card__box {
+        .game-card .game-card__box.fixed {
             height: 339.61px;
-            width: 239.5px;
         }
 
         .d-w-38 {

@@ -47,6 +47,7 @@
 
         <div class="page-wrapper">
             @include('layout/header')
+            @include('frontend/mb-search-area')
             <div class="page-content">
                 @include('layout/aside')
                 @plot('content')
@@ -87,7 +88,9 @@ $( function() {
                     .appendTo(ul);
                 };;
 
-            $('.search__input .search_name').autocomplete({
+            
+
+            $('.search__input .search_name_mb').autocomplete({
                 source: "{{ route('api.search-product') }}",
                 minLength: 1,
                 select: function( event, ui ) {
@@ -95,7 +98,7 @@ $( function() {
                         //window.location.href = "{ { url('store/view') } }/"+ui.item.id;
                     } else {
                         setTimeout(function() {
-                            $('.search__input .search_name').val('');
+                            $('.search__input .search_name_mb').val('');
                         }, 500)
                     }
                 },
@@ -104,7 +107,7 @@ $( function() {
                     .data("item.autocomplete", item)
                     .append(item.label)
                     .appendTo(ul);
-                };;
+                };
 
             // $('.search-category-input').on('change', function() {
             //     window.location.href = '{ { route("frontend.store.list") }}?category='+$(this).val();

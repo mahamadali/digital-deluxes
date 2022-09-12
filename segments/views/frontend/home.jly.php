@@ -77,7 +77,7 @@
                         @foreach($popular_products as $product):                                                
                         <div class="swiper-slide">
                             <div class="game-card">
-                                <div class="game-card__box">
+                                <div class="game-card__box fixed">
                                     <div class="game-card__media"><a href="{{ url('store/view/'.$product->id) }}"><img src="{{ $product->coverImageOriginal }}" alt="{{ $product->name }}" /></a></div>
                                     <div class="game-card__info"><a class="game-card__title" href="{{ url('store/view/'.$product->id) }}"> {{ $product->name }}</a>
                                         <div class="game-card__genre">

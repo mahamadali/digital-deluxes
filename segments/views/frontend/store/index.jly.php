@@ -112,7 +112,7 @@
         @foreach($products as $product):
         <div>
             <div class="game-card">
-                <div class="game-card__box">
+                <div class="game-card__box fixed">
                     <div class="game-card__media"><a href="{{ url('store/view/'.$product->id) }}"><img src="{{ $product->coverImageOriginal }}" alt="{{ $product->name }}" /></a></div>
                     <div class="game-card__info"><a class="game-card__title" href="{{ route('frontend.store.view', ['product' => $product->id]) }}"> {{ $product->name }}</a>
                         <div class="game-card__genre">
@@ -147,5 +147,24 @@
         $('#page-preloader').show();
         $(this).closest('form').submit();
     });
+
+    $('.search__input .search_name').autocomplete({
+        source: "{{ route('api.search-product') }}",
+        minLength: 1,
+        select: function( event, ui ) {
+            if(typeof ui.item.id != 'undefined') {
+                //window.location.href = "{ { url('store/view') } }/"+ui.item.id;
+            } else {
+                setTimeout(function() {
+                    $('.search__input .search_name').val('');
+                }, 500)
+            }
+        },
+    }).data('ui-autocomplete')._renderItem = function(ul, item){
+        return $("<li class='ui-autocomplete-row'></li>")
+            .data("item.autocomplete", item)
+            .append(item.label)
+            .appendTo(ul);
+        };
 </script>
 @endsection
