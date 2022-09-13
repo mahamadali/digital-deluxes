@@ -55,7 +55,7 @@ class Product extends Model
 		$this->price_original_value = $price;
 		
 		if(!session()->has('base_price') && empty(session()->get('base_price'))) {
-			session()->setCurrency('cop');
+			session()->set('platform_currency', 'cop');
 			$base_price = currencyConverter('EUR', 'COP', 1);
 			session()->set('base_price', $base_price);
 		}
@@ -64,11 +64,11 @@ class Product extends Model
 		
 		$profitPrice = $currenctCurrencyPrice;
 		
-		if(session()->getCurrency() == 'cop') {
+		if(session()->get('platform_currency') == 'cop') {
 			$profitPrice = (int) $profitPrice;
 		}
 
-		if(session()->getCurrency() == 'usd' || session()->getCurrency() == 'eur') {
+		if(session()->get('platform_currency') == 'usd' || session()->get('platform_currency') == 'eur') {
 			$profitPrice = round($profitPrice, 2);
 		}
 		return $profitPrice;

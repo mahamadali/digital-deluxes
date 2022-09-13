@@ -120,7 +120,7 @@ $( function() {
         // var cartTotal = exchangePrice;
         
         // if(cartTotal > 0 && cartTotal > 1500) {
-        //     cartTotal = '{ { currencyConverter(strtoupper(session()->getCurrency()), "COP", cartTotal(), false) } }';
+        //     cartTotal = '{ { currencyConverter(strtoupper(session()->get('platform_currency')), "COP", cartTotal(), false) } }';
         //     var amountInCents = (cartTotal * 100).toFixed(0);
         //     var user_phone = '{ { !empty(auth()) ? user()->phone : "" } }';
         //     if(user_phone != '') {

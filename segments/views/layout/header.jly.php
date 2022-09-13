@@ -51,18 +51,18 @@
 
                <li class="uk-first-column currency-section">
                   <a href="#" aria-expanded="false">
-                     @if(session()->getCurrency() == 'cop' || session()->getCurrency() == ''):
+                     @if(session()->get('platform_currency') == 'cop' || session()->get('platform_currency') == ''):
                      <img src="{{ url('assets/frontend/img/cop-flag.png') }}" alt="profile" class="profile">
                      COP
                      <span uk-icon="icon: triangle-down" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
                      @endif
-                     @if(session()->getCurrency() == 'eur'):
+                     @if(session()->get('platform_currency') == 'eur'):
                      <img src="{{ url('assets/frontend/img/eur-flag.png') }}" alt="profile" class="profile">
                      EUR
                      <span uk-icon="icon: triangle-down" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
                      @endif
 
-                     @if(session()->getCurrency() == 'usd'):
+                     @if(session()->get('platform_currency') == 'usd'):
                      <img src="{{ url('assets/frontend/img/usd-flag.png') }}" alt="profile" class="profile">
                      USD
                      <span uk-icon="icon: triangle-down" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 7 15 7 10 12"></polygon></svg></span>

@@ -145,7 +145,7 @@
                                 @endforeach
                             </div>
                             <hr>
-                            <div class="game-profile-price__value">{{ currencySymbol() }}{{ $product->price }} {{ strtoupper(session()->getCurrency()) }}</div>
+                            <div class="game-profile-price__value">{{ currencySymbol() }}{{ $product->price }} {{ strtoupper(session()->get('platform_currency')) }}</div>
                             @if($productQty > 0):
                             <a href="{{ route('frontend.cart.add',[$product->id]) }}" class="uk-button uk-button-danger uk-width-1-1 buy-now-btn">
                                 <span class="ico_shopping-cart"></span><span>{{ trans('store.buy_now') }}</span>

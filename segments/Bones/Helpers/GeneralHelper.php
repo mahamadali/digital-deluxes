@@ -204,7 +204,7 @@ if (! function_exists('exchangeRate')) {
     function exchangeRate($price, $from, $to)
     {
         if(cartTotal() > 0) {
-            if(session()->getCurrency() != 'cop') {
+            if(session()->get('platform_currency') != 'cop') {
                 $exchange_rate = currencyConverter($from, $to, $price);
             } else {
                 $exchange_rate = $price;
@@ -423,7 +423,7 @@ if (! function_exists('platforms')) {
 
 if (! function_exists('currencySymbol')) {
     function currencySymbol() {
-        $currency = session()->getCurrency();
+        $currency = session()->get('platform_currency');
         switch ($currency) {
             case 'eur':
                 $symbol = "€";

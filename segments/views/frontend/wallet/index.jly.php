@@ -12,10 +12,10 @@
             <div class="widjet__body">
                 <div class="wallet-info">
                     <div class="wallet-value">
-                        @if(session()->getCurrency() == 'cop'):
-                        {{ (int) currencyConverter('EUR', strtoupper(session()->getCurrency()), user()->wallet_amount) }} {{ strtoupper(session()->getCurrency()) }}
+                        @if(session()->get('platform_currency') == 'cop'):
+                        {{ (int) currencyConverter('EUR', strtoupper(session()->get('platform_currency')), user()->wallet_amount) }} {{ strtoupper(session()->get('platform_currency')) }}
                         @else
-                        {{ round(currencyConverter('EUR', strtoupper(session()->getCurrency()), user()->wallet_amount), 2) }} {{ strtoupper(session()->getCurrency()) }}
+                        {{ round(currencyConverter('EUR', strtoupper(session()->get('platform_currency')), user()->wallet_amount), 2) }} {{ strtoupper(session()->get('platform_currency')) }}
                         @endif
                     </div>
                     <div class="wallet-label"><i class="icon-wallet"></i> {{ trans('wallet.available') }}</div>

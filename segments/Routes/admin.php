@@ -111,7 +111,7 @@ Router::get('/language/{lang}', function(Request $request, $lang) {
 })->name('set-lang');
 
 Router::get('/currency/{currency}', function(Request $request, $currency) {
-	session()->setCurrency($currency);
+	session()->set('platform_currency', $currency);
 	$base_price = currencyConverter('EUR', strtoupper($currency), 1);
 	session()->set('base_price', $base_price);
 	return redirect()->back();
