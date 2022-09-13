@@ -46,10 +46,10 @@
                 @foreach($cart_details as $cart):
                 <div class="widjet__body">
                     <div class="widjet-game">
-                        <div class="widjet-game__media"><a href="#"><img src="{{ $cart->product()->coverImage }}" alt="image"></a></div>
+                        <div class="widjet-game__media"><a href="#"><img src="{{ $cart->product->coverImage }}" alt="image"></a></div>
                         <div class="widjet-game__info">
-                            <div class="widjet-game__title"><a href="#">{{ $cart->product()->name }}</a></div>
-                            <div class="widjet-game__starting">{{ trans('cart.price') }}: $<b class="price">{{ $cart->product()->price }}</b></div>
+                            <div class="widjet-game__title"><a href="#">{{ $cart->product->name }}</a></div>
+                            <div class="widjet-game__starting">{{ trans('cart.price') }}: $<b class="price">{{ $cart->product->price }}</b></div>
                             <div class="widjet-game__quantity">
                                 {{ trans('cart.quantity') }}:<input type="text"  class="uk-input quantity" value="{{ $cart->product_qty }}" style="height:35px;width:100px;">
                                 </div>

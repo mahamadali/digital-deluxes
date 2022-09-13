@@ -6,11 +6,13 @@ use Bones\Commander;
 use Bones\Database;
 use Bones\File;
 use Bones\Str;
-use JollyException\DBGramException;
+use Bones\DBGramException;
+use Bones\Traits\Commander\AttrPairGenerator;
 
 class Adjustor
 {
-
+    use AttrPairGenerator;
+    
     protected $table = 'dbgrams';
     protected $console;
     protected $filesBasePath = 'locker/dbgrams/';
@@ -19,6 +21,8 @@ class Adjustor
     public function __construct()
     {
         $this->console = (new Commander());
+        if (!file_exists($this->filesBasePath))
+            mkdir($this->filesBasePath, 0644, true);
     }
 
     public function create($commandAttr, $commandExtraAttrs)
@@ -572,34 +576,6 @@ class Adjustor
         fclose($handle);
 
         return $this->console->showMsg('Export done for database ' . $database . '. File saved at ' . $backUpFileAs . PHP_EOL);
-    }
-
-    public function generateExtraAttrs($commandAttr, $commandExtraAttrs)
-    {
-        $commandExtraAttrPairs = [];
-
-        if (!empty($commandExtraAttrs)) {
-            if (gettype($commandAttr) == 'string') $commandAttr = [$commandAttr];
-            foreach ($commandAttr as $extraAttr) {
-                if (Str::startsWith($extraAttr, '--')) {
-                    $attribute = explode('=', $extraAttr);
-                    $attrName = $attribute[0];
-                    $commandExtraAttrPairs[$attrName] = (!empty($attribute[1])) ? $attribute[1] : '';
-                }
-            }
-        }
-
-        if (!empty($commandExtraAttrs)) {
-            foreach ($commandExtraAttrs as $extraAttr) {
-                if (Str::startsWith($extraAttr, '--')) {
-                    $attribute = explode('=', $extraAttr);
-                    $attrName = $attribute[0];
-                    $commandExtraAttrPairs[$attrName] = (!empty($attribute[1])) ? $attribute[1] : '';
-                }
-            }
-        }
-
-        return $commandExtraAttrPairs;
     }
 
     public function cleanBaseFilePath($path)

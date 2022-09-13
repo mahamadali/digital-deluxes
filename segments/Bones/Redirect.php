@@ -3,8 +3,8 @@
 namespace Bones;
 
 use Bones\Router;
-use JollyException\RedirectException;
-use JollyException\BadMethodException;
+use Bones\RedirectException;
+use Bones\BadMethodException;
 
 class Redirect
 {
@@ -38,7 +38,7 @@ class Redirect
     public function go()
     {
         if (empty($this->url))
-            throw new RedirectException('Redirect: URL not found');
+            throw new RedirectException('Redirect: Empty URL given');
         foreach ($this->headers as $header) {
             foreach ($header as $key => $value) {
                 header($key . ':' . $value);

@@ -2,9 +2,9 @@
 
 namespace Bones;
 
-use JollyException\MultiplePrimaryDBFound;
-use JollyException\DatabaseException;
-use JollyException\BadMethodException;
+use Bones\MultiplePrimaryDBFound;
+use Bones\DatabaseException;
+use Bones\BadMethodException;
 
 class Database
 {
@@ -308,6 +308,8 @@ class Database
             $this->setPrefix($prefix);
         }
 
+        self::query('SET FOREIGN_KEY_CHECKS=1;');
+
         self::$_instance = $this;
     }
 
@@ -478,6 +480,7 @@ class Database
         self::$_lastInsertId = null;
         self::$_updateColumns = null;
         self::$_mapKey = null;
+        self::$_limitAttrs = [];
         if (!self::$_transaction_in_progress) {
             self::$defConnectionName = 'default';
         }
@@ -2150,7 +2153,7 @@ class Database
                     if (is_array($val)) {
                         self::_bindParams($val);
                     } elseif ($val === null) {
-                        self::$_query .= ' ' . $operator . " NULL";
+                        self::$_query .= ' ' . $operator . " NULL ";
                     } elseif ($val != 'DBNULL' || $val == '0') {
                         self::$_query .= self::_buildPair($operator, $val);
                     }
@@ -2242,6 +2245,11 @@ class Database
         }
 
         self::$_limitAttrs = $limitAttrs;
+    }
+
+    protected static function __clearLimit()
+    {
+        self::$_limitAttrs = [];
     }
 
     /**
@@ -2680,7 +2688,7 @@ class Database
             'total_pages' => self::$totalPages,
             'current_page' => $page,
             'per_page' => $pageLimit,
-            'has_next_page' => $page < self::$totalPages
+            'has_next_page' => $page < self::$totalPages,
         ];
         return $res;
     }
@@ -2889,7 +2897,7 @@ class Database
      * 
      * @return method response
      */
-    public function __call(string $method, $arguments)
+    public function __call(string $method, array $arguments)
     {
         if (method_exists($this, '__' . $method)) {
             return $this->{'__' . $method}(...$arguments);

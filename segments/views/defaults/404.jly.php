@@ -85,7 +85,7 @@
     <article class="vh-100 dt w-100 bg-dark-orange">
         <div class="dtc v-mid tc white ph3 ph4-l">
             <h1 class="f6 f2-m f-subheadline-l fw6 tc">404</h1>
-            <h3>{{ $error ?? 'Page you are looking for does not exists in the system!' }}</h3>
+            <h3>{{ 'Page you are looking for does not exists in the system' }}</h3>
         </div>
     </article>
 </body>

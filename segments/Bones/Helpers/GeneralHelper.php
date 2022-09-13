@@ -162,7 +162,7 @@ if (! function_exists('cartTotal')) {
         $cart_details  = Cart::where('user_id', $userId)->orderBy('id')->get();
         $total = 0;
         foreach($cart_details as $cart) {
-            $total += remove_format($cart->product()->price) * $cart->product_qty;
+            $total += remove_format($cart->product->price) * $cart->product_qty;
         }
         return $total;
     }
@@ -180,7 +180,7 @@ if (! function_exists('cartTotalOriginal')) {
         $cart_details  = Cart::where('user_id', $userId)->orderBy('id')->get();
         $total = 0;
         foreach($cart_details as $cart) {
-            $total += remove_format($cart->product()->price_original) * $cart->product_qty;
+            $total += remove_format($cart->product->price_original) * $cart->product_qty;
         }
         return $total;
     }
@@ -479,5 +479,14 @@ if (! function_exists('productGenres')) {
             }
         }
         return $productGenresArray;
+    }
+}
+
+if (!function_exists('prevent_csrf')) {
+    function prevent_csrf()
+    {
+        $prevent_csrf_token = md5(uniqid(mt_rand(), true));
+        session()->appendSet('prevent_csrf_token', $prevent_csrf_token, true);
+        return '<input type="hidden" name="prevent_csrf_token" value="'.$prevent_csrf_token.'" />' . PHP_EOL;
     }
 }

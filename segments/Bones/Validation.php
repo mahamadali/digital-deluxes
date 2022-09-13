@@ -4,7 +4,7 @@ namespace Bones;
 
 use Exception;
 use Bones\Database;
-use JollyException\BadMethodException;
+use Bones\BadMethodException;
 
 class Validation
 {

@@ -3,10 +3,10 @@
 namespace Bones;
 
 use Exception;
-use JollyException\FileDeleteError;
-use JollyException\FileNotFound;
-use JollyException\FileUploadError;
-use JollyException\InvalidFileTypeException;
+use Bones\FileDeleteError;
+use Bones\FileNotFound;
+use Bones\FileUploadError;
+use Bones\InvalidFileTypeException;
 
 class File
 {

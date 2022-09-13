@@ -85,7 +85,7 @@
     <article class="vh-100 dt w-100 bg-dark-sky-blue">
         <div class="dtc v-mid tc white ph3 ph4-l">
             <h1 class="f6 f2-m f-subheadline-l fw6 tc">Under Maintenance</h1>
-            <h3>{{ $stop_msg ?? 'We will soon up here. Thanks for the support and Stay connected!' }}</h3>
+            <h3>{{ $message ?? 'We will soon up here. Thanks for the support and Stay connected!' }}</h3>
         </div>
     </article>
 </body>

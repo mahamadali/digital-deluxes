@@ -9,9 +9,11 @@ class Cart extends Model
 {
     protected $table = 'user_cart';
 
+	protected $with = ['product'];
+
     public function product() 
 	{
-		return $this->parallelTo(Product::class, 'product_id')->first();
+		return $this->parallelTo(Product::class, 'product_id');
 	}
 
 }

@@ -4,14 +4,13 @@ namespace Bones;
 
 use Bones\Str;
 use Exception;
-use JollyException\BadMethodException;
+use Bones\BadMethodException;
 
 class Session
 {
     protected static $prefix;
     protected static $reservedPrefix;
     protected static $languageKey = 'platform_language';
-    protected static $currencyKey = 'platform_currency';
 
     /**
      * Constructor
@@ -99,7 +98,6 @@ class Session
     public static function appendSet(string $key, $value, bool $reserved = false)
     {
         $existingSet = (self::has($key, $reserved)) ? self::get($key, $reserved) : [];
-        
 
         if (!is_array($existingSet)) {
             throw new Exception('Session: appendSet() can only be applied on array');
@@ -216,35 +214,6 @@ class Session
     public static function getLanguage()
     {
         return self::get(self::$languageKey, true);
-    }
-
-    /**
-     * Check session has platform laguage
-     * 
-     */
-    public static function hasCurrency()
-    {
-        return self::has(self::$currencyKey, true);
-    }
-
-    /**
-     * Set platform laguage in session 
-     * 
-     * @param string $lang
-     */
-    public static function setCurrency($lang = 'eur')
-    {
-        return self::set(self::$currencyKey, $lang, true);
-    }
-
-    /**
-     * Get platform laguage from session 
-     * 
-     * @param string $lang
-     */
-    public static function getCurrency()
-    {
-        return self::get(self::$currencyKey, true);
     }
 
     /**

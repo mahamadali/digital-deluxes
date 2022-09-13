@@ -3,8 +3,8 @@
 namespace Bones\Skeletons\DataWing;
 
 use Bones\Str;
-use JollyException\BadMethodException;
-use JollyException\DataWingException;
+use Bones\BadMethodException;
+use Bones\DataWingException;
 
 class ColumnStructure
 {

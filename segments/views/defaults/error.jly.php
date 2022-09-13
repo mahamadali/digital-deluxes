@@ -84,10 +84,16 @@
                 :Jolly
             </div>
         </header>
-        <section class="terminal">
-            <div class="history"></div>
-            <?php echo $error; ?>
-        </section>
+        
+            <section class="terminal">
+                <div class="history"></div>
+                <?php
+                    if (!empty($error))
+                        echo $error;
+                    else
+                        echo 'Oops! Something went wrong...';
+                ?>
+            </section>
     </div>
 </body>
 

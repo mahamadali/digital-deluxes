@@ -111,6 +111,9 @@ class Transform
                 return date($format, strtotime($this->attribute));
         }
 
+        if (function_exists($type))
+            return call_user_func_array($type, [$this->attribute]);
+
         return null;
     }
 

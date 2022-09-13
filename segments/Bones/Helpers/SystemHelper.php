@@ -8,10 +8,10 @@ use Bones\Session;
 use Jolly\Engine;
 use Bones\Redirect;
 use Bones\Response;
-use JollyException\RouteException;
-use JollyException\CompileException;
-use JollyException\VariableFileNotFound;
-use JollyException\VariableFileKeyNotFound;
+use Bones\RouteException;
+use Bones\CompileException;
+use Bones\VariableFileNotFound;
+use Bones\VariableFileKeyNotFound;
 
 if (!function_exists('findFileVariableByKey')) {
     function findFileVariableByKey($file, $param, $default = '')
@@ -101,18 +101,18 @@ if (!function_exists('trans')) {
 }
 
 if (!function_exists('render')) {
-    function render($jlySource = '', array $with = [])
+    function render($jlySource = '', array $with = [], $stopExecution = false)
     {
         if (empty(trim($jlySource))) throw new CompileException('Empty source can not be generated');
-        return Engine::render($jlySource, $with);
+        return Engine::render($jlySource, $with, false, $stopExecution);
     }
 }
 
 if (!function_exists('content')) {
-    function content($jlySource = '', array $with = [])
+    function content($jlySource = '', array $with = [], $stopExecution = false)
     {
         if (empty(trim($jlySource))) throw new CompileException('Empty source can not be generated');
-        return Engine::render($jlySource, $with, true);
+        return Engine::render($jlySource, $with, true, $stopExecution);
     }
 }
 
@@ -124,15 +124,6 @@ if (!function_exists('formData')) {
             return $_REQUEST[$param];
         }
         return '';
-    }
-}
-
-if (!function_exists('prevent_csrf')) {
-    function prevent_csrf()
-    {
-        $prevent_csrf_token = md5(uniqid(mt_rand(), true));
-        session()->appendSet('prevent_csrf_token', $prevent_csrf_token, true);
-        return '<input type="hidden" name="prevent_csrf_token" value="'.$prevent_csrf_token.'" />' . PHP_EOL;
     }
 }
 
@@ -148,7 +139,7 @@ if (!function_exists('prevent_csrf_token')) {
 if (!function_exists('prevent_csrf_field')) {
     function prevent_csrf_field()
     {
-        return '<input type="hidden" name="prevent_csrf_token" value="'.prevent_csrf_token().'" />' . PHP_EOL;
+        echo '<input type="hidden" name="prevent_csrf_token" value="'.prevent_csrf_token().'" />' . PHP_EOL;
     }
 }
 
@@ -214,6 +205,26 @@ if (!function_exists('url')) {
             return $url;
         
         return Router::url(trim($url, '/'));
+    }
+}
+
+if (!function_exists('error')) {
+    function error($error_code, $data = [])
+    {
+        if (empty($data['error'])) {
+            $data['error'] = (!empty($data['message']) && !empty(trim($data['message']))) ? $data['message'] : trans('errors.page.' . $error_code);
+        }
+        
+        render(setting('templates.'.$error_code, 'defaults/error'), $data);
+        exit;
+    }
+}
+
+if (!function_exists('template')) {
+    function template($template, $data = [])
+    {
+        render(setting('templates.'.$template, 'defaults/' . $template), $data, true);
+        exit;
     }
 }
 

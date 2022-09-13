@@ -4,9 +4,10 @@ namespace Models\Base;
 
 use Bones\Database;
 use Bones\Str;
+use Bones\BadMethodException;
+use Bones\DatabaseException;
 use Contributors\Particles\Pagination;
-use JollyException\BadMethodException;
-use JollyException\DatabaseException;
+use InvalidArgumentException;
 use Models\Traits\Relation;
 use Models\Traits\SelfResolve;
 
@@ -32,6 +33,7 @@ class Model extends Database
     protected $relationalProps = [];
     protected $dynamicAttributes = [];
     protected $transforms = [];
+    protected $skip_relationships = false;
 
     public function __construct()
     {
@@ -46,7 +48,7 @@ class Model extends Database
         $this->hidden = array_merge($this->hidden, resolveAsArray($attrs));
         $this->makeUnique('hidden');
 
-        return $this; 
+        return $this;
     }
 
     public function ___makeVisible(...$attrs)
@@ -54,7 +56,7 @@ class Model extends Database
         $this->hidden = array_diff($this->hidden, resolveAsArray($attrs));
         $this->makeUnique('hidden');
 
-        return $this; 
+        return $this;
     }
 
     public function ___with(...$attrs)
@@ -83,24 +85,31 @@ class Model extends Database
     public function ___hasRelated(...$attrs)
     {
         $this->has = array_merge($this->has, resolveAsArray($attrs));
-        
+
+        return $this;
+    }
+
+    public function ___skipRelationships($skip_relationships = true)
+    {
+        $this->skip_relationships = $skip_relationships;
+
         return $this;
     }
 
     public function ___selectSet(...$attrs)
     {
         $this->columns = resolveAsArray($attrs);
-        
+
         return $this;
     }
 
     public function ___select(string $column, string $alias = '')
     {
         $alias = (!empty($alias)) ? ' AS ' . $alias : '';
-        
+
         if (!in_array('*', $this->columns))
             $this->columns[] = $column . $alias;
-        
+
         return $this;
     }
 
@@ -115,7 +124,7 @@ class Model extends Database
     {
         if (!empty($this->defaults)) {
             foreach ($this->defaults as $element => $default) {
-                if (!array_key_exists($element, $insertData)) 
+                if (!array_key_exists($element, $insertData))
                     $insertData[$element] = $default;
             }
         }
@@ -146,7 +155,7 @@ class Model extends Database
                     if (!Str::empty($this->defaults[$element])) {
                         $insertData[$element] = $this->defaults[$element];
                     } else {
-                        throw new DatabaseException('{'.$element.'} presents in '.$this->model.'::elements but not available in arguments Array in method '.__FUNCTION__.'(Array)');
+                        throw new DatabaseException('{' . $element . '} presents in ' . $this->model . '::elements but not available in arguments Array in method ' . __FUNCTION__ . '(Array)');
                     }
                 } else {
                     $insertData[$element] = $createData[$element];
@@ -158,7 +167,7 @@ class Model extends Database
             }
             if (!empty($this->defaults)) {
                 foreach ($this->defaults as $element => $default) {
-                    if (!isset($insertData[$element])) 
+                    if (!isset($insertData[$element]))
                         $insertData[$element] = $default;
                 }
             }
@@ -172,7 +181,7 @@ class Model extends Database
         if (!empty($this->defaults)) {
             foreach ($multiInsertData as $insertPairIndex => $insertData) {
                 foreach ($this->defaults as $element => $default) {
-                    if (!array_key_exists($element, $insertData)) 
+                    if (!array_key_exists($element, $insertData))
                         $multiInsertData[$insertPairIndex][$element] = $default;
                 }
             }
@@ -203,7 +212,7 @@ class Model extends Database
             $this->where($this->primary_key, $this->{$this->primary_key});
             $this->setSelfOnly(false);
         }
-        
+
         if (!empty($this->transforms)) {
             foreach ($updateData as $elementName => &$elementVal) {
                 if (array_key_exists($elementName, $this->transforms)) {
@@ -254,25 +263,25 @@ class Model extends Database
 
     public function ___whereNull($whereProp, $cond = 'AND')
     {
-        $this->db->__where($whereProp, NULL, 'IS', $cond);
+        $this->db->__whereNull($whereProp, $cond);
         return $this;
     }
 
     public function ___orWhereNull($whereProp)
     {
-        $this->db->__where($whereProp, NULL, 'IS', 'OR');
+        $this->db->__orWhereNull($whereProp);
         return $this;
     }
 
     public function ___whereNotNull($whereProp, $cond = 'AND')
     {
-        $this->db->__where($whereProp, NULL, 'IS NOT', $cond);
+        $this->db->__whereNotNull($whereProp, $cond);
         return $this;
     }
 
     public function ___orWhereNotNull($whereProp)
     {
-        $this->db->__where($whereProp, NULL, 'IS NOT', 'OR');
+        $this->db->__orWhereNotNull($whereProp);
         return $this;
     }
 
@@ -347,7 +356,7 @@ class Model extends Database
         $this->db->__where($whereProp, $rangeSet, 'NOT BETWEEN', $cond);
         return $this;
     }
-    
+
     public function ___orWhereNotBetween($whereProp, $rangeSet = [])
     {
         $this->db->__where($whereProp, $rangeSet, 'NOT BETWEEN', 'OR');
@@ -486,20 +495,26 @@ class Model extends Database
         }
 
         $entries = $this->select($this->primary_key)->db->__getRows($numRows, $this->columnSet(), $this->table);
-        
-        $this->primary_keys = array_map(function($item) {
-            return $item->{$this->primary_key};
-        }, $entries);
 
         $result = [];
-        
+
         foreach ($entries as $key => $entry) {
 
             $modelObj = (new $this->model());
             $modelObj = $this->build($modelObj, $entry);
-            
+
             if (!empty($modelObj)) {
                 $result[$key] = $modelObj;
+            }
+        }
+
+        if (!$this->skip_relationships) {
+            foreach ($this->with as $with) {
+                if (in_array($with, $this->without)) continue;
+                $this->$with = $this->$with();
+                if (!empty($relationalProps = $this->$with->relationalProps) && !empty($this->$with->relationalProps['type'])) {
+                    $result = $this->___buildRelationalData($with, $entries, $result, $relationalProps);
+                }
             }
         }
 
@@ -533,7 +548,69 @@ class Model extends Database
         $modelObj = $this->build($modelObj, $attributes);
         $modelObj->setSelfOnly(true);
 
+        foreach ($this->with as $with) {
+            if (in_array($with, $this->without)) continue;
+            $this->$with = $this->$with();
+            if (!empty($relationalProps = $this->$with->relationalProps) && !empty($this->$with->relationalProps['type'])) {
+                $modelObj = $this->___buildRelationalData($with, $entries, $modelObj, $relationalProps);
+            }
+        }
+
         return $modelObj;
+    }
+
+    public function ___firstOrNew($whereData = [], $additionalData = [])
+    {
+        if (gettype($whereData) != 'array')
+            throw new InvalidArgumentException(__FUNCTION__ . ' must have an array as argument #1');
+
+        if (gettype($additionalData) != 'array')
+            throw new InvalidArgumentException(__FUNCTION__ . ' must have an array as argument #2');
+
+        $this->__clearWhere();
+
+        foreach ($whereData as $attrName => $attrVal) {
+            $this->where($attrName, $attrVal);
+        }
+
+        if (!empty($first = $this->first()))
+            return $first;
+
+        $model = new $this->model();
+        foreach (array_merge($whereData, $additionalData) as $attrName => $attrVal) {
+            $model->$attrName = $attrVal;
+        }
+
+        return $model;
+    }
+
+    public function ___firstOrCreate($whereData = [], $additionalData = [])
+    {
+        if (gettype($whereData) != 'array')
+            throw new InvalidArgumentException(__FUNCTION__ . ' must have an array as argument #1');
+        if (gettype($additionalData) != 'array')
+            throw new InvalidArgumentException(__FUNCTION__ . ' must have an array as argument #2');
+
+        $this->__clearWhere();
+
+        foreach ($whereData as $attrName => $attrVal) {
+            $this->where($attrName, $attrVal);
+        }
+
+        if (!empty($first = $this->first()))
+            return $first;
+
+        return $this->insert(array_merge($whereData, $additionalData));
+    }
+
+    public function ___isLast()
+    {
+        return ($this->{$this->primary_key} === $this->max($this->primary_key));
+    }
+
+    public function ___exists()
+    {
+        return $this->count() > 0;
     }
 
     public function ___find($value)
@@ -552,29 +629,81 @@ class Model extends Database
         return $this;
     }
 
+    public function ___clearLimit(...$limit)
+    {
+        $this->db->__limit(implode(',', resolveAsArray($limit)));
+        return $this;
+    }
+
+    public function ___ignoreForeignKeyChecks($ignore = true)
+    {
+        $this->db->query('SET FOREIGN_KEY_CHECKS=' . (int) !$ignore . ';');
+        return $this;
+    }
+
+    public function ___truncate()
+    {
+        return $this->db->__truncate($this->table);
+    }
+
     public function ___paginate($page_limit = 0, $query_param = 'page')
     {
         $page = (!empty(request()->get($query_param))) ? request()->get($query_param) : 1;
+
+        if ($this->hasTrashMask() && !$this->withTrashed) {
+            $this->whereNull($this->getTrashMaskColumn());
+        }
+
         $paginated = $this->db->paginate($page_limit, $page, $this->columns, $this->table);
         $wrapped = [];
+
         foreach ($paginated as $key => $entry) {
             if (Str::contains($key, '__pagination')) {
                 $wrapped[$key] = new Pagination($entry, $query_param);
                 continue;
             }
+
             $attributes = (is_object($entry)) ? get_object_vars($entry) : array_keys($entry);
+
             $modelObj = (new $this->model());
             $modelObj = $this->build($modelObj, $attributes);
             $modelObj->setSelfOnly(true);
-            foreach($this->with as $with) {
+
+            foreach ($this->with as $with) {
+                if (in_array($with, $this->without)) continue;
                 $this->$with = $this->$with();
                 if (!empty($relationalProps = $this->$with->relationalProps) && !empty($this->$with->relationalProps['type'])) {
                     $modelObj = $this->___buildRelationalData($with, $entry, $modelObj, $relationalProps);
                 }
             }
+
             $wrapped[] = $modelObj;
         }
+
         return $wrapped;
+    }
+
+    public function ___aggregate($operator, $column = '', $alias = '')
+    {
+        $this->columns = $this->removeAttr($this->columns, '*');
+
+        $column = ltrim($column, '`');
+        $column = rtrim($column, '`');
+
+        if (empty($column)) {
+            if (strtolower($operator) == 'count')
+                $column = $this->primary_key;
+            else
+                throw new InvalidArgumentException('Aggregate operation {' . $operator . '} must have column name to peform operation, empty given');
+        }
+
+        $entry = $this->select($operator . '(`' . $column . '`)', $alias)->skipRelationships()->first();
+        if (!empty($entry)) {
+            $retrive_as = (!empty($alias)) ? $entry->$alias : $operator . '(`' . $column . '`)';
+            return (!empty($entry->{$retrive_as})) ? $entry->{$retrive_as} : 0;
+        }
+
+        return 0;
     }
 
     public function ___makeUnique($attr)
@@ -582,6 +711,14 @@ class Model extends Database
         if (!empty($this->$attr) && is_array($this->$attr)) {
             $this->$attr = array_unique($this->$attr);
         }
+    }
+
+    public function ___removeAttr($attrs, $attr)
+    {
+        if (($key = array_search($attr, $attrs)) !== false)
+            unset($attrs[$key]);
+
+        return $attrs;
     }
 
     public function ___hasTrashMask()
@@ -600,12 +737,12 @@ class Model extends Database
             return [];
         }
         $attribute = Str::decamelize($attribute);
-        $attributeMehod = 'get'.$attribute.'Property';
+        $attributeMehod = 'get' . $attribute . 'Property';
         if (method_exists($this->model, $attributeMehod)) {
             return $this->$attributeMehod();
         }
-        return null;
-        throw new BadMethodException('Property {'.Str::camelize($attribute).'} not found in '.$this->model);
+
+        throw new BadMethodException('Property {' . Str::camelize($attribute) . '} not found in ' . $this->model);
     }
 
     public function __set($attribute, $value)
@@ -615,7 +752,7 @@ class Model extends Database
             $this->dynamicAttributes[] = $attribute;
         }
 
-        $attributeMehod = 'set'.Str::decamelize($attribute).'Property';
+        $attributeMehod = 'set' . Str::decamelize($attribute) . 'Property';
         if (method_exists($this->model, $attributeMehod)) {
             $this->$attributeMehod($value);
         }
@@ -625,7 +762,7 @@ class Model extends Database
     {
         if (in_array('*', $this->columns) && count($this->columns) > 1)
             return implode(',', array_diff($this->columns, ['*']));
-        
+
         return implode(',', $this->columns);
     }
 
@@ -637,27 +774,48 @@ class Model extends Database
     public function ___setWithDefaults($relation, $defaultAttrs)
     {
         $this->withDefaults[$relation] = $defaultAttrs;
-        
+
         return $this;
     }
 
     public static function __callStatic($method, $parameters)
     {
-        if (method_exists((new static), '___'.$method)) {
-            (new static)->___clearWhere();
-            return (new static)->{'___'.$method}(...$parameters);
+        $static = (new static);
+
+        if (in_array($method, ['avg', 'count', 'max', 'min', 'sum'])) {
+            array_unshift($parameters, $method);
+            return $static->{'___aggregate'}(...$parameters);
         }
 
-        throw new BadMethodException('Method {'.$method.'} not found in '.(new static)->model);
+        $wrapMethod = 'wrap' . Str::decamelize($method);
+        if (method_exists($static, $wrapMethod)) {
+            return $static->{$wrapMethod}(...$parameters);
+        }
+
+        if (method_exists($static, '___' . $method)) {
+            $static->___clearWhere();
+            return $static->{'___' . $method}(...$parameters);
+        }
+
+        throw new BadMethodException('Method {' . $method . '} not found in ' . $static->model);
     }
 
     public function __call(string $method, $parameters)
     {
-        if (method_exists($this, '___'.$method)) {
-            return $this->{'___'.$method}(...$parameters);
+        if (in_array($method, ['avg', 'count', 'max', 'min', 'sum'])) {
+            array_unshift($parameters, $method);
+            return $this->{'___aggregate'}(...$parameters);
         }
 
-        throw new BadMethodException('Method {'.$method.'} not found in '.$this->model);
-    }
+        $wrapMethod = 'wrap' . Str::decamelize($method);
+        if (method_exists($this, $wrapMethod)) {
+            return $this->{$wrapMethod}(...$parameters);
+        }
 
+        if (method_exists($this, '___' . $method)) {
+            return $this->{'___' . $method}(...$parameters);
+        }
+
+        throw new BadMethodException('Method {' . $method . '} not found in ' . $this->model);
+    }
 }

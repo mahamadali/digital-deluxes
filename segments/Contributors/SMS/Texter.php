@@ -4,7 +4,7 @@ namespace Contributors\SMS;
 
 use Bones\Skeletons\Supporters\AutoMethodMap;
 use Bones\Str;
-use JollyException\SMSException;
+use Bones\SMSException;
 
 class Texter extends AutoMethodMap
 {

@@ -3,7 +3,7 @@
 namespace Bones;
 
 use Bones\Skeletons\DataWing\Skeleton;
-use JollyException\BadMethodException;
+use Bones\BadMethodException;
 
 class DataWing
 {

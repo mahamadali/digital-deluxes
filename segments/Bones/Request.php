@@ -2,9 +2,10 @@
 
 namespace Bones;
 
-use JollyException\RequestException;
-use JollyException\RequestManipulation;
-use JollyException\RequestParamNotFound;
+use Bones\RequestException;
+use Bones\RequestManipulation;
+use Bones\RequestParamNotFound;
+use Bones\URL;
 
 class Request extends Validation
 {
@@ -235,6 +236,16 @@ class Request extends Validation
 
         return true;
 
+    }
+
+    /**
+     * Check request has valid signature
+     * 
+     * @return bool
+     */
+    public static function hasValidSignature()
+    {
+        return URL::verifySignature(url(self::currentPage()));
     }
 
     /**

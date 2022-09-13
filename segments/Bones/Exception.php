@@ -1,6 +1,6 @@
 <?php
 
-namespace JollyException;
+namespace Bones;
 
 use Exception;
 

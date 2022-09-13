@@ -3,7 +3,7 @@
 namespace Contributors\Mail;
 
 use Bones\Skeletons\Supporters\AutoMethodMap;
-use JollyException\MailerException;
+use Bones\MailerException;
 use Contributors\Mail\PHPMailer\PHPMailer;
 use Contributors\Mail\PHPMailer\Exception;
 use Jolly\Engine;

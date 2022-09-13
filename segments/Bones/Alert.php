@@ -5,7 +5,7 @@ namespace Bones;
 use Bones\Skeletons\Supporters\AutoMethodMap;
 use Contributors\Mail\Mailer;
 use Contributors\SMS\Texter;
-use JollyException\AlertException;
+use Bones\AlertException;
 
 class Alert extends AutoMethodMap
 {

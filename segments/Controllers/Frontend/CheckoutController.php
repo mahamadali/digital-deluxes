@@ -134,13 +134,13 @@ class CheckoutController
 			$kinguinOrderItems = [];
 			$kinguinOrderTotalPrice = 0;
 			foreach($cartItems as $item) {
-				if($item->product()->product_type == 'M') {
+				if($item->product->product_type == 'M') {
 					$manualOrderItems[] = $item;
-					$manualOrderTotalPrice += currencyConverter('EUR', 'COP', $item->product()->price_original);
+					$manualOrderTotalPrice += currencyConverter('EUR', 'COP', $item->product->price_original);
 				}
-				if($item->product()->product_type == 'K') {
+				if($item->product->product_type == 'K') {
 					$kinguinOrderItems[] = $item;
-					$kinguinOrderTotalPrice += currencyConverter('EUR', 'COP', $item->product()->price_original);
+					$kinguinOrderTotalPrice += currencyConverter('EUR', 'COP', $item->product->price_original);
 				}
 			}
 
@@ -166,7 +166,7 @@ class CheckoutController
 					$mannual_order_item->product_id = $manualOrderItems->product_id;
 					$mannual_order_item->product_name = $manualOrderItems->product_name;
 					$mannual_order_item->product_price = currencyConverter('EUR', 'COP', $manualOrderItems->product_price);
-					$mannual_order_item->product_price_profit = getProfitCommission(remove_format($manualOrderItems->product()->price_original));
+					$mannual_order_item->product_price_profit = getProfitCommission(remove_format($manualOrderItems->product->price_original));
 					$mannual_order_item->product_qty = $manualOrderItems->product_qty;
 					$mannual_order_item->save();
 
@@ -179,7 +179,7 @@ class CheckoutController
 							$game_key->product_id = $manualOrderItems->product_id;
 							$game_key->serial = $productKey->key;
 							$game_key->type = 'text/plain';
-							$game_key->name = $manualOrderItems->product()->name;
+							$game_key->name = $manualOrderItems->product->name;
 							$game_key->kinguinId = NULL;
 							$game_key->offerId = NULL;
 							$game_key->save();
@@ -216,7 +216,7 @@ class CheckoutController
 					$orderItem->product_id = $kinguinOrderItem->product_id;
 					$orderItem->product_name = $kinguinOrderItem->product_name;
 					$orderItem->product_price = currencyConverter('EUR', 'COP', $kinguinOrderItem->product_price);
-					$orderItem->product_price_profit = getProfitCommission(remove_format($kinguinOrderItem->product()->price_original));
+					$orderItem->product_price_profit = getProfitCommission(remove_format($kinguinOrderItem->product->price_original));
 					$orderItem->product_qty = $kinguinOrderItem->product_qty;
 					$orderItem->save();
 				}

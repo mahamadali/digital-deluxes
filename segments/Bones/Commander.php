@@ -4,19 +4,23 @@ namespace Bones;
 
 use Bones\Skeletons\DBFiller\Refill;
 use Bones\Skeletons\DBGram\Adjustor;
+use Bones\Skeletons\Supporters\BaseCodeTemplate;
 
 class Commander
 {
     protected $commands = [];
     protected $attribute;
     protected $extraAttrs;
+    protected $baseCodeTemplate;
     public $appStopperFile = 'locker/system/stop';
     public $settingDir = 'settings';
+    protected $agent = '[COMMANDER VIA JOLLY]: ';
 
     public function __construct($commands = [])
     {
         unset($commands[0]);
         $this->commands = array_values($commands);
+        $this->baseCodeTemplate = new BaseCodeTemplate(array_values($this->commands));
     }
 
     public static function run(string $args)
@@ -36,6 +40,7 @@ class Commander
         }
         $this->extraAttrs = array_values($this->commands);
         $this->authenticate($action);
+        $this->baseCodeTemplate = new BaseCodeTemplate($this->extraAttrs);
     }
 
     public function authenticate(string $action)
@@ -75,6 +80,9 @@ class Commander
                 break;
             case 'set':
                 $this->set($commandFor);
+                break;
+            case 'self-update':
+                $this->selfUpdate();
                 break;
             default:
                 return $this->throwError('%s is not a valid command', [$command]);
@@ -138,6 +146,9 @@ class Commander
                 break;
             case 'mailer':
                 $this->removeMailerFile();
+                break;
+            case 'texter':
+                $this->removeTexterFile();
                 break;
             default:
                 return $this->throwError('%s is not a valid segment to remove', [$commandFor]);
@@ -214,6 +225,11 @@ class Commander
         }
     }
 
+    public function selfUpdate()
+    {
+        return (new JollyManager($this))->update();
+    }
+
     public function createModelFile()
     {
         if (empty($this->attribute)) {
@@ -240,7 +256,7 @@ class Commander
         if (!$f) {
             return $this->throwError('%s can not create model file at ', [$modelFilePath]);
         }
-        fwrite($f, $this->getBaseModelCode($modelFileNameParts[0], $nameSpace));
+        fwrite($f, $this->baseCodeTemplate->model($modelFileNameParts[0], $nameSpace));
         fclose($f);
         return $this->showMsg('Model saved at ' . $modelFilePath . '!');
     }
@@ -272,7 +288,7 @@ class Commander
         if (!$f) {
             return $this->throwError('%s can not create controller file at ', [$controllerFilePath]);
         }
-        fwrite($f, $this->getBaseControllerCode($controllerFileNameParts[0], $nameSpace));
+        fwrite($f, $this->baseCodeTemplate->controller($controllerFileNameParts[0], $nameSpace));
         fclose($f);
         return $this->showMsg('Controller saved at ' . $controllerFilePath . '!');
     }
@@ -296,7 +312,7 @@ class Commander
         if (!$f) {
             return $this->throwError('%s can not create view file at ', [$viewFilePath]);
         }
-        fwrite($f, $this->getBaseViewCode());
+        fwrite($f, $this->baseCodeTemplate->view());
         fclose($f);
         return $this->showMsg('View saved at ' . $viewFilePath . '!');
     }
@@ -327,7 +343,7 @@ class Commander
         if (!$f) {
             return $this->throwError('%s can not create barrier file at ', [$barrierFilePath]);
         }
-        fwrite($f, $this->getBaseBarrierCode($barrierFileNameParts[0], $nameSpace));
+        fwrite($f, $this->baseCodeTemplate->barrier($barrierFileNameParts[0], $nameSpace));
         fclose($f);
         return $this->showMsg('Barrier saved at ' . $barrierFilePath . '!');
     }
@@ -369,7 +385,7 @@ class Commander
         if (!$f) {
             return $this->throwError('%s can not create mailer file at ', [$mailerFilePath]);
         }
-        fwrite($f, $this->getBaseMailerCode($mailerFileNameParts[0], $nameSpace));
+        fwrite($f, $this->baseCodeTemplate->mailer($mailerFileNameParts[0], $nameSpace));
         fclose($f);
         return $this->showMsg('Mailer saved at ' . $mailerFilePath . '!');
     }
@@ -401,7 +417,7 @@ class Commander
         if (!$f) {
             return $this->throwError('%s can not create texter file at ', [$texterFilePath]);
         }
-        fwrite($f, $this->getBaseTexterCode($texterFileNameParts[0], $nameSpace));
+        fwrite($f, $this->baseCodeTemplate->texter($texterFileNameParts[0], $nameSpace));
         fclose($f);
         return $this->showMsg('Texter saved at ' . $texterFilePath . '!');
     }
@@ -411,23 +427,20 @@ class Commander
         if (file_exists($this->settingDir)) {
             $this->showMsgAndContinue($this->settingDir . ' directory already exists. Do you want to remove it and set a fresh config files?' . PHP_EOL);
 
-            $confirm = $this->confirm('Enter Y for [Yes] or N for [No]: ');
-
-            if (strtoupper($confirm) == 'Y' || ucfirst(strtolower($confirm)) == 'Yes') {
-                $this->showMsgAndContinue('Setting up setting files in %s' . PHP_EOL, [ $this->settingDir ]);
+            if ($this->confirm('Enter Y for [Yes] or N for [No]: ')) {
+                $this->showMsgAndContinue('Setting up setting files in %s' . PHP_EOL, [$this->settingDir]);
             } else {
                 return $this->showMsg('config setup process stopped' . PHP_EOL);
             }
         }
 
         if (!file_exists($this->settingDir)) {
-            $this->showMsgAndContinue('Creating %s [SETTING DIRECTORY]' . PHP_EOL, [ $this->settingDir ]);
+            $this->showMsgAndContinue('Creating %s [SETTING DIRECTORY]' . PHP_EOL, [$this->settingDir]);
             mkdir($this->settingDir, 655, true);
-            $this->showMsgAndContinue('%s [SETTING DIRECTORY] created!' . PHP_EOL, [ $this->settingDir ]);
+            $this->showMsgAndContinue('%s [SETTING DIRECTORY] created!' . PHP_EOL, [$this->settingDir]);
         }
 
         return $this->createFreshSettingFiles();
-        
     }
 
     public function createFreshSettingFiles()
@@ -445,26 +458,12 @@ class Commander
     public function createSettingAppFile()
     {
         $settingAppFile = $this->settingDir . '/app.php';
-        
-        $this->showMsgAndContinue('Creating %s [FILE]...' . PHP_EOL, [$settingAppFile]);
 
-        $settingContent = '<?php' . PHP_EOL . PHP_EOL;
-        $settingContent .= "return [" . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t// Set base url of your project" . PHP_EOL;
-        $settingContent .= "\t'base_url' => 'http://localhost'," . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t// Enter sub directory where your project is hosted or set it blank if your project is on host root" . PHP_EOL;
-        $settingContent .= "\t'sub_dir' => 'jolly'," . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t// Set application stage (local || production)" . PHP_EOL;
-        $settingContent .= "\t'stage' => 'local'," . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t'title' => 'Jolly - A tiny PHP Framework'," . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t// Set default language for your application, this will be used when there is no language has been set or if any translation string is not" . PHP_EOL;
-        $settingContent .= "\t//found then it will be returned from default_lang" . PHP_EOL;
-        $settingContent .= "\t'default_lang' => 'en'," . PHP_EOL . PHP_EOL;
-        $settingContent .= "];";
+        $settingContent = $this->baseCodeTemplate->setting('app');
 
         $f = fopen($settingAppFile, 'wb');
         if (!$f) {
-            return $this->throwError('Setting file can not be created at %s' . PHP_EOL, [ $settingAppFile ]);
+            return $this->throwError('Setting file can not be created at %s' . PHP_EOL, [$settingAppFile]);
         }
 
         fwrite($f, $settingContent);
@@ -477,18 +476,11 @@ class Commander
     {
         $settingAliasFile = $this->settingDir . '/aliases.php';
 
-        $settingContent = '<?php' . PHP_EOL . PHP_EOL;
-        $settingContent .= 'use Barriers\VerifyRequest;' . PHP_EOL . PHP_EOL;
-        $settingContent .= "return [" . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t// Add Barrier aliases to use as an alias" . PHP_EOL;
-        $settingContent .= "\t'Barriers' => [" . PHP_EOL;
-        $settingContent .= "\t\t'verify-request' => VerifyRequest::class," . PHP_EOL;
-        $settingContent .= "\t]," . PHP_EOL . PHP_EOL;
-        $settingContent .= "];";
+        $settingContent = $this->baseCodeTemplate->setting('alias');
 
         $f = fopen($settingAliasFile, 'wb');
         if (!$f) {
-            return $this->throwError('Setting file can not be created at %s' . PHP_EOL, [ $settingAliasFile ]);
+            return $this->throwError('Setting file can not be created at %s' . PHP_EOL, [$settingAliasFile]);
         }
 
         fwrite($f, $settingContent);
@@ -501,26 +493,11 @@ class Commander
     {
         $settingDatabaseFile = $this->settingDir . '/database.php';
 
-        $settingContent = '<?php' . PHP_EOL . PHP_EOL;
-        $settingContent .= "return [" . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t// Set this false if you do not want to use database" . PHP_EOL;
-        $settingContent .= "\t'enable' => true," . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t// Database details [ Key of this set is database name ]" . PHP_EOL;
-        $settingContent .= "\t'database_name' => [" . PHP_EOL;
-        $settingContent .= "\t\t'host' => 'localhost'," . PHP_EOL;
-        $settingContent .= "\t\t'username' => 'root'," . PHP_EOL;
-        $settingContent .= "\t\t'password' => ''," . PHP_EOL;
-        $settingContent .= "\t\t'port' => 3306," . PHP_EOL;
-        $settingContent .= "\t\t'prefix' => ''," . PHP_EOL;
-        $settingContent .= "\t\t'charset' => 'utf8'," . PHP_EOL;
-        $settingContent .= "\t\t'socket' => null," . PHP_EOL;
-        $settingContent .= "\t\t'is_primary' => true," . PHP_EOL;
-        $settingContent .= "\t]," . PHP_EOL . PHP_EOL;
-        $settingContent .= "];";
+        $settingContent = $this->baseCodeTemplate->setting('database');
 
         $f = fopen($settingDatabaseFile, 'wb');
         if (!$f) {
-            return $this->throwError('Setting file can not be created at %s' . PHP_EOL, [ $settingDatabaseFile ]);
+            return $this->throwError('Setting file can not be created at %s' . PHP_EOL, [$settingDatabaseFile]);
         }
 
         fwrite($f, $settingContent);
@@ -533,14 +510,11 @@ class Commander
     {
         $settingSessionFile = $this->settingDir . '/session.php';
 
-        $settingContent = '<?php' . PHP_EOL . PHP_EOL;
-        $settingContent .= "return [" . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t'age' => 14400, // seconds" . PHP_EOL . PHP_EOL;
-        $settingContent .= "];";
+        $settingContent = $this->baseCodeTemplate->setting('session');
 
         $f = fopen($settingSessionFile, 'wb');
         if (!$f) {
-            return $this->throwError('Setting file can not be created at %s' . PHP_EOL, [ $settingSessionFile ]);
+            return $this->throwError('Setting file can not be created at %s' . PHP_EOL, [$settingSessionFile]);
         }
 
         fwrite($f, $settingContent);
@@ -553,44 +527,11 @@ class Commander
     {
         $settingAliasFile = $this->settingDir . '/alert.php';
 
-        $settingContent = '<?php' . PHP_EOL . PHP_EOL;
-        $settingContent .= "return [" . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t// Mail configuration" . PHP_EOL;
-        $settingContent .= "\t'mail' => [" . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t\t'via' => 'smtp', // default | SMTP" . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t\t'from' => [" . PHP_EOL;
-        $settingContent .= "\t\t\t\t'email' => 'admin@administration.com'," . PHP_EOL;
-        $settingContent .= "\t\t\t\t'name' => 'Administration'," . PHP_EOL;
-        $settingContent .= "\t\t]," . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t\t'reply' => [" . PHP_EOL;
-        $settingContent .= "\t\t\t\t'email' => 'reply@administration.com'," . PHP_EOL;
-        $settingContent .= "\t\t\t\t'name' => 'Administration'," . PHP_EOL;
-        $settingContent .= "\t\t]," . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t\t'smtp' => [" . PHP_EOL;
-        $settingContent .= "\t\t\t\t'host' => 'smtp.example.com'," . PHP_EOL;
-        $settingContent .= "\t\t\t\t'username' => 'username'," . PHP_EOL;
-        $settingContent .= "\t\t\t\t'password' => 'password'," . PHP_EOL;
-        $settingContent .= "\t\t\t\t'port' => 465," . PHP_EOL;
-        $settingContent .= "\t\t\t\t'encryption' => 'tls', // SSL | TLS" . PHP_EOL;
-        $settingContent .= "\t\t\t\t'debug' => false," . PHP_EOL;
-        $settingContent .= "\t\t\t\t'auth' => true," . PHP_EOL;
-        $settingContent .= "\t\t]," . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t]," . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t// SMS configuration" . PHP_EOL;
-        $settingContent .= "\t'sms' => [" . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t\t'via' => 'twilio', // twilio" . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t\t'twilio' => [" . PHP_EOL;
-        $settingContent .= "\t\t\t'account_sid' => 'TWILIO_ACCOUNT_SID'," . PHP_EOL;
-        $settingContent .= "\t\t\t'auth_token' => 'TWILIO_AUTH_TOKEN'," . PHP_EOL;
-        $settingContent .= "\t\t\t'from_number' => 'TWILIO_FROM_NUMBER'," . PHP_EOL;
-        $settingContent .= "\t\t\t'api_endpoint' => 'https://api.twilio.com/2010-04-01/'," . PHP_EOL;
-        $settingContent .= "\t\t]," . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t]," . PHP_EOL . PHP_EOL;
-        $settingContent .= "];";
+        $settingContent = $this->baseCodeTemplate->setting('alert');
 
         $f = fopen($settingAliasFile, 'wb');
         if (!$f) {
-            return $this->throwError('Setting file can not be created at %s' . PHP_EOL, [ $settingAliasFile ]);
+            return $this->throwError('Setting file can not be created at %s' . PHP_EOL, [$settingAliasFile]);
         }
 
         fwrite($f, $settingContent);
@@ -603,135 +544,17 @@ class Commander
     {
         $settingAliasFile = $this->settingDir . '/templates.php';
 
-        $settingContent = '<?php' . PHP_EOL . PHP_EOL;
-        $settingContent .= "\$sysDefaultDir = 'defaults/';" . PHP_EOL . PHP_EOL;
-        $settingContent .= "return [" . PHP_EOL . PHP_EOL;
-        $settingContent .= "\t'404' => \$sysDefaultDir . '404'," . PHP_EOL;
-        $settingContent .= "\t'503' => \$sysDefaultDir . '503'," . PHP_EOL . PHP_EOL;
-        $settingContent .= "];";
+        $settingContent = $this->baseCodeTemplate->setting('template');
 
         $f = fopen($settingAliasFile, 'wb');
         if (!$f) {
-            return $this->throwError('Setting file can not be created at %s' . PHP_EOL, [ $settingAliasFile ]);
+            return $this->throwError('Setting file can not be created at %s' . PHP_EOL, [$settingAliasFile]);
         }
 
         fwrite($f, $settingContent);
         fclose($f);
 
         $this->showMsgAndContinue('%s [SETTING FILE] created!' . PHP_EOL, [$settingAliasFile]);
-    }
-
-    public function getBaseModelCode(string $name, string $nameSpace)
-    {
-        $baseModelCode = '<?php' . PHP_EOL . PHP_EOL;
-        $baseModelCode .= 'namespace ' . $nameSpace . ';' . PHP_EOL . PHP_EOL;
-        $baseModelCode .= 'use Models\Base\Model;' . PHP_EOL . PHP_EOL;
-        $baseModelCode .= 'class ' . Str::decamelize($name) . ' extends Model' . PHP_EOL;
-        $baseModelCode .= '{' . PHP_EOL;
-        if (!empty($this->extraAttrs)) {
-            foreach ($this->extraAttrs as $extraAttr) {
-                $attribute = explode('=', $extraAttr);
-                $attrName = $attribute[0];
-                if (Str::startsWith($attrName, '--') && count($attribute) > 0) {
-                    $attrVal = $attribute[1];
-                    $attrName = str_replace('--', '', $attrName);
-                    $baseModelCode .= "\tprotected \$" . $attrName . " = '" . $attrVal . "';" . PHP_EOL;
-                }
-            }
-        }
-        $baseModelCode .= PHP_EOL . '}';
-        return $baseModelCode;
-    }
-
-    public function getBaseControllerCode(string $name, string $nameSpace)
-    {
-        $baseControllerCode = '<?php' . PHP_EOL . PHP_EOL;
-        $baseControllerCode .= 'namespace ' . $nameSpace . ';' . PHP_EOL . PHP_EOL;
-        $baseControllerCode .= 'use Bones\Request;' . PHP_EOL . PHP_EOL;
-        $baseControllerCode .= 'class ' . Str::decamelize($name) . PHP_EOL;
-        $baseControllerCode .= '{' . PHP_EOL;
-        $baseControllerCode .= "\tpublic function index(Request \$request)" . PHP_EOL;
-        $baseControllerCode .= "\t{" . PHP_EOL;
-        $baseControllerCode .= "\t\t// Paint your jolly stuff with code..." . PHP_EOL;
-        $baseControllerCode .= "\t}" . PHP_EOL;
-        if (!empty($this->extraAttrs)) {
-        }
-        $baseControllerCode .= '}';
-        return $baseControllerCode;
-    }
-
-    public function getBaseMailerCode(string $name, string $nameSpace)
-    {
-        $baseControllerCode = '<?php' . PHP_EOL . PHP_EOL;
-        $baseControllerCode .= 'namespace ' . $nameSpace . ';' . PHP_EOL . PHP_EOL;
-        $baseControllerCode .= 'use Contributors\Mail\Mailer;' . PHP_EOL . PHP_EOL;
-        $baseControllerCode .= 'class ' . Str::decamelize($name) . ' extends Mailer' . PHP_EOL;
-        $baseControllerCode .= '{' . PHP_EOL;
-        $baseControllerCode .= "\tprotected \$data;" . PHP_EOL . PHP_EOL;
-        $baseControllerCode .= "\tpublic function __construct(\$data)" . PHP_EOL;
-        $baseControllerCode .= "\t{" . PHP_EOL;
-        $baseControllerCode .= "\t\t\$this->data = \$data;" . PHP_EOL;
-        $baseControllerCode .= "\t}" . PHP_EOL.PHP_EOL;
-        $baseControllerCode .= "\tpublic function prepare()" . PHP_EOL;
-        $baseControllerCode .= "\t{" . PHP_EOL;
-        $baseControllerCode .= "\t\treturn \$this->html(content('mails/welcome', ['data' => \$this->data]))" . PHP_EOL;
-        $baseControllerCode .= "\t\t\t\t\t->to('recepient_address')" . PHP_EOL;
-        $baseControllerCode .= "\t\t\t\t\t->subject('subject')" . PHP_EOL;
-        $baseControllerCode .= "\t\t\t\t\t->attach('path/to/file', 'attachment_alias');" . PHP_EOL;
-        $baseControllerCode .= "\t}" . PHP_EOL;
-        if (!empty($this->extraAttrs)) {
-        }
-        $baseControllerCode .= '}';
-        return $baseControllerCode;
-    }
-
-    public function getBaseTexterCode(string $name, string $nameSpace)
-    {
-        $baseControllerCode = '<?php' . PHP_EOL . PHP_EOL;
-        $baseControllerCode .= 'namespace ' . $nameSpace . ';' . PHP_EOL . PHP_EOL;
-        $baseControllerCode .= 'use Contributors\SMS\Texter;' . PHP_EOL . PHP_EOL;
-        $baseControllerCode .= 'class ' . Str::decamelize($name) . ' extends Texter' . PHP_EOL;
-        $baseControllerCode .= '{' . PHP_EOL;
-        $baseControllerCode .= "\tprotected \$data;" . PHP_EOL . PHP_EOL;
-        $baseControllerCode .= "\tpublic function __construct(\$data)" . PHP_EOL;
-        $baseControllerCode .= "\t{" . PHP_EOL;
-        $baseControllerCode .= "\t\t\$this->data = \$data;" . PHP_EOL;
-        $baseControllerCode .= "\t}" . PHP_EOL.PHP_EOL;
-        $baseControllerCode .= "\tpublic function prepare()" . PHP_EOL;
-        $baseControllerCode .= "\t{" . PHP_EOL;
-        $baseControllerCode .= "\t\treturn \$this->template(content('sms/account-activated', ['data' => \$this->data]))" . PHP_EOL;
-        $baseControllerCode .= "\t\t\t\t\t->to('recepient_number');" . PHP_EOL;
-        $baseControllerCode .= "\t}" . PHP_EOL;
-        if (!empty($this->extraAttrs)) {
-        }
-        $baseControllerCode .= '}';
-        return $baseControllerCode;
-    }
-
-    public function getBaseViewCode()
-    {
-        $baseViewCode = "@php " . PHP_EOL . "\t// Paint your jolly stuff with code... " . PHP_EOL . "@endphp";
-        return $baseViewCode;
-    }
-
-    public function getBaseBarrierCode(string $name, string $nameSpace)
-    {
-        $baseBarrierCode = '<?php' . PHP_EOL . PHP_EOL;
-        $baseBarrierCode .= 'namespace ' . $nameSpace . ';' . PHP_EOL . PHP_EOL;
-        $baseBarrierCode .= 'use Bones\Request;' . PHP_EOL . PHP_EOL;
-        $baseBarrierCode .= 'class ' . Str::decamelize($name) . PHP_EOL;
-        $baseBarrierCode .= '{' . PHP_EOL;
-        $baseBarrierCode .= "\tpublic \$excludeRoutes = [" . PHP_EOL;
-        $baseBarrierCode .= "\t\t// define routes to exclude from barrier check" . PHP_EOL;
-        $baseBarrierCode .= "\t];" . PHP_EOL . PHP_EOL;
-        $baseBarrierCode .= "\tpublic function check(Request \$request)" . PHP_EOL;
-        $baseBarrierCode .= "\t{" . PHP_EOL;
-        $baseBarrierCode .= "\t\treturn true;" . PHP_EOL;
-        $baseBarrierCode .= "\t}" . PHP_EOL;
-        if (!empty($this->extraAttrs)) {
-        }
-        $baseBarrierCode .= '}';
-        return $baseBarrierCode;
     }
 
     public function removeModelFile()
@@ -780,6 +603,12 @@ class Commander
         return $this->removeAsset($mailerFilePath, 'Mailer');
     }
 
+    public function removeTexterFile()
+    {
+        $texterFilePath = 'segments/SMS/' . $this->attribute . '.php';
+        return $this->removeAsset($texterFilePath, 'Texter');
+    }
+
     public function removeAsset($assetPath, $assetType = '')
     {
         if (!file_exists($assetPath))
@@ -814,7 +643,7 @@ class Commander
         if (!file_exists('locker/system')) {
             mkdir('locker/system/', 655);
         }
-        
+
         $this->writeMessageToAppStopper();
         if (!file_exists($this->appStopperFile)) {
             if (!touch($this->appStopperFile)) {
@@ -875,11 +704,13 @@ class Commander
         echo '----------------------------------------------------------------------------------------------------' . PHP_EOL;
         $mask = "%6s | %-30.30s | %-10s | %s\n";
 
-        foreach ($routes as $route) {
-            if (empty($route['caption'])) $route['caption'] = '/';
-            $namedAs = (!empty($route['namedAs']) && !$route['nameFromParent']) ? $route['namedAs'] : 'N/A';
-            $barriersCount = (!empty($route['barriers'])) ? count($route['barriers']) . ' barrier(s)' : 'No barrier';
-            printf($mask, strtoupper($route['method']), $namedAs, $barriersCount, $route['caption']);
+        foreach ($routes as $routeMethod => $routeInfo) {
+            foreach ($routeInfo as $route) {
+                if (empty($route['caption'])) $route['caption'] = '/';
+                $namedAs = (!empty($route['namedAs']) && !$route['nameFromParent']) ? $route['namedAs'] : 'N/A';
+                $barriersCount = (!empty($route['barriers'])) ? count($route['barriers']) . ' barrier(s)' : 'No barrier';
+                printf($mask, strtoupper($routeMethod), $namedAs, $barriersCount, $route['caption']);
+            }
         }
 
         return true;
@@ -930,22 +761,24 @@ class Commander
         return implode('/', $relativePathParts);
     }
 
-    public function throwError(string $errMsg, array $args = [])
-    {
-        $errMsg = '[COMMANDER VIA JOLLY]: ' . $errMsg;
-        $errorParts = array_merge([$errMsg], $args);
-        echo call_user_func_array('sprintf', $errorParts);
-        return false;
-    }
-
     public function confirm($message)
     {
-        return readline($message);
+        $confirm = readline($message);
+
+        return (strtoupper($confirm) == 'Y' || ucfirst(strtolower($confirm)) == 'Yes');
+    }
+
+    public function throwError(string $errMsg, array $args = [])
+    {
+        $errMsg = $this->agent . $errMsg;
+        $errorParts = array_merge([$errMsg], $args);
+        echo call_user_func_array('sprintf', $errorParts);
+        exit;
     }
 
     public function showMsg(string $errMsg, array $args = [])
     {
-        $errMsg = '[COMMANDER VIA JOLLY]: ' . $errMsg;
+        $errMsg = $this->agent . $errMsg;
         $errorParts = array_merge([$errMsg], $args);
         echo call_user_func_array('sprintf', $errorParts);
         return true;
@@ -953,7 +786,7 @@ class Commander
 
     public function showMsgAndContinue(string $errMsg, array $args = [])
     {
-        $errMsg = '[COMMANDER VIA JOLLY]: ' . $errMsg;
+        $errMsg = $this->agent . $errMsg;
         $errorParts = array_merge([$errMsg], $args);
         echo call_user_func_array('sprintf', $errorParts);
     }

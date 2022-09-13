@@ -17,7 +17,8 @@ class WelcomeEmail extends Mailer
     {
         return $this->html(content('mails/welcome', ['user' => $this->user]))
                     ->to($this->user->email)
-                    ->subject('Welcome to ' . setting('app.title', 'Jolly Framework!'));
+                    ->subject('Welcome to ' . setting('app.title', 'Jolly Framework!'))
+                    ->attach('assets/css/welcome.css', 'checkout_this.css');
     }
 
 }

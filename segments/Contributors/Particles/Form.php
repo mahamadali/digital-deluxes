@@ -4,46 +4,11 @@ namespace Contributors\Particles;
 
 use Bones\BadMethodException;
 use Bones\Str;
+use Contributors\Particles\Traits\AttrBuilder;
 
 class Form
 {
-    public function buildAttrs($attrs = [], $additional = [])
-    {
-        if (!empty($additional['name']))
-            $additional['name'] = $additional['name'];
-
-        foreach ($additional as $attrName => $attrValue) {
-            $attrs[$attrName] = $attrValue;
-        }
-
-        if (!empty($attrs['name']) && !array_key_exists('id', $attrs))
-            $attrs['id'] = $attrs['name'];
-
-        return $this->sanitizeAttrs($attrs);
-    }
-
-    public function gluedAttrs($attrs)
-    {
-        $attrPairs = [];
-
-        array_walk($attrs, function ($value, $key) use (&$attrPairs) {
-            $attrPairs[] = $key . "='" . $value . "'";
-        });
-
-        return (!empty($attrPairs)) ? ' ' . implode(' ', $attrPairs) : '';
-    }
-
-    public function sanitizeAttrs($attrs)
-    {
-        array_walk($attrs, function ($value, $key) use (&$attrs) {
-            if ($value == null)
-                unset($attrs[$key]);
-            if ($key == 'type' && $value == 'hidden' && array_key_exists('id', $attrs))
-                unset($attrs['id']);
-        });
-
-        return $attrs;
-    }
+    use AttrBuilder;
 
     public function generateOptions($options = [], $selected_value = '')
     {
@@ -71,32 +36,32 @@ class Form
 
     public function __open($method = 'get', $attrs = [])
     {
-        return '<form ' . $this->gluedAttrs($this->buildAttrs($attrs, compact('method'))) . '>' . PHP_EOL;
+        echo '<form ' . $this->gluedAttrs($this->buildAttrs($attrs, compact('method'))) . '>' . PHP_EOL;
     }
 
     public function __close()
     {
-        return '</form>' . PHP_EOL;
+        echo '</form>' . PHP_EOL;
     }
 
     public function __prevent_csrf()
     {
-        return prevent_csrf_field();
+        echo prevent_csrf_field();
     }
 
     public function tag($tag, $text = '', $attrs = [])
     {
-        return '<' . $tag . '' . $this->gluedAttrs($attrs) . '>' . $text . '</' . $tag . '>' . PHP_EOL;
+        echo '<' . $tag . '' . $this->gluedAttrs($attrs) . '>' . $text . '</' . $tag . '>' . PHP_EOL;
     }
 
     public function input($type, $name = '', $value = '', $attrs = [])
     {
-        return '<input' . $this->gluedAttrs($this->buildAttrs($attrs, compact('type', 'name', 'value'))) . ' />' . PHP_EOL;
+        echo '<input' . $this->gluedAttrs($this->buildAttrs($attrs, compact('type', 'name', 'value'))) . ' />' . PHP_EOL;
     }
 
     public function actionButton($type, $text = '', $value = '', $attrs = [], $name = '')
     {
-        return '<button' . $this->gluedAttrs($this->buildAttrs($attrs, compact('type', 'value', 'name'))) . '>' . $text . '</button>' . PHP_EOL;
+        echo '<button' . $this->gluedAttrs($this->buildAttrs($attrs, compact('type', 'value', 'name'))) . '>' . $text . '</button>' . PHP_EOL;
     }
 
     public function __select($name, $options = [], $value = '', $attrs = [])
@@ -105,17 +70,17 @@ class Form
         $selectField = '<select' . $this->gluedAttrs($this->buildAttrs($attrs, compact('name'))) . '>';
         $selectField .= $options;
         $selectField .= '</select>' . PHP_EOL;
-        return $selectField;
+        echo $selectField;
+    }
+
+    public function __textarea($name = '', $value = '', $attrs = [])
+    {
+        echo '<textarea' . $this->gluedAttrs($this->buildAttrs($attrs, compact('name', 'value'))) . '>' . $value . '</textarea>'. PHP_EOL;
     }
 
     public function specialInput($type = null, $name = null, $value = null, $attrs = [])
     {
-        return $this->input($type, $name, $value, $attrs);
-    }
-
-    public function _argv($arguments, $index, $default = null)
-    {
-        return isset($arguments[$index]) ? $arguments[$index] : $default;
+        echo $this->input($type, $name, $value, $attrs);
     }
 
     public function getCallables($name, $arguments)

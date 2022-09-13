@@ -8,12 +8,12 @@
             @foreach(cartItems() as $cart):
                 
                 <div class="widjet-game">
-                    <div class="widjet-game__media"><a href="{{ url('store/view/'.$cart->product()->id) }}"><img src="{{ $cart->product()->coverImage }}" alt="image"></a></div>
+                    <div class="widjet-game__media"><a href="{{ url('store/view/'.$cart->product->id) }}"><img src="{{ $cart->product->coverImage }}" alt="image"></a></div>
                     <div class="widjet-game__info">
-                        <div class="widjet-game__title"><a href="{{ url('store/view/'.$cart->product()->id) }}">{{ $cart->product()->name }}</a></div>
-                        <div class="widjet-game__starting">{{ trans('cart.price') }}: {{ currencySymbol() }}<b class="price">{{ $cart->product()->price }}</b></div>
+                        <div class="widjet-game__title"><a href="{{ url('store/view/'.$cart->product->id) }}">{{ $cart->product->name }}</a></div>
+                        <div class="widjet-game__starting">{{ trans('cart.price') }}: {{ currencySymbol() }}<b class="price">{{ $cart->product->price }}</b></div>
                         <div class="widjet-game__quantity">
-                            {{ trans('cart.quantity') }}:<input type="number" onkeypress="return isNumber(event)" min="1" class="uk-input quantity" value="{{ $cart->product_qty }}" data-url="{{ route('frontend.cart.update-qty', ['product' => $cart->product()->id]) }}" style="height:35px;width:100px;">
+                            {{ trans('cart.quantity') }}:<input type="number" onkeypress="return isNumber(event)" min="1" class="uk-input quantity" value="{{ $cart->product_qty }}" data-url="{{ route('frontend.cart.update-qty', ['product' => $cart->product->id]) }}" style="height:35px;width:100px;">
                             </div>
                     </div>
 

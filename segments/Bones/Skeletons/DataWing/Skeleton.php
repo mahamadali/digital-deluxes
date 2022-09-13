@@ -4,7 +4,7 @@ namespace Bones\Skeletons\DataWing;
 
 use Bones\Skeletons\DataWing\ColumnStructure;
 use Bones\Traits\DataWing\Commands;
-use JollyException\DataWingException;
+use Bones\DataWingException;
 
 class Skeleton extends ColumnStructure
 {
@@ -482,7 +482,7 @@ class Skeleton extends ColumnStructure
         $this->addColumn('timestamp', 'updated_at', compact('precision'))->default('on_update_current')->nullable();
     }
 
-    public function softDelete($column = 'deleted_at', $precision = 0)
+    public function trashMask($column = 'deleted_at', $precision = 0)
     {
         $this->addColumn('timestamp', $column, compact('precision'))->nullable();
     }
