@@ -478,7 +478,7 @@ class Router
                     $columnValueToCompare = $optionalParamsClone[$paramCount];
                     $optionalParamsClone[$paramCount] = $modelObj->where($columnToBind, $columnValueToCompare)->first();
                     if (empty($optionalParamsClone[$paramCount])) {
-                        throw new RouteException('No data found for {' . $columnValueToCompare . '} as {' . $columnToBind . '} [route_bind_column] in {' . $bindModelImplicitly . '} while implicit binding');
+                        return error(404);
                     }
                     $paramCount++;
                 }

@@ -92,6 +92,9 @@ class StoreController
 
     public function view(Request $request, Product $product)
 	{
+		if(empty($product->price))
+			error('404');
+
 		if($product->product_type == 'M'):
 			$productQty = count($product->manual_keys()->where('is_used', 0)->get());
 		endif;
