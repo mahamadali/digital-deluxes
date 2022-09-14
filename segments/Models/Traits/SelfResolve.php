@@ -59,9 +59,11 @@ trait SelfResolve
         foreach ($attributes as $attribute => $value) {
             $modelObj->$attribute = $value;
         }
-
-        foreach ($this->attaches as $attach) {
-            $modelObj->$attach = $modelObj->$attach;
+        
+        if (!$this->skip_attaches) {
+            foreach ($this->attaches as $attach) {
+                $modelObj->$attach = $modelObj->$attach;
+            }
         }
 
         // foreach ($this->with as $with) {
@@ -207,7 +209,7 @@ trait SelfResolve
             if (!empty($forein_key_values_to_map)) {
                 $relatedModelObj = new $relationalProps['related_model']();
                 
-                $relatedModelObj = $relatedModelObj->___clearWhere()->skipRelationships()->whereIn($relationalProps['foreign_key'], array_unique($forein_key_values_to_map));
+                $relatedModelObj = $relatedModelObj->___clearWhere()->without($this->circularWiths($relatedModelObj))->whereIn($relationalProps['foreign_key'], array_unique($forein_key_values_to_map));
 
                 if (!empty($this->where_has && !empty($this->where_has[$with])))
                     $relatedModelObj = call_user_func_array($this->where_has[$with], [$relatedModelObj]);

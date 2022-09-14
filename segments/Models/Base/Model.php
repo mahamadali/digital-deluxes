@@ -34,6 +34,7 @@ class Model extends Database
     protected $dynamicAttributes = [];
     protected $transforms = [];
     protected $skip_relationships = false;
+    protected $skip_attaches = false;
 
     public function __construct()
     {
@@ -94,6 +95,18 @@ class Model extends Database
         $this->skip_relationships = $skip_relationships;
 
         return $this;
+    }
+
+    public function ___skipAttaches($skip_attaches = true)
+    {
+        $this->skip_attaches = $skip_attaches;
+
+        return $this;
+    }
+
+    public function ___withoutGlues()
+    {
+        return $this->skipRelationships()->skipAttaches();
     }
 
     public function ___selectSet(...$attrs)
@@ -686,7 +699,7 @@ class Model extends Database
     public function ___aggregate($operator, $column = '', $alias = '')
     {
         $this->columns = $this->removeAttr($this->columns, '*');
-
+        
         $column = ltrim($column, '`');
         $column = rtrim($column, '`');
 
@@ -697,7 +710,7 @@ class Model extends Database
                 throw new InvalidArgumentException('Aggregate operation {' . $operator . '} must have column name to peform operation, empty given');
         }
 
-        $entry = $this->select($operator . '(`' . $column . '`)', $alias)->skipRelationships()->first();
+        $entry = $this->select($operator . '(`' . $column . '`)', $alias)->withoutGlues()->first();
         if (!empty($entry)) {
             $retrive_as = (!empty($alias)) ? $entry->$alias : $operator . '(`' . $column . '`)';
             return (!empty($entry->{$retrive_as})) ? $entry->{$retrive_as} : 0;

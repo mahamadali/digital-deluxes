@@ -13,9 +13,11 @@ class UserController
 {
     public function index(Request $request)
 	{
+		$user = User::onlyMembers();
+
 		return render('backend/admin/user/list', [
-			'users' => User::onlyMembers()->get(),
-			'totalUsers' => count(User::onlyMembers()->get())
+			'users' => $user->get(),
+			'totalUsers' => $user->count()
 		]);
 	}
 
