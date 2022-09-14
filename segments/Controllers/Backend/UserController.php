@@ -13,15 +13,9 @@ class UserController
 {
     public function index(Request $request)
 	{
-		$users = User::whereHas('role', function($query) {
-			return $query->where('name', 'user');
-		})->get();
-		
-		$totalUsers = count($users);
-		
 		return render('backend/admin/user/list', [
-			'users' => $users,
-			'totalUsers' => $totalUsers
+			'users' => User::onlyMembers()->get(),
+			'totalUsers' => count(User::onlyMembers()->get())
 		]);
 	}
 
@@ -109,6 +103,11 @@ class UserController
 		
 
 		return redirect()->withFlashSuccess('Payment method updated successfully')->back();
+	}
+
+	public function deleteMultiple(Request $request) {
+		User::whereIn('id',$request->userIds)->delete();
+		return response()->json(['stauts'=> 'success', 'msg' => 'Users deleted successfully']);
 	}
 	
 

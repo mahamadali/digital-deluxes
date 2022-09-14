@@ -144,6 +144,9 @@ class WelcomeController
 
 	public function cmspage(Request $request, $page) {
 		$page = CMS::where('slug', $page)->first();
+		if(empty($page)) {
+			error('404');
+		}
 		return render('frontend/cms', [
 			'page' => $page
 		]);

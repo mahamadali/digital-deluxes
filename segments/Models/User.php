@@ -10,7 +10,7 @@ use Models\Cart;
 
 class User extends Model
 {
-	// use TrashMask;
+	use TrashMask;
 
 	protected $table = 'users';
 	protected $attaches = ['full_name'];
@@ -45,6 +45,9 @@ class User extends Model
 		return $this->parallelTo(Country::class, 'country');
 	}
 	
+	public function wrapOnlyMembers() {
+		return $this->where('role_id', Role::where('name', 'user')->first()->id);
+	}
 
 
 }
