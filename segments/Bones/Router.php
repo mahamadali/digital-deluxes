@@ -245,12 +245,13 @@ class Router
 
         $is_authenticated = false;
         $has_matched_route = false;
+        $current_uri = ltrim(URL::removeQuery(request()->currentUri()), '/');
         foreach ($matchedRoutes as $matchedRoute) {
 
             $matched_route_segments = explode('/', $matchedRoute['caption']);
-            $current_page_segments = explode('/', ltrim(request()->currentUri(), '/'));
+            $current_page_segments = explode('/', ltrim(URL::removeQuery(request()->currentUri()), '/'));
 
-            if (count($matched_route_segments) === count($current_page_segments) && Url::matchesTo(request()->currentUri(), self::toPattern($matchedRoute['caption']))) {
+            if (count($matched_route_segments) === count($current_page_segments) && Url::matchesTo($current_uri, self::toPattern($matchedRoute['caption']))) {
                 $has_matched_route = true;
                 if (!$is_authenticated && strtolower($matchedRoute['method']) == 'any') {
                     self::$currentRouteMethod = 'ANY';
@@ -258,7 +259,7 @@ class Router
                 }
 
                 if (!$is_authenticated && strtolower($matchedRoute['method']) == strtolower($method)) {
-                    self::$currentRouteMethod = $matchedRoute['method'];
+                    self::$currentRouteMethod = strtoupper($matchedRoute['method']);
                     $is_authenticated = true;
                 }
             }

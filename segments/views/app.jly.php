@@ -190,7 +190,7 @@ $( function() {
             }
             }
             
-            $('.translation-links a').click(function(e) {
+            $('.translation-links li').click(function(e) {
                 e.preventDefault();
                 var lang = $(this).data('lang');
                 console.log(lang);

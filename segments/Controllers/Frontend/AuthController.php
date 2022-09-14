@@ -132,6 +132,12 @@ class AuthController
 	}
 
 	public function redirectAfterLogin($user) {
+		
+		if(empty($user)) {
+			Session::remove('auth');
+			return redirect()->to(route('frontend.auth.login'))->withFlashError('Your account has been removed!')->go();
+		}
+
 		if($user->status == 'Deactivate') {
 			Session::remove('auth');
 			return redirect()->to(route('frontend.auth.login'))->withFlashError('Your account has been suspended!')->go();

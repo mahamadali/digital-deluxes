@@ -18,17 +18,17 @@ class URL
         return $route;
     }
 
-    public static function matchesTo($url, $pattern)
+    public static function matchesTo($url = '/', $pattern = 'no-pattern')
     {
         if (!Str::startsWith($pattern, '/')) {
-            $currentPage = ltrim($url, '/');
+            $url = ltrim($url, '/');
         }
 
-        $currentPageParts = explode('/', $currentPage);
-        $patternParts = explode('/', $pattern);
+        $current_page_parts = explode('/', $url);
+        $pattern_parts = explode('/', $pattern);
 
-        foreach ($patternParts as $index => $patternPart) {
-            if ($patternPart != '*' && (!isset($currentPageParts[$index]) || $patternPart != $currentPageParts[$index]))
+        foreach ($pattern_parts as $index => $pattern_part) {
+            if ($pattern_part != '*' && (!isset($current_page_parts[$index]) || $pattern_part != $current_page_parts[$index]))
                 return false;
         }
 
