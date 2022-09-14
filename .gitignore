@@ -7,6 +7,11 @@ settings/google.php
 settings/facebook.php
 settings/wompi.php
 settings/kinguin.php
+settings/coinbase.php
+settings/grecaptcha.php
+settings/mercadopago.php
+settings/paypal.php
+settings/stripe.php
 compiler/builds/
 ipn.txt
 order-status.txt
