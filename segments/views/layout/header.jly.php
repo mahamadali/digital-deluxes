@@ -27,16 +27,24 @@
             <div class="page-header__action">
             <ul class="uk-subnav uk-nav-lang  uk-subnav-pill nav-lang" uk-margin="">
                <li class="uk-first-column">
-                  <a href="#" aria-expanded="false">
-                     @if(session()->getLanguage() == 'en' || session()->getLanguage() == ''):
+                  <a href="#" aria-expanded="false" class="choosen_lang">
+                     
+                     @if(isset($_COOKIE['googtrans'])):
+
+                     @if($_COOKIE['googtrans'] == '/en/en' || $_COOKIE['googtrans'] == ''):
                      <img src="{{ url('assets/frontend/img/united-kingdom.png') }}" alt="profile" class="profile">
-                     English
+                     <span class="lang_name">English</span>
                      <span uk-icon="icon: triangle-down" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
                      @endif
 
-                     @if(session()->getLanguage() == 'es'):
+                     @if($_COOKIE['googtrans'] == '/en/es'):
                      <img src="{{ url('assets/frontend/img/spain.png') }}" alt="profile" class="profile">
-                     Español
+                     <span class="lang_name">Spanish</span>
+                     <span uk-icon="icon: triangle-down" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
+                     @endif
+                     @else
+                     <img src="{{ url('assets/frontend/img/united-kingdom.png') }}" alt="profile" class="profile">
+                     <span class="lang_name">English</span>
                      <span uk-icon="icon: triangle-down" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
                      @endif
                   </a>

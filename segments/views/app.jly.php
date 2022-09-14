@@ -193,21 +193,22 @@ $( function() {
             $('.translation-links li').click(function(e) {
                 e.preventDefault();
                 var lang = $(this).data('lang');
-                console.log(lang);
                 $('#google_translate_element select option').each(function(){
                     if($(this).text().indexOf(lang) > -1) {
                         $(this).parent().val($(this).val());
                         var container = document.getElementById('google_translate_element');
                         var select = container.getElementsByTagName('select')[0];
                         triggerHtmlEvent(select, 'change');
-                        $('.page-home').css('top', '0px !important');
+                        $('body').css('top', '0px !important');
                     }
                 });
-                $('.page-home').css('top', '0px !important');
+                $('body').css('top', '0px !important');
+                $('.choosen_lang').find('img').attr('src', $(this).find('img').attr('src'));
+                $('.choosen_lang').find('.lang_name').html($(this).data('lang'));
             });
 
             $(document).ready(function() {
-                $('.page-home').css('top', '0px !important');
+                $('body').css('top', '0px !important');
             })
 
         </script>

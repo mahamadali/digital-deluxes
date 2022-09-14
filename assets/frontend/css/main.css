@@ -20,6 +20,7 @@ body {
     font-style: normal;
     font-weight: normal;
     line-height: 1.31;
+    top: 0px !important;
 }
 
 h1,
@@ -6442,4 +6443,7 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
 
 .goog-te-banner-frame{
     display:none !important;
+}
+#google_translate_element {
+    display: none;
 }
