@@ -6439,3 +6439,7 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
             width: 38%;
         }
     }
+
+.goog-te-banner-frame{
+    display:none !important;
+}

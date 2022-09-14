@@ -18,6 +18,8 @@ class Response
         }
 
         echo json_encode(self::$response);
+
+        // Stop the execution after giving response
         exit;
     }
     

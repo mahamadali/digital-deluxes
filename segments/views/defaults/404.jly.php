@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>Jolly: <?php echo (!empty($error) ? $error : 'Under Maintenance'); ?></title>
+    <title>404: Page not found</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style type="text/css">

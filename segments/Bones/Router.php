@@ -69,24 +69,24 @@ class Router
     }
 
     public static function modules($modules = [])
-    {   
+    {
         foreach ($modules as $prefix => $action) {
             $singular_prefix = (isset($action['entity-alias']) && !empty($action['entity-alias'])) ? $action['entity-alias'] : Str::singular(Str::toSlug($prefix));
             $barriers = (isset($action['barriers']) && !empty($action['barriers'])) ? $action['barriers'] : [];
             $segments = (isset($action['segments']) && !empty($action['segments'])) ? $action['segments'] : [];
-            
-            self::bunch($prefix, [ 'as' => $prefix . '.', 'barrier' => [$barriers] ], function() use ($action, $singular_prefix, $segments) {
-                self::get('/', [ $action['controller'], 'index' ])->name('index');
-                self::get('/'.(!empty($segments['create']) ? $segments['create'] : 'create').'', [ $action['controller'], 'create' ])->name('create');
-                self::post('/', [ $action['controller'], 'store' ])->name('store');
-                self::get('/{' . $singular_prefix . '}', [ $action['controller'], 'show' ])->name('show');
-                self::get('/{' . $singular_prefix . '}/'.(!empty($segments['edit']) ? $segments['edit'] : 'edit').'', [ $action['controller'], 'edit' ])->name('edit');
-                self::patch('/{' . $singular_prefix . '}', [ $action['controller'], 'update' ])->name('update');
-                self::delete('/{' . $singular_prefix . '}', [ $action['controller'], 'destroy' ])->name('destroy');
+
+            self::bunch($prefix, ['as' => $prefix . '.', 'barrier' => [$barriers]], function () use ($action, $singular_prefix, $segments) {
+                self::get('/', [$action['controller'], 'index'])->name('index');
+                self::get('/' . (!empty($segments['create']) ? $segments['create'] : 'create') . '', [$action['controller'], 'create'])->name('create');
+                self::post('/', [$action['controller'], 'store'])->name('store');
+                self::get('/{' . $singular_prefix . '}', [$action['controller'], 'show'])->name('show');
+                self::get('/{' . $singular_prefix . '}/' . (!empty($segments['edit']) ? $segments['edit'] : 'edit') . '', [$action['controller'], 'edit'])->name('edit');
+                self::patch('/{' . $singular_prefix . '}', [$action['controller'], 'update'])->name('update');
+                self::delete('/{' . $singular_prefix . '}', [$action['controller'], 'destroy'])->name('destroy');
             });
         }
     }
-    
+
     public static function bunchAttrs($parentAttrs)
     {
         $prefixSet = '';
@@ -112,7 +112,6 @@ class Router
                         $settingSet['as'] = $parentAttr[1]['as'];
                     }
                 }
-
             }
         }
 
@@ -145,7 +144,7 @@ class Router
         if (!self::__validateGlobalChecks()) {
             return false;
         }
-        
+
         $routeSegments = explode('?', $route);
         $route = trim($routeSegments[0], '/');
         Session::appendSetReserved('latest_routes', $route);
@@ -153,6 +152,7 @@ class Router
 
         $method = self::requestMethod();
         self::validateRequestMethod($method);
+        $method = self::$currentRouteMethod;
 
         if (empty(self::$routes[$method][$route])) {
             if (!empty($matchedRoute = self::checkRoutePatternMatch($route, $method))) {
@@ -163,7 +163,7 @@ class Router
                 if (!self::validateRequest(self::$routes[$matchedRoute['method']][$matchedRoute['route']])) {
                     self::setError(401);
                 }
-                
+
                 if (!empty($matchedRoute['optionalParams'])) {
                     $callbackParams = array_values($matchedRoute['optionalParams']);
                     if (gettype($callback) == 'object') {
@@ -226,10 +226,10 @@ class Router
             foreach (self::$routes as $routeMethod => $routeInfo) {
                 if (!empty($method) && strtolower($routeMethod) != 'any' && strtolower($method) != strtolower($routeMethod))
                     continue;
-                
+
                 foreach ($routeInfo as $route) {
                     if (request()->matchesTo(self::toPattern($route['caption'])))
-                        $matchedRoutes[$routeMethod.'://'.$route['caption']] = $route;
+                        $matchedRoutes[$routeMethod . '://' . $route['caption']] = $route;
                 }
             }
         }
@@ -242,20 +242,29 @@ class Router
         $matchedRoutes = self::requestMatchedRoutes();
 
         if (empty($matchedRoutes)) self::setError(404);
-        
-        $isAuthenticated = false;
+
+        $is_authenticated = false;
+        $has_matched_route = false;
         foreach ($matchedRoutes as $matchedRoute) {
-            
-            if (strtolower($matchedRoute['method']) == 'any') $isAuthenticated = true;
 
-            if (strtolower($matchedRoute['method']) == strtolower($method)) {
-                $isAuthenticated = true;
+            $matched_route_segments = explode('/', $matchedRoute['caption']);
+            $current_page_segments = explode('/', ltrim(request()->currentUri(), '/'));
+
+            if (count($matched_route_segments) === count($current_page_segments) && Url::matchesTo(request()->currentUri(), self::toPattern($matchedRoute['caption']))) {
+                $has_matched_route = true;
+                if (!$is_authenticated && strtolower($matchedRoute['method']) == 'any') {
+                    self::$currentRouteMethod = 'ANY';
+                    $is_authenticated = true;
+                }
+
+                if (!$is_authenticated && strtolower($matchedRoute['method']) == strtolower($method)) {
+                    self::$currentRouteMethod = $matchedRoute['method'];
+                    $is_authenticated = true;
+                }
             }
-
-            if ($isAuthenticated) break;
         }
 
-        if (!$isAuthenticated) self::setError(401);
+        if ($has_matched_route && !$is_authenticated) self::setError(401);
     }
 
     public static function validateRequest(array $route = [])
@@ -296,9 +305,8 @@ class Router
                     throw new RouteException('Unauthenticated: Barriers\System\PreventCSRFToken must exist with check method to prevent CSRF attack', 402);
                 }
             }
-
         }
-        
+
         return $isValid;
     }
 
@@ -316,7 +324,7 @@ class Router
                     } else {
                         if ((Str::startsWith($barrier['name'], 'Barrier') && Str::endsWith($barrier['name'], 'Barrier')))
                             $barrierClass = $barrier['name'];
-                        else if(Str::startsWith($barrier['name'], 'Barrier'))
+                        else if (Str::startsWith($barrier['name'], 'Barrier'))
                             $barrierClass = $barrier['name'];
                         else
                             $barrierClass = '\\Barriers\\' . $barrier['name'];
@@ -382,7 +390,7 @@ class Router
         $pageRouteSegments = array_map(function ($pageRouteSegment) {
             return urldecode($pageRouteSegment);
         }, $pageRouteSegments);
-        
+
         $routeNames = [];
         $requestMatchedRoutes = self::requestMatchedRoutes($method);
         foreach ($requestMatchedRoutes as $key => $routeInfo) {
@@ -496,12 +504,13 @@ class Router
         return $optionalParams;
     }
 
-    public static function accessProtected($obj, $prop) {
+    public static function accessProtected($obj, $prop)
+    {
         $reflection = new \ReflectionClass($obj);
         $property = $reflection->getProperty($prop);
         $property->setAccessible(true);
         return $property->getValue($obj);
-      }
+    }
 
     public static function getRouteSegmentPresenseAttrs($segment)
     {
@@ -658,7 +667,7 @@ class Router
 
         foreach (self::$routes[$method][$route]['barriers'] as $barrierIndex => $barrier) {
             foreach ($barrier as $barrierName) {
-                if (in_array($barrierName, $barriers)) {   
+                if (in_array($barrierName, $barriers)) {
                     unset(self::$routes[$method][$route]['barriers'][$barrierIndex]);
                 }
             }
@@ -694,7 +703,7 @@ class Router
 
         // Calculate request->response total execution time in seconds
         $current_time = microtime(true);
-        $execution_start_time = (double) session()->get('execution_start_time');
+        $execution_start_time = (float) session()->get('execution_start_time');
 
         if (is_string($content)) {
             echo $content;
@@ -731,7 +740,7 @@ class Router
             echo error($error_code, compact('error'));
             exit;
         }
-        
+
         throw new RouteException('Error code ' . $error_code . ' returned');
     }
 
@@ -761,7 +770,7 @@ class Router
 
         if (!empty($_SERVER['REQUEST_METHOD']) && in_array($_SERVER['REQUEST_METHOD'], ['POST']) && !empty($_REQUEST['_method']))
             return $_REQUEST['_method'];
-        
+
         return (!empty($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'ANY');
     }
 
@@ -795,12 +804,12 @@ class Router
 
     public static function url(string $path)
     {
-        $url = setting('app.base_url') .'/';
+        $url = setting('app.base_url') . '/';
 
         if (!empty($subDir = setting('app.sub_dir', ''))) {
             $url .= $subDir . '/';
         }
-        
+
         return $url . $path;
     }
 
@@ -850,7 +859,7 @@ class Router
                     if (!$segmentHasSyntaxParam && array_key_exists($syntaxParam, $segmentValues))
                         $segmentHasSyntaxParam = true;
                 }
-                
+
                 if ((count($segmentValues) == count($segmentValues, COUNT_RECURSIVE)) && !$segmentHasSyntaxParam) {
                     $dynamicSegmentCount = 0;
                     foreach ($routeSyntax as $segmentCount => $segment) {
@@ -862,7 +871,7 @@ class Router
                         } else {
                             $finalRouteBlocks[$segment] = $segment;
                         }
-                    }       
+                    }
                 } else {
                     foreach ($routeSyntax as $segment) {
                         if (Str::startsWith($segment, '{') && !Str::startsWith($segment, '{?') && Str::endsWith($segment, '}')) {
@@ -906,5 +915,4 @@ class Router
 
         return $proceedToNext;
     }
-
 }

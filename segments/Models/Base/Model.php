@@ -699,7 +699,7 @@ class Model extends Database
     public function ___aggregate($operator, $column = '', $alias = '')
     {
         $this->columns = $this->removeAttr($this->columns, '*');
-        
+
         $column = ltrim($column, '`');
         $column = rtrim($column, '`');
 

@@ -41,9 +41,9 @@
                      @endif
                   </a>
                   <div uk-dropdown="mode: hover" class="uk-dropdown uk-dropdown-bottom-left" style="left: 50px; top: 42px;">
-                     <ul class="uk-nav uk-dropdown-nav">
-                           <li><a href="{{ route('set-lang', ['lang' => 'en']) }}"> <img src="{{ url('assets/frontend/img/united-kingdom.png') }}" alt="profile" class="profile">English</a></li>
-                           <li><a href="{{ route('set-lang', ['lang' => 'es']) }}"> <img src="{{ url('assets/frontend/img/spain.png') }}" alt="profile" class="profile">Español</a></li>
+                     <ul class="uk-nav uk-dropdown-nav translation-links">
+                           <li><a href="Javascript:void(0);" class="english" data-lang="English"> <img src="{{ url('assets/frontend/img/united-kingdom.png') }}" alt="profile" class="profile">English</a></li>
+                           <li><a href="Javascript:void(0);" class="spanish" data-lang="Spanish"> <img src="{{ url('assets/frontend/img/spain.png') }}" alt="profile" class="profile">Español</a></li>
 
                      </ul>
                   </div>

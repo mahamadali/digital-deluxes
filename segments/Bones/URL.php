@@ -14,8 +14,25 @@ class URL
         $route = str_replace(setting('app.sub_dir', ''), '', (!empty($parsedURL['path']) ? $parsedURL['path'] : ''));
         if (!empty($parsedURL['query']))
             $route .= '?' . $parsedURL['query'];
-        
+
         return $route;
+    }
+
+    public static function matchesTo($url, $pattern)
+    {
+        if (!Str::startsWith($pattern, '/')) {
+            $currentPage = ltrim($url, '/');
+        }
+
+        $currentPageParts = explode('/', $currentPage);
+        $patternParts = explode('/', $pattern);
+
+        foreach ($patternParts as $index => $patternPart) {
+            if ($patternPart != '*' && (!isset($currentPageParts[$index]) || $patternPart != $currentPageParts[$index]))
+                return false;
+        }
+
+        return true;
     }
 
     public static function removeQuery($url)
@@ -34,7 +51,7 @@ class URL
         } else {
             $url .= '?' . urlencode($key) . '=' . urlencode($value);
         }
-        
+
         return (string) url($url);
     }
 
@@ -49,7 +66,7 @@ class URL
     }
 
     public static function addQueryParamToCurrentPage($key, $value = '')
-    {    
+    {
         return (new static)->addQueryParam(request()->currentPage(), $key, $value);
     }
 
@@ -65,7 +82,7 @@ class URL
 
         if (empty($parts['query']))
             return false;
-        
+
         parse_str($parts['query'], $query);
 
         return !empty($parts['query']) && isset($query[$param]);
@@ -75,10 +92,10 @@ class URL
     {
         if (!self::hasQueryParam($url, $param))
             return '';
-        
+
         $parts = parse_url($url);
         parse_str($parts['query'], $query);
-        
+
         return (!empty($parts['query']) && isset($query[$param])) ? $query[$param] : '';
     }
 
@@ -91,15 +108,15 @@ class URL
     {
         if (self::hasQueryParam($url, 'signature'))
             throw new InvalidArgumentException('"signature" is a required<->reserved parameter for signing the url. Please update your route syntax.');
-        
+
         if (self::hasQueryParam($url, 'expires_at'))
             throw new InvalidArgumentException('"expires_at" is a required<->reserved parameter for signing the url. Please update your route syntax.');
-        
-        $signature = $url .'::';
+
+        $signature = $url . '::';
         $queryParams = [];
 
         if (!empty($expires_at)) {
-            
+
             if ($expires_at instanceof DateTimer || $expires_at instanceof DateTime) {
                 $queryParams['expires_at'] = $expires_at->format('U');
             } else if (gettype($expires_at == 'string') && Str::isTimestamp($expires_at)) {
@@ -112,9 +129,9 @@ class URL
 
             $signature .= $expires_at;
         }
-        
+
         $queryParams['signature'] = self::createSignature($signature);
-        
+
         return (string) $url . '?' . http_build_query($queryParams);
     }
 
@@ -132,22 +149,21 @@ class URL
     public static function verifySignature($url)
     {
         if (!self::hasQueryParam($url, 'signature'))
-        
+
             return false;
 
         $url_for_signature = self::removeQuery($url) . '::';
 
         if (self::hasQueryParam($url, 'expires_at') && !empty($expires_at = self::getQueryParam($url, 'expires_at'))) {
-            if ($expires_at < DateTimer::currentTimestamp()) 
+            if ($expires_at < DateTimer::currentTimestamp())
                 return false;
-            
+
             $url_for_signature .= $expires_at;
         }
 
         if (self::createSignature($url_for_signature) != self::getQueryParam($url, 'signature'))
             return false;
-        
+
         return true;
     }
-
 }
