@@ -46,7 +46,11 @@ trait Commands
         foreach ($this->statements as $statement) {
             if (!empty($statement['index'])) {
                 $indexName = $statement['index'];
-                $sql = 'CREATE INDEX ' . $indexName . ' ON `'.$this->prefix . $this->table.'` (`'.implode('`, `', $statement['columns']).'`)';
+                if ($statement['name'] == 'fulltext') {
+                    $sql = 'ALTER TABLE `'.$this->prefix . $this->table.'` ADD FULLTEXT(`'.implode('`, `', $statement['columns']).'`)';
+                } else {
+                    $sql = 'CREATE INDEX ' . $indexName . ' ON `'.$this->prefix . $this->table.'` (`'.implode('`, `', $statement['columns']).'`)';
+                }
                 Database::rawQuery($sql);
             } else if ($statement['name'] == 'foreign') {
                 $sql = "ALTER TABLE `".$this->prefix . $this->table."`

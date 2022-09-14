@@ -15,11 +15,6 @@ class StoreController
 {
 	public function index(Request $request)
 	{
-		$page = $request->get("page");
-		if ($page == "") {
-			$page = 1;
-		}
-
 		$operatingSystems = ProductSystemRequirement::selectSet(['system'])->groupBy('system')->orderBy('id','ASC')->get();
 		
         $products = Product::whereNotLike('platform', 'kinguin')->whereNotLike('name', '%Kinguin%');
@@ -64,7 +59,8 @@ class StoreController
         }
 
 		if($name){
-			$products = $products->where('name', '%'.$name.'%', 'LIKE');
+			// $products = $products->where('name', '%'.$name.'%', 'LIKE');
+			$products = $products->where('MATCH(name) AGAINST ("'.$name.'" IN NATURAL LANGUAGE MODE)');
         }
 
 		if($min_price){
