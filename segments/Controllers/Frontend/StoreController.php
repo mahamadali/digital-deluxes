@@ -59,8 +59,8 @@ class StoreController
         }
 
 		if($name){
-			// $products = $products->where('name', '%'.$name.'%', 'LIKE');
-			$products = $products->where('MATCH(name) AGAINST ("'.$name.'" IN NATURAL LANGUAGE MODE)');
+			$products = $products->where('name', '%'.$name.'%', 'LIKE');
+			// $products = $products->where('MATCH(name) AGAINST ("'.$name.'" IN NATURAL LANGUAGE MODE)');
         }
 
 		if($min_price){

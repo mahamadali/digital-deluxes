@@ -65,12 +65,13 @@ class Product extends Model
 		$profitPrice = $currenctCurrencyPrice;
 		
 		if(session()->get('platform_currency') == 'cop') {
-			$profitPrice = (int) $profitPrice;
+			$profitPrice = number_format($profitPrice, 0, ',', '.');
 		}
 
 		if(session()->get('platform_currency') == 'usd' || session()->get('platform_currency') == 'eur') {
 			$profitPrice = round($profitPrice, 2);
 		}
+		
 		return $profitPrice;
 	}
 

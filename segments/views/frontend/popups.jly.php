@@ -21,6 +21,10 @@
                         <a href="{{ route('frontend.cart.remove',[$cart->id]) }}"><i class="ico_trash" style="float: right;color:red;cursor:pointer;"></i></a>
                     </div>
                 </div>
+                <div class="products_limitation" data-region_limitation="{{ $cart->product->regionalLimitations }}" data-product_id="{{ $cart->product->id }}"></div>
+                
+                <div class="country_restriction_success_text_cart" style="display: none;" id="country_restriction_success_text_cart_{{ $cart->product->id }}"><i class="ico_tick-circle"></i> {{ trans('view_product.can_be_activated_in') }}: <span class="YOUR_COUNTRY"></span></div>
+                <div class="country_restriction_danger_text_cart" style="display: none;" id="country_restriction_danger_text_cart_{{ $cart->product->id }}"><i class="ico_close-circle"></i> {{ trans('view_product.cant_be_activated_in') }}: <span class="YOUR_COUNTRY"></span></div>
                 <hr>
                 
             @endforeach

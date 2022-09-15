@@ -177,40 +177,85 @@ $( function() {
 
 
         <script type="text/javascript">
-            // function triggerHtmlEvent(element, eventName) {
-            // var event;
-            // if(document.createEvent) {
-            //     event = document.createEvent('HTMLEvents');
-            //     event.initEvent(eventName, true, true);
-            //     element.dispatchEvent(event);
-            // } else {
-            //     event = document.createEventObject();
-            //     event.eventType = eventName;
-            //     element.fireEvent('on' + event.eventType, event);
-            // }
-            // }
-            
-            // $('.translation-links li').click(function(e) {
-            //     e.preventDefault();
-            //     var lang = $(this).data('lang');
-            //     $('#google_translate_element select option').each(function(){
-            //         if($(this).text().indexOf(lang) > -1) {
-            //             $(this).parent().val($(this).val());
-            //             var container = document.getElementById('google_translate_element');
-            //             var select = container.getElementsByTagName('select')[0];
-            //             triggerHtmlEvent(select, 'change');
-            //             $('body').css('top', '0px !important');
-            //         }
-            //     });
-            //     $('body').css('top', '0px !important');
-            //     $('.choosen_lang').find('img').attr('src', $(this).find('img').attr('src'));
-            //     $('.choosen_lang').find('.lang_name').html($(this).data('lang'));
-            // });
+            jQuery('.products_limitation').each(function(index, currentElement) {
+                var limited_country = $(currentElement).attr('data-region_limitation');
+                var limited_product_id = $(currentElement).attr('data-product_id');
+                var country_code = $(currentElement).attr('data-region_limitation');
+                var user_country = '<?php echo !empty(auth()->country_info) ? user()->country_info->country_name : "" ?? "" ?>';
+                var country_code = '<?php echo !empty(auth()->country_info) ? user()->country_info->country_code : "" ?? "" ?>';
+                
+                if(user_country.length == 0) {
+                    checkWithIPProduct(limited_country, limited_product_id);
+                } else {
+                    handleIpProduct(user_country, country_code, limited_country, limited_product_id, limited_product_id);
+                }
+            });
 
-            // $(document).ready(function() {
-            //     $('body').css('top', '0px !important');
-            // })
+            function checkWithIPProduct(limited_country,limited_product_id) {
+                $.getJSON("https://api.ipify.org/?format=json", function(e) {
+                    
+                    fetch("https://ip-api.io/json/"+e.ip, {
+                        headers: { Accept: "application/json" },
+                    })
+                        .then((resp) => resp.json())
+                        .catch(() => {
+                        return {
+                            country: "us",
+                        };
+                        })
+                        .then((resp) => {
+                            handleIp(resp.country_name, resp.country_code, limited_country, limited_product_id);
+                        });
+                });
+                
+            }
 
+            function handleIpProduct(country, code, limited_country, limited_product_id) {
+                var restriction_countries = limited_country;
+                if(restriction_countries == '' || restriction_countries.toLowerCase() == 'region free' || restriction_countries.toLowerCase() == 'rest of the world' || restriction_countries.toLowerCase() == 'outside europe' || restriction_countries.toLowerCase() == 'other' || restriction_countries.toLowerCase() == 'other') {
+                    $('#country_restriction_success_text_cart_'+limited_product_id).show();
+                    $('#country_restriction_danger_text_cart_'+limited_product_id).hide();
+                    $('#country_restriction_success_text_cart_'+limited_product_id).find('.YOUR_COUNTRY').text(country);
+                } else {
+                    var allowCountry = 0;
+                    
+                    $.getJSON("{{ route('api.region-countries') }}?region="+restriction_countries, function(e) {
+                        var total_countries = Object.keys(e.data).length;
+                        if(total_countries > 0) {
+                            var counter = 0;
+                            $.each(e.data, function (i) {
+                                
+                                if(code == i) {
+                                    allowCountry = 1;
+                                }
+                                counter++;
+                                if(total_countries == counter) {
+                                    if(allowCountry == 0) {
+                                        $('#country_restriction_success_text_cart_'+limited_product_id).hide();
+                                        $('#country_restriction_danger_text_cart_'+limited_product_id).show();
+                                        $('#country_restriction_danger_text_cart_'+limited_product_id).find('.YOUR_COUNTRY').text(country)
+                                    } else {
+                                        $('#country_restriction_success_text_cart_'+limited_product_id).show();
+                                        $('#country_restriction_danger_text_cart_'+limited_product_id).hide();
+                                        $('#country_restriction_success_text_cart_'+limited_product_id).find('.YOUR_COUNTRY').text(country)
+                                    }
+                                }
+                            });
+                        } else {
+                            if(restriction_countries == country) {
+                                $('#country_restriction_success_text_cart_'+limited_product_id).show();
+                                $('#country_restriction_danger_text_cart_'+limited_product_id).hide();
+                                $('#country_restriction_success_text_cart_'+limited_product_id).find('.YOUR_COUNTRY').text(country)
+                            } else {
+                                $('#country_restriction_success_text_cart_'+limited_product_id).hide();
+                                $('#country_restriction_danger_text_cart_'+limited_product_id).show();
+                                $('#country_restriction_danger_text_cart_'+limited_product_id).find('.YOUR_COUNTRY').text(country)
+                            }
+                        }
+                    });
+                }
+                
+            }
         </script>
         @plot('scripts')
         @include('layout/alert')
