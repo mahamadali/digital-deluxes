@@ -161,6 +161,32 @@
     </div>
   </div>
 
+  <div class="col-md-6 grid-margin stretch-card">
+    
+    <div class="card">
+      <div class="card-body">
+     
+        <form method="post" enctype="multipart/form-data" action="{{ route('admin.users.add-wallet', ['user' => $user->id]) }}">
+          {{ prevent_csrf() }}
+          <h4 class="card-title">
+              User Wallet <small>{{ $user->wallet_amount }} EUR</small>
+          </h4>
+          <p class="card-description">
+            Add balance to user's wallet
+          </p>
+          <div class="form-group row">
+            <label class="col-sm-12 col-form-label">Wallet Amount</label>
+            <div class="col-sm-12">
+              <input class="form-control" name="wallet_amount" placeholder="Enter Amount">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary mr-2">Submit</button>
+          <a href="{{ route('admin.users.list') }}" class="btn btn-light">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 @endblock

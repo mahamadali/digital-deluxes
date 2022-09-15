@@ -6477,3 +6477,12 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
 #google_translate_element {
     display: none;
 }
+
+/* Bottom left text */
+.bottom-left {
+    position: absolute;
+    bottom: 20px;
+    left: 16px;
+    color: #c5c5c5;
+    font-size: 20px;
+}

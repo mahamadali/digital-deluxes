@@ -25,6 +25,7 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 		Router::post('/update/{user}', [ UserController::class, 'update' ])->name('update');
 		Router::post('/payment_method_update/{user}', [ UserController::class, 'paymentMethodUpdate' ])->name('payment_method_update');
 		Router::post('/delete-multiple', [ UserController::class, 'deleteMultiple' ])->name('delete-multiple');
+		Router::post('/add-wallet/{user}', [ UserController::class, 'addWallet' ])->name('add-wallet');
 	});
 
 	Router::bunch('/products', ['as' => 'products.'], function () {

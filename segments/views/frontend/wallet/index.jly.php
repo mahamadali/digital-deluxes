@@ -61,11 +61,19 @@
                 <ul class="activities-list">
                     @foreach($transactions as $transaction):
                     <li class="activities-item">
+                        @if(!empty($transaction->payment_method_id)):
                         <div class="activities-item__logo"><a href="Javascript:void(0);"><img src="{{ url('assets/frontend/img/payment-logos/'.$transaction->payment_method_info->title.'.png') }}" alt="image"></a></div>
                         <div class="activities-item__info"><a class="activities-item__title" href="Javascript:void(0);"> {{ $transaction->payment_method_info->title }}</a>
                             <div class="activities-item__date">{{ date('d M, Y H:i', strtotime($transaction->created_at)) }}</div>
                         </div>
                         <div class="activities-item__price">{{ $transaction->kind_of_tx == 'CREDIT' ? '+' : '-' }} ${{ $transaction->amount }} {{ $transaction->currency }}</div>
+                        @else
+                        <div class="activities-item__logo"><a href="Javascript:void(0);">ADMIN</a></div>
+                        <div class="activities-item__info"><a class="activities-item__title" href="Javascript:void(0);"> {{ $transaction->payment_method }}</a>
+                            <div class="activities-item__date">{{ date('d M, Y H:i', strtotime($transaction->created_at)) }}</div>
+                        </div>
+                        <div class="activities-item__price">{{ $transaction->kind_of_tx == 'CREDIT' ? '+' : '-' }} ${{ $transaction->amount }} {{ $transaction->currency }}</div>
+                        @endif
                     </li>
                     @endforeach
                 </ul>

@@ -6,6 +6,7 @@ use Bones\Request;
 use Models\Role;
 use Models\User;
 use Models\PaymentMethod;
+use Models\TransactionLog;
 use Models\UserPaymentMethod;
 
 
@@ -110,6 +111,33 @@ class UserController
 	public function deleteMultiple(Request $request) {
 		User::whereIn('id',$request->userIds)->delete();
 		return response()->json(['stauts'=> 'success', 'msg' => 'Users deleted successfully']);
+	}
+
+	public function addWallet(Request $request, User $user) {
+		$validator = $request->validate([
+			'wallet_amount' => 'required|numeric'
+		]);
+
+		if ($validator->hasError()) {
+			return redirect()->withFlashError(implode('<br>', $validator->errors()))->with('old', $request->all())->back();
+		}
+		$amount = $request->wallet_amount;
+		$transaction = new TransactionLog();
+		$transaction->user_id = $user->id;
+		$transaction->tx_id = 'ADMIN_CREATED';
+		$transaction->currency = 'EUR';
+		$transaction->type = 'wallet';
+		$transaction->amount = $amount;
+		$transaction->status = 'COMPLETED';
+		$transaction->payment_method = 'BY ADMIN';
+		$transaction->payment_method_id = '';
+		$transaction->kind_of_tx = 'CREDIT';
+		$transaction = $transaction->save();
+
+		$user->wallet_amount = $user->wallet_amount + $amount;
+		$user->save();
+
+		return redirect()->withFlashSuccess($amount.' EUR successfully added into '.$user->fullName.' account')->back();
 	}
 	
 
