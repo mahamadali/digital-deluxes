@@ -202,7 +202,7 @@ class PaymentController
         
                 $products = [];
                 foreach($orderProducts as $orderProduct) {
-                    // $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
+                    $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
                     // $keyTypeResponse = $this->fetchKeyType($orderProduct);
                     // $keyTypeResponse = json_decode($keyTypeResponse);
                     // $offerId = $this->fetchOfferId($keyTypeResponse);
@@ -212,8 +212,8 @@ class PaymentController
                         'qty' => $orderProduct->product_qty,
                         'name' => $orderProduct->product_name,
                         'price' => $orderProduct->product_price,
-                        // 'keyType' => 'text',
-                        // 'offerId' => $offerId,
+                        'keyType' => 'text',
+                        'offerId' => $offerId,
                     ];
                 }
                 
@@ -660,7 +660,7 @@ class PaymentController
     
             $products = [];
             foreach($orderProducts as $orderProduct) {
-                // $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
+                $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
                 // $keyTypeResponse = $this->fetchKeyType($orderProduct);
                 // $keyTypeResponse = json_decode($keyTypeResponse);
                 // $offerId = $this->fetchOfferId($keyTypeResponse);
@@ -670,8 +670,8 @@ class PaymentController
                     'qty' => $orderProduct->product_qty,
                     'name' => $orderProduct->product_name,
                     'price' => $orderProduct->product_price,
-                    // 'keyType' => 'text',
-                    // 'offerId' => $offerId,
+                    'keyType' => 'text',
+                    'offerId' => $offerId,
                 ];
             }
             
@@ -938,7 +938,7 @@ class PaymentController
     
             $products = [];
             foreach($orderProducts as $orderProduct) {
-                // $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
+                $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
                 // $keyTypeResponse = $this->fetchKeyType($orderProduct);
                 // $keyTypeResponse = json_decode($keyTypeResponse);
                 // $offerId = $this->fetchOfferId($keyTypeResponse);
@@ -948,8 +948,8 @@ class PaymentController
                     'qty' => $orderProduct->product_qty,
                     'name' => $orderProduct->product_name,
                     'price' => $orderProduct->product_price,
-                    // 'keyType' => 'text',
-                    // 'offerId' => $offerId,
+                    'keyType' => 'text',
+                    'offerId' => $offerId,
                 ];
             }
             
