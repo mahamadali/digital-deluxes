@@ -139,10 +139,10 @@ if (! function_exists('currentPageFullURL')) {
 if (! function_exists('cartItems')) {
     function cartItems($userId = '')
     {
-        if(empty(auth()->id)) {
-            return [];
-        }
         if(empty($userId)) {
+            if(empty(auth()->id)) {
+                return [];
+            }
             $userId = auth()->id;
         }
         $cart_details  = Cart::where('user_id',$userId)->orderBy('id')->get();
@@ -153,10 +153,10 @@ if (! function_exists('cartItems')) {
 if (! function_exists('cartTotal')) {
     function cartTotal($userId = '')
     {
-        if(empty(auth()->id)) {
-            return 0;
-        }
         if(empty($userId)) {
+            if(empty(auth()->id)) {
+                return 0;
+            }
             $userId = auth()->id;
         }
         $cart_details  = Cart::where('user_id', $userId)->orderBy('id')->get();
@@ -171,10 +171,10 @@ if (! function_exists('cartTotal')) {
 if (! function_exists('cartTotalOriginal')) {
     function cartTotalOriginal($userId = '')
     {
-        if(empty(auth()->id)) {
-            return 0;
-        }
         if(empty($userId)) {
+            if(empty(auth()->id)) {
+                return 0;
+            }
             $userId = auth()->id;
         }
         $cart_details  = Cart::where('user_id', $userId)->orderBy('id')->get();
