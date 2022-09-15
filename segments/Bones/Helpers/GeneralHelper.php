@@ -5,6 +5,7 @@ use Google\Service\AdExchangeBuyerII\Price;
 use Models\User;
 use Models\Cart;
 use Models\CurrencyRate;
+use Models\PaymentMethod;
 use Models\PriceProfit;
 use Models\Product;
 use Models\Setting;
@@ -488,5 +489,17 @@ if (!function_exists('prevent_csrf')) {
         $prevent_csrf_token = md5(uniqid(mt_rand(), true));
         session()->appendSet('prevent_csrf_token', $prevent_csrf_token, true);
         return '<input type="hidden" name="prevent_csrf_token" value="'.$prevent_csrf_token.'" />' . PHP_EOL;
+    }
+}
+
+if (!function_exists('paymentFee')) {
+    function paymentFee($id)
+    {
+        $payment_method = PaymentMethod::find($id);
+        if(!empty($payment_method->transaction_fee)) {
+            return $payment_method->transaction_fee;
+        } else {
+            return 0;
+        }
     }
 }

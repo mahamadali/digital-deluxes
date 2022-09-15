@@ -170,7 +170,7 @@
                 @foreach($payment_methods as $key => $payment_method):
                  <div class="col-custom-row-12 payment_method_info">
                     <div class="col-custom-12">
-                    <label><input type="radio" name="payment_method" data-value="{{ $payment_method->title }}" value="{{ $payment_method->id }}" {{ ($key == 0) ? 'required' : '' }}> {{ $payment_method->title }} <small>{{ $payment_method->currency }}</small> 
+                    <label><input type="radio" name="payment_method" data-value="{{ $payment_method->title }}" data-fee="{{ !empty($payment_method->transaction_fee) ? $payment_method->transaction_fee : 0 }}" value="{{ $payment_method->id }}" {{ ($key == 0) ? 'required' : '' }}> {{ $payment_method->title }} <small>{{ $payment_method->currency }} {{ !empty($payment_method->transaction_fee) ? $payment_method->transaction_fee.'% fee' : '' }}</small> 
                     
                     @if(file_exists($payment_method->main_logo)):
                     <div class="payment-card__logo"><img src="{{ url($payment_method->main_logo) }}" alt="logo"></div>
@@ -229,6 +229,13 @@
             submitHandler: function(form) {
                 if($(form).find('input[name="payment_method"]:checked').data('value') == 'Wompi') {
                     var exchangePrice = '{{ $total_amount }}';
+                    var fee_perc = $(form).find("input[name=payment_method]:checked").data('fee');
+                    var exchangePriceFee = 0;
+                    if(fee_perc > 0) {
+                        exchangePriceFee = (exchangePrice * fee_perc) / 100;
+                    }
+                    
+                    exchangePrice = parseFloat(exchangePrice) + parseFloat(exchangePriceFee);
                     var cartTotal = exchangePrice;
                     
                     if(cartTotal > 0 && cartTotal > 1500) {
@@ -274,6 +281,8 @@
                 }
                 if($(form).find('input[name="payment_method"]:checked').data('value') == 'Mercado Pago') {
                     var formData = new FormData(form);
+                    $(form).find('button[type="submit"]').prop('disabled', true);
+                    $('#page-preloader').show();
                     $.ajax({
                         url : $(form).attr('action'),
                         type : 'POST',
@@ -281,14 +290,18 @@
                         dataType: 'json',
                         contentType: false, processData: false,
                         success: function(response) {
+                            $('#page-preloader').hide();
                             if(response.redirectUrl != null) {
                                 window.location.href = response.redirectUrl;
                             } else {
                                 toastr.error('Currently '+response.payment_method+' is not responsive! Please try with other payment method.');
+                                $(form).find('button[type="submit"]').prop('disabled', false);
                             }
                         },
                         error: function() {
-                            
+                            $(form).find('button[type="submit"]').prop('disabled', false);
+                            toastr.error('Something went wrong! Please refresh page and try again!');
+                            $('#page-preloader').hide();
                         }
                     });
                 }

@@ -86,7 +86,12 @@ class CheckoutController
 			
 			$cartTotal = cartTotalOriginal();
 			$total_amount = currencyConverter('EUR', "COP", $cartTotal);
-			
+			$fee_perc = $paymentMethod->transaction_fee;
+			$fee_amount = 0;
+			if($fee_perc > 0) {
+				$fee_amount = ($total_amount * $fee_perc) / 100;
+			}
+			$total_amount = $total_amount + $fee_amount;
 			\MercadoPago\SDK::setAccessToken(setting('mercadopago.access_token'));
 			$preference = new \MercadoPago\Preference();
 			
@@ -302,6 +307,12 @@ class CheckoutController
 
 			$cartTotal = cartTotalOriginal();
 			$total_amount = currencyConverter('EUR', $paymentMethod->currency, $cartTotal);
+			$fee_perc = $paymentMethod->transaction_fee;
+			$fee_amount = 0;
+			if($fee_perc > 0) {
+				$fee_amount = ($total_amount * $fee_perc) / 100;
+			}
+			$total_amount = $total_amount + $fee_amount;
 			
 			$gateway = Omnipay::create('PayPal_Rest');
 			$gateway->setClientId(setting('paypal.CLIENT_ID'));
@@ -334,6 +345,12 @@ class CheckoutController
 
 			$cartTotal = cartTotalOriginal();
 			$total_amount = currencyConverter('EUR', $paymentMethod->currency, $cartTotal);
+			$fee_perc = $paymentMethod->transaction_fee;
+			$fee_amount = 0;
+			if($fee_perc > 0) {
+				$fee_amount = ($total_amount * $fee_perc) / 100;
+			}
+			$total_amount = $total_amount + $fee_amount;
 			
 			$curl = curl_init();
 
