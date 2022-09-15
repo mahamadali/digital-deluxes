@@ -88,7 +88,7 @@ class PaymentController
 
     public function notify(Request $request)
 	{
-        //$raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1662623141-89231","created_at":"2022-09-08T07:45:41.327Z","finalized_at":"2022-09-08T07:45:41.632Z","amount_in_cents":24082487,"reference":"782XDV0WBWGE","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"BANCOLOMBIA_TRANSFER","payment_method":{"type":"BANCOLOMBIA_TRANSFER","extra":{"async_payment_url":"https://sandbox.wompi.co/v1/payment_methods/redirect/bancolombia_transfer?transferCode=O9q2lMmgHw9Z2Ip0-approved","external_identifier":"O9q2lMmgHw9Z2Ip0-approved"},"user_type":"PERSON","sandbox_status":"APPROVED","payment_description":"Pago a digitaldeluxes, ref: 782XDV0WBWGE"},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"https://127.0.0.1/digital-deluxes/payment/check","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"24234","full_name":"Akbar Husen","phone_number":"+57523423","legal_id_type":"CC"},"billing_data":null}},"sent_at":"2022-09-08T07:45:41.675Z","timestamp":1662623141,"signature":{"checksum":"9b6693e3b40eb58a345d358024b0fad49a5f62944cbe3cddd02dde08aba14394","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
+        //$raw_post_data = '{"event":"transaction.updated","data":{"transaction":{"id":"121271-1663226090-28980","created_at":"2022-09-15T07:14:50.529Z","finalized_at":"2022-09-15T07:14:50.000Z","amount_in_cents":721845,"reference":"KG06MLVZVWP7","customer_email":"akbarmaknojiya@gmail.com","currency":"COP","payment_method_type":"CARD","payment_method":{"type":"CARD","extra":{"bin":"424242","name":"VISA-4242","brand":"VISA","exp_year":"25","exp_month":"03","last_four":"4242","card_holder":"4242 4242 4242 4242","external_identifier":"UqVBnlSUXu","processor_response_code":"00"},"token":"tok_test_21271_7A2Bf201A9CBB620ec03de41614538b2","installments":1},"status":"APPROVED","status_message":null,"shipping_address":null,"redirect_url":"https://127.0.0.1/digital-deluxes/payment/check","payment_source_id":null,"payment_link_id":null,"customer_data":{"legal_id":"2423423","full_name":"Akbar Husain","phone_number":"+57423423","legal_id_type":"CC"},"billing_data":{"legal_id_type":"CC","legal_id":"2423423"}}},"sent_at":"2022-09-15T07:14:51.785Z","timestamp":1663226091,"signature":{"checksum":"cb38ef9cdb0beedd2e4f351a3b423a1f3de43f206959e6d32960a05e17d3b752","properties":["transaction.id","transaction.status","transaction.amount_in_cents"]},"environment":"test"}';
         $raw_post_data = file_get_contents('php://input'); 
         file_put_contents('ipn.txt', $raw_post_data);
 
@@ -207,15 +207,17 @@ class PaymentController
                     // $keyTypeResponse = json_decode($keyTypeResponse);
                     // $offerId = $this->fetchOfferId($keyTypeResponse);
                     // $offer = json_decode($offerId);
+                    
                     $products[] = (object) [
                         'kinguinId' => $orderProduct->product->kinguinId,
                         'qty' => $orderProduct->product_qty,
                         'name' => $orderProduct->product_name,
-                        'price' => $orderProduct->product_price,
-                        'keyType' => 'text',
+                        'price' => $orderProduct->product->price_original_value,
+                        // 'keyType' => 'text',
                         'offerId' => $offerId,
                     ];
                 }
+
                 
                 // $orderExternalId = $this->orderExternalId($keyTypeResponse);
                 // $orderExternalId = json_decode($orderExternalId);
@@ -669,8 +671,8 @@ class PaymentController
                     'kinguinId' => $orderProduct->product->kinguinId,
                     'qty' => $orderProduct->product_qty,
                     'name' => $orderProduct->product_name,
-                    'price' => $orderProduct->product_price,
-                    'keyType' => 'text',
+                    'price' => $orderProduct->product->price_original_value,
+                    // 'keyType' => 'text',
                     'offerId' => $offerId,
                 ];
             }
@@ -947,8 +949,8 @@ class PaymentController
                     'kinguinId' => $orderProduct->product->kinguinId,
                     'qty' => $orderProduct->product_qty,
                     'name' => $orderProduct->product_name,
-                    'price' => $orderProduct->product_price,
-                    'keyType' => 'text',
+                    'price' => $orderProduct->product->price_original_value,
+                    // 'keyType' => 'text',
                     'offerId' => $offerId,
                 ];
             }
