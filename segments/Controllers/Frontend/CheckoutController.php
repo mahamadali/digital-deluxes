@@ -50,6 +50,17 @@ class CheckoutController
 			},$user_active_payments);
 			$payment_methods = PaymentMethod::where('status', 'ACTIVE')->whereIn('id', $user_active_payments)->where('type', 'both')->get();
 		}
+
+		$logged_in_user_register_date = date('Y-m-d',strtotime(user()->created_at));
+		
+		if($logged_in_user_register_date == date('Y-m-d'))
+		{
+			foreach($payment_methods as $key => $payment_method) {
+				if($payment_method->new_users == 0) {
+					unset($payment_methods[$key]);
+				}
+			}
+		}
 		
 		return render('frontend/checkout/index', ['countries' => $countries, 'user' => $user, 'payment_methods' =>  $payment_methods, 'total_amount' => $total_amount, 'order_reference' => $order_reference, 'walletEnable' => $walletEnable, 'wallet_in_cop' => $wallet_in_cop]);
 	}
