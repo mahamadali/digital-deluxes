@@ -93,4 +93,24 @@ class PaymentMethodController
 		$logo->delete();
 		return redirect()->withFlashSuccess('Logo deleted successfully')->back();
 	}
+
+	public function editPaymentMethod(Request $request, PaymentMethod $payment) {
+		$paymentMethod = PaymentMethod::find($payment->id);
+		return render('backend/admin/payment-methods/edit_payment_method',['payment' => $payment,'paymentMethod' => $paymentMethod]);
+	}
+
+	public function updatepaymentMethodPost(Request $request) {
+				/*$validator = $request->validate([
+						'new_users' => 'required',
+						'transaction_fee' => 'required',
+					]);
+
+				if ($validator->hasError()) {
+					return redirect()->withFlashError(implode('<br>', $validator->errors()))->with('old', $request->all())->back();
+				}*/
+		$PaymentMethodEditData['new_users'] = $request->new_users;
+		$PaymentMethodEditData['transaction_fee'] = $request->transaction_fee;
+		PaymentMethod::where('id', $request->payment_id)->update($PaymentMethodEditData);
+		return redirect(route('admin.settings.payment-methods.index'))->withFlashSuccess('Payment Method Updated successfully')->go();
+	}
 }

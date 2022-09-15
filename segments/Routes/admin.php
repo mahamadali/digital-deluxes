@@ -75,6 +75,8 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 			Router::bunch('/{logo}', ['as' => ''], function() {
 				Router::get('/remove-logo', [ PaymentMethodController::class, 'paymentLogoRemove' ])->name('remove-payment-logo');
 			});
+			Router::get('/edit-payment-methods/{payment}', [ PaymentMethodController::class, 'editPaymentMethod' ])->name('edit-payment-methods');
+			Router::post('/edit-payment-method-post', [ PaymentMethodController::class, 'updatepaymentMethodPost' ])->name('edit-payment-method-post');
 		});
 
 	});

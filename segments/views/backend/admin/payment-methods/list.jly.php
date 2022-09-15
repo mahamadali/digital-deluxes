@@ -43,6 +43,7 @@
                 <td>
                   <input type="checkbox" class="pm-status" data-id="{{ $payment_method->id }}" {{ $payment_method->status == 'ACTIVE' ? 'checked' : '' }} data-toggle="toggle" data-on="ACTIVE" data-off="INACTIVE" data-onstyle="success" data-offstyle="danger">
                   <a href="{{ route('admin.settings.payment-methods.add-payment-logo', ['payment' => $payment_method->id]) }}" class="btn btn-sm btn-info ml-2">Add Logo</a>
+                  <a href="{{ route('admin.settings.payment-methods.edit-payment-methods', ['payment' => $payment_method->id]) }}" class="btn btn-sm btn-warning ml-2">Edit</a>
                 </td>
               </tr>
               @endforeach
