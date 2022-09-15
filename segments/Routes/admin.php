@@ -110,6 +110,11 @@ Router::get('/language/{lang}', function(Request $request, $lang) {
 	return redirect()->back();
 })->name('set-lang');
 
+Router::get('/language-cookie/{lang}', function(Request $request, $lang) {
+	setcookie('googtrans', '/en/'.$lang, time() + (86400 * 30), "/"); // 86400 = 1 day
+	return redirect()->back();
+})->name('set-lang-cookie');
+
 Router::get('/currency/{currency}', function(Request $request, $currency) {
 	session()->set('platform_currency', $currency);
 	$base_price = currencyConverter('EUR', strtoupper($currency), 1);
