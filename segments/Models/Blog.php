@@ -37,4 +37,8 @@ class Blog extends Model
         return $text;
     }
 
+    public function blogviews() {
+        return $this->hasMany(BlogView::class, 'blog_id');
+    }
+
 }

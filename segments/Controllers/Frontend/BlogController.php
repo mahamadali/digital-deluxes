@@ -5,6 +5,7 @@ namespace Controllers\Frontend;
 use Bones\Request;
 use Bones\Session;
 use Models\Blog;
+use Models\BlogView;
 
 class BlogController
 {
@@ -17,7 +18,10 @@ class BlogController
 	}
 
     public function view(Request $request, Blog $blog, $slug) {
-		
+		$blogView = new BlogView();
+		$blogView->blog_id = $blog->id;
+		$blogView->ip = get_client_ip();
+		$blogView->save();
 		return render('frontend/blogs/view', [
 			'blog' => $blog
 		]);

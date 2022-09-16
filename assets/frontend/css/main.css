@@ -6333,7 +6333,7 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
     }
 
     .b-post-full .entry-meta__item {
-        margin-right: 0px;
+        margin-right: 15px;
         margin-left: 15px;
         font-size: 14px;
         color: #fff;
