@@ -126,7 +126,7 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
 Router::bunch('/blogs', ['as' => 'blogs.'], function () {
   Router::get('/', [BlogController::class, 'index'])->name('index');
   Router::bunch('/{blog}', ['as' => ''], function () {
-    Router::get('/view', [BlogController::class, 'view'])->name('view');
+    Router::get('/{slug}', [BlogController::class, 'view'])->name('view');
   });
 });
 Router::post('/update-screen-mode', [WelcomeController::class, 'updateScreenMode'])->name('update-screen-mode');

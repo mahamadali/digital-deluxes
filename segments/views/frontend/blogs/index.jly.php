@@ -12,7 +12,7 @@
         @foreach($blogs as $blog):
             <section class="b-post b-post-full clearfix" style="transform: translateY(0px);">
                 <div class="entry-media">
-                    <a href="#"><img class="img-fluid" src="{{ url($blog->post_img) }}" alt="Foto" style="filter: brightness(50%);"></a>
+                    <a href="{{ route('blogs.view', ['blog' => $blog->id, 'slug' => $blog->slug]) }}"><img class="img-fluid" src="{{ url($blog->post_img) }}" alt="Foto" style="filter: brightness(50%);"></a>
                     <div class="entry-meta">
                         
                         <span class="entry-meta__item">{{ date('M d, Y', strtotime($blog->created_at)) }}</span>
@@ -22,11 +22,11 @@
                 </div>
                 <div class="entry-main">
                     <div class="entry-content">
-                        <h1 class="entry-title" style="margin: 0;"><a href="{{ route('blogs.view', ['blog' => $blog->id]) }}">{{ $blog->title }}</a></h1>
+                        <h1 class="entry-title" style="margin: 0;"><a href="{{ route('blogs.view', ['blog' => $blog->id, 'slug' => $blog->slug]) }}">{{ $blog->title }}</a></h1>
                         @if(strlen(strip_tags($blog->description)) > 150):
-                        <p>{{ substr(strip_tags($blog->description), 0, 150) }} <a class="more_post" href="{{ route('blogs.view', ['blog' => $blog->id]) }}"><i class="ico_more"></i></a> </p>
+                        <p>{{ substr(strip_tags($blog->description), 0, 150) }} <a class="more_post" href="{{ route('blogs.view', ['blog' => $blog->id, 'slug' => $blog->slug]) }}"><i class="ico_more"></i></a> </p>
                         @else
-                        <p>{{ $blog->description }}<a class="more_post" href="{{ route('blogs.view', ['blog' => $blog->id]) }}"></a> </p>
+                        <p>{{ $blog->description }}<a class="more_post" href="{{ route('blogs.view', ['blog' => $blog->id, 'slug' => $blog->slug]) }}"></a> </p>
                         @endif
                         
                     </div>

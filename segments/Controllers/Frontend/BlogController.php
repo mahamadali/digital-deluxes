@@ -16,7 +16,7 @@ class BlogController
 		]);
 	}
 
-    public function view(Request $request, Blog $blog) {
+    public function view(Request $request, Blog $blog, $slug) {
 		
 		return render('frontend/blogs/view', [
 			'blog' => $blog
