@@ -60,7 +60,7 @@
                   <a href="#" aria-expanded="false">
                      @if(session()->get('platform_currency') == 'cop' || session()->get('platform_currency') == ''):
                      <img src="{{ url('assets/frontend/img/cop-flag.png') }}" alt="profile" class="profile">
-                     COP
+                     Pesos Col
                      <span uk-icon="icon: triangle-down" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
                      @endif
                      @if(session()->get('platform_currency') == 'eur'):
@@ -77,7 +77,7 @@
                   </a>
                   <div uk-dropdown="mode: hover" class="uk-dropdown uk-dropdown-bottom-left" style="left: 50px; top: 42px;">
                      <ul class="uk-nav uk-dropdown-nav">
-                           <li><a href="{{ route('set-currency', ['currency' => 'cop']) }}"> <img src="{{ url('assets/frontend/img/cop-flag.png') }}" alt="profile" class="profile">COP</a></li>
+                           <li><a href="{{ route('set-currency', ['currency' => 'cop']) }}"> <img src="{{ url('assets/frontend/img/cop-flag.png') }}" alt="profile" class="profile">Pesos Col</a></li>
                            <li><a href="{{ route('set-currency', ['currency' => 'eur']) }}"> <img src="{{ url('assets/frontend/img/eur-flag.png') }}" alt="profile" class="profile">EUR</a></li>
                            <li><a href="{{ route('set-currency', ['currency' => 'usd']) }}"> <img src="{{ url('assets/frontend/img/usd-flag.png') }}" alt="profile" class="profile">USD</a></li>
                      </ul>

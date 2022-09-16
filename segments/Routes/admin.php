@@ -114,6 +114,12 @@ Router::get('/language/{lang}', function(Request $request, $lang) {
 })->name('set-lang');
 
 Router::get('/language-cookie/{lang}', function(Request $request, $lang) {
+
+	if (isset($_COOKIE['googtrans'])) {
+		unset($_COOKIE['googtrans']); 
+		setcookie('googtrans', null, -1, '/'); 	
+	}
+
 	setcookie('googtrans', '/en/'.$lang, time() + (86400 * 30), "/"); // 86400 = 1 day
 	return redirect()->back();
 })->name('set-lang-cookie');
