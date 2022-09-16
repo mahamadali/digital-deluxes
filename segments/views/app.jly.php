@@ -261,7 +261,7 @@ $( function() {
             $('.change-language').on('click', function() {
                 var cookie_val = $(this).data('href');
                 document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                document.cookie = "googtrans="+cookie_val+"; expires=Thu, 31 Dec {{ date('Y') }} 12:00:00 UTC; path=/";
+                document.cookie = "googtrans="+cookie_val+"; expires=Thu, 31 Dec {{ date('Y') }} 12:00:00 UTC;domain=digitaldeluxes.com;path=/";
                 $('#page-preloader').show();
                 location.reload();
             });
