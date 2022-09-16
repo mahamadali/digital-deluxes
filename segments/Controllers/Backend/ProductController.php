@@ -37,7 +37,7 @@ class ProductController
 	{
 		
 		$validator = $request->validate([
-			'name' => 'required|min:2|max:30',
+			'name' => 'required',
 			'coverImage' => 'required',
 			'coverImageOriginal' => 'required',
 			'qty' => 'required',
@@ -162,7 +162,7 @@ class ProductController
 		
 
 		$validator = $request->validate([
-			'name' => 'required|min:2|max:30',
+			'name' => 'required',
 			'coverImage' => 'required',
 			'coverImageOriginal' => 'required',
 			'qty' => 'required',
