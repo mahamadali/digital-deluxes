@@ -46,7 +46,7 @@
                     <tr>
                         <td><input type="checkbox" name="delete_transaction" id="delete_transaction" class="delete_transaction" value="{{$transaction->id}}"></td>
                         <td>{{ $transaction->id }}</td>
-                        <td>{{ $transaction->user->fullName }} #{{ $transaction->user->id ?? '' }}</td>
+                        <td>{{ $transaction->user->fullName ?? '' }} #{{ $transaction->user->id ?? '' }}</td>
                         <td>{{ $transaction->tx_id }}</td>
                         <td>{{ $transaction->currency }}</td>
                         <td>${{ $transaction->type }}</td>
