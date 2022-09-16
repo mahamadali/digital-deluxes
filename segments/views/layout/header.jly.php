@@ -28,7 +28,7 @@
             <ul class="uk-subnav uk-nav-lang  uk-subnav-pill nav-lang" uk-margin="">
                <li class="uk-first-column">
                   <a href="#" aria-expanded="false" class="choosen_lang">
-                     {{ $_COOKIE['googtrans'] }}
+                     
                      @if(isset($_COOKIE['googtrans'])):
 
                      @if($_COOKIE['googtrans'] == '/en/en' || $_COOKIE['googtrans'] == ''):
