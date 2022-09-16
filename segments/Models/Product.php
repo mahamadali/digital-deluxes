@@ -85,4 +85,13 @@ class Product extends Model
 	public function home_slider() {
     	return $this->hasOne(HomeSliderProduct::class, 'product_id');
     }
+
+	public function isInSlider() {
+		$homeSlider = HomeSliderProduct::where('product_id', $this->id)->first();
+		if(!empty($homeSlider)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

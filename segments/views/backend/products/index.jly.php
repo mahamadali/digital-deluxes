@@ -51,7 +51,7 @@
                 <td>{{ $product->qty }}</td>
                 <td>
 
-                  @if(!empty($product->home_slider()->first())):
+                  @if(!empty($product->isInSlider())):
                   <a href="{{ route('admin.products.update_slider_status', ['product' => $product->id , 'status' => 1]) }}" class="btn btn-sm btn-danger">Remove to home slider</a> 
                   @else
                   <a href="{{ route('admin.products.update_slider_status', ['product' => $product->id ,  'status' => 0]) }}" class="btn btn-sm btn-success">Add to home slider</a>
