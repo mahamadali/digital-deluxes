@@ -130,6 +130,9 @@
   background-color: #de463b;
   color: #ffffff;
 }
+.entry-content p {
+    color: black;
+}
 </style>
 @endblock
 
@@ -142,9 +145,10 @@
 
             <section class="b-post b-post-full b-post-single clearfix">
                 <div class="entry-media">
-                    <img class="img-fluid" src="{{ url($blog->post_img) }}" alt="Foto" style="filter: brightness(50%);">
+                    <img class="img-fluid" src="{{ url($blog->post_img) }}" alt="Foto" style="filter: brightness(50%);width:100%;">
                     <div class="entry-meta">
                         <span class="entry-meta__item">{{ date('M d, Y', strtotime($blog->created_at)) }}</span>
+                        <span class="entry-meta__item" title="Total Views" style="float:right;display:flex;"><i class="ico_eye"></i> {{ $blog->blogviews()->count() }}</span>
                     </div>
 
                 </div>
