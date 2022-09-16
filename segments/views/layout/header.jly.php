@@ -50,8 +50,8 @@
                   </a>
                   <div uk-dropdown="mode: hover" class="uk-dropdown uk-dropdown-bottom-left" style="left: 50px; top: 42px;">
                      <ul class="uk-nav uk-dropdown-nav translation-links">
-                           <li class="english" data-lang="English"><a href="{{ route('set-lang-cookie', ['lang' => 'en']) }}"> <img src="{{ url('assets/frontend/img/united-kingdom.png') }}" alt="profile" class="profile">English</a></li>
-                           <li class="spanish" data-lang="Spanish"><a href="{{ route('set-lang-cookie', ['lang' => 'es']) }}"> <img src="{{ url('assets/frontend/img/spain.png') }}" alt="profile" class="profile">Spanish</a></li>
+                           <li data-lang="English" class="english change-language" data-href="/en/en"><a href="Javascript:void(0);"> <img src="{{ url('assets/frontend/img/united-kingdom.png') }}" alt="profile" class="profile">English</a></li>
+                           <li data-lang="Spanish" class="spanish change-language" data-href="/en/es"><a href="Javascript:void(0);"> <img src="{{ url('assets/frontend/img/spain.png') }}" alt="profile" class="profile">Spanish</a></li>
                      </ul>
                   </div>
                </li>
