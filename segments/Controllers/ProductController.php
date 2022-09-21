@@ -284,7 +284,7 @@ class ProductController
 			$product->totalQty = $kproduct->totalQty ?? null;
 			$product->ageRating = $kproduct->ageRating ?? null;
 			$product->steam = $kproduct->steam ?? null;
-			$product->cheapestOfferId = $kproduct->cheapestOfferId ? json_encode($kproduct->cheapestOfferId) :  null;
+			$product->cheapestOfferId = !empty($kproduct->cheapestOfferId) ? json_encode($kproduct->cheapestOfferId) :  null;
 			$product->languages = $kproduct->languages ? json_encode($kproduct->languages) :  null;
 			$product->tags = $kproduct->tags ? json_encode($kproduct->tags) :  null;
 			$product->merchantName = $kproduct->merchantName ?? null ? json_encode($kproduct->merchantName) :  null;
