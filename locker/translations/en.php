@@ -198,6 +198,6 @@
          'payment_success' => [
             'order_placed_success' => 'Congratulations, Order Placed.',
             'thankyou_msg_success' => 'Thanks you for placing order. You will receive an email for your games serial keys.',
-            'go_to_home' => 'Go to HOME',
+            'go_to_orders' => 'Go to Orders',
         ],
     ];

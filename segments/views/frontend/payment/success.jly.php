@@ -16,7 +16,7 @@
                         <div class="game-card__genre"></div>
                         <br><br>
                         <div class="game-card__bottom">
-                            <a class="uk-button uk-button-primary uk-width-1-1" href="{{ route('frontend.home') }}">{{ trans('payment_success.go_to_home') }}</a>
+                            <a class="uk-button uk-button-primary uk-width-1-1" href="{{ route('frontend.orders.index') }}">{{ trans('payment_success.go_to_orders') }}</a>
                         </div>
                 </div>
             </div>
