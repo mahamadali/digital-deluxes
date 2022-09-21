@@ -142,17 +142,49 @@
                     <h3 class="uk-text-lead">{{ trans('cart.checkout') }}</h3>
                 </div>
                 <div class="custom__body">
-                 <div class="col-custom-row-12">
-                    <div class="col-custom-12">
-                    {{ trans('cart.subtotal') }}  <small class="custom-right" style="margin-left: 5px;">COP</small><b class="custom-right">{{ round($total_amount, 2,) }}</b>
-                    </div>
-                 </div>
+                    <table>
+                    @if(cartTotal() > 0):
+                        @foreach(cartItems() as $cart):
+                        <tr>
+                            <td>
+                                <a href="{{ url('store/view/'.$cart->product->id) }}" style="font-size: 13px;font-weight: normal;">{{ $cart->product->name }}</a>
+                            </td>
+                            <td style="width: 40%;text-align:right;">
+                                <b>{{ (session()->get('platform_currency') != 'cop') ? currencyConverter('EUR', strtoupper(session()->get('platform_currency')), $cart->product->price) : $cart->product->price }}
+                                    <small>{{ strtoupper(session()->get('platform_currency')) }}</small>
+                                </b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <div class="products_limitation" data-region_limitation="{{ $cart->product->regionalLimitations }}" data-product_id="{{ $cart->product->id }}"></div>
+                                <div class="country_restriction_success_text_cart" style="display: none;" id="country_restriction_success_text_cart_{{ $cart->product->id }}"><i class="ico_tick-circle"></i> {{ trans('view_product.can_be_activated_in') }}: <span class="YOUR_COUNTRY"></span></div>
+                                <div class="country_restriction_danger_text_cart" style="display: none;" id="country_restriction_danger_text_cart_{{ $cart->product->id }}"><i class="ico_close-circle"></i> {{ trans('view_product.cant_be_activated_in') }}: <span class="YOUR_COUNTRY"></span></div>
+                                <hr>
+                            </td>
+                        </tr>
+                        @endforeach
+                    @endif
+                        <tr>
+                            <td>
+                                {{ trans('cart.subtotal') }}
+                            </td>
+                            <td style="width: 40%;text-align:right;">
+                                <b class="subtotal_count"></b>
+                                <small>{{ strtoupper(session()->get('platform_currency')) }}</small>
+                            </td>
+                        </tr>
 
-                 <div class="col-custom-row-12">
-                    <div class="col-custom-12">
-                    {{ trans('cart.total') }}  <small class="custom-right" style="margin-left: 5px;">COP</small><b class="custom-right">{{ round($total_amount, 2) }}</b>
-                    </div>
-                 </div>
+                        <tr>
+                            <td>
+                                {{ trans('cart.total') }}
+                            </td>
+                            <td style="width: 40%;text-align:right;">
+                                <b class="total_count"></b>
+                                <small>{{ strtoupper(session()->get('platform_currency')) }}</small>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
 
                 <div class="custom__body" style="margin-top: 10px;">

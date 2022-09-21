@@ -6461,7 +6461,7 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
         }
     }
 
-    @media only screen and (min-width: 768px) {
+    /* @media only screen and (min-width: 768px) { */
         .game-card .game-card__box.fixed {
             height: 339.61px;
         }
@@ -6469,7 +6469,7 @@ html body.dark-theme .chat-user-list__head a.ico_edit {
         .d-w-38 {
             width: 38%;
         }
-    }
+    /* } */
 
 .goog-te-banner-frame{
     display:none !important;
