@@ -35,7 +35,10 @@ class StoreController
 		} else if($sort_by == 'Newest') {
 			$products->orderBy('id', 'DESC');
 		} else {
-			$products->orderBy('id', 'ASC');
+			$products->orderBy('CASE 
+			WHEN regionalLimitations="Region free" THEN rand() 
+			WHEN regionalLimitations="Other" THEN rand() 
+		END', 'DESC');
 		}
 
 		if($system){
