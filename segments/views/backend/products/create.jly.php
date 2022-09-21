@@ -39,10 +39,16 @@
         </div>
 
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="form-group">
                     <label>Platform</label>
                     <input type="text" class="form-control" name="platform" placeholder="Platform" >
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Regional Limitations</label>
+                    <input type="text" class="form-control" name="regionalLimitations" placeholder="Regional Limitations">
                 </div>
             </div>
         </div>

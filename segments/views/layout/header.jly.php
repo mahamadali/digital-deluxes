@@ -100,6 +100,9 @@
                            <span uk-icon="icon: triangle-down" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
                            <div uk-dropdown="mode: click" class="uk-dropdown uk-dropdown-bottom-right" style="left: -54.9876px; top: 42px;">
                                  <ul class="uk-nav uk-dropdown-nav">
+                                    @if(user()->role->name == 'admin'):
+                                       <li><a href="{{ route('admin.dashboard') }}">{{ trans('menu.dashboard') }}</a></li>
+                                    @endif
                                     <li><a href="{{ route('frontend.profile.index') }}">{{ trans('menu.my_account') }}</a></li>
                                     <li class="uk-nav-divider"></li>
                                     <li><a href="{{ route('frontend.logout') }}">{{ trans('menu.logout') }}</a></li>

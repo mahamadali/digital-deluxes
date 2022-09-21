@@ -59,6 +59,7 @@ class ProductController
 		$productData['genres'] = $request->genres  ?? null ? json_encode(explode(',',$request->genres)) :  null;
 		$productData['description'] = $request->description ??  null;
 		$productData['platform'] = $request->platform ??  null;
+		$productData['regionalLimitations'] = $request->regionalLimitations ??  null;
 		$productData['releaseDate'] = $request->releaseDate ? $request->releaseDate :  null;
 		$productData['activationDetails'] = $request->activationDetails ??  null;
 		$productData['originalName'] = $request->originalName ? $request->originalName : null;
@@ -184,6 +185,7 @@ class ProductController
 		$productData['genres'] = $request->genres  ?? null ? json_encode(explode(',',$request->genres)) :  null;
 		$productData['description'] = $request->description ??  null;
 		$productData['platform'] = $request->platform ??  null;
+		$productData['regionalLimitations'] = $request->regionalLimitations ??  null;
 		$productData['releaseDate'] = $request->releaseDate ? $request->releaseDate :  null;
 		$productData['activationDetails'] = $request->activationDetails ??  null;
 		$productData['originalName'] = $request->originalName ? $request->originalName : null;

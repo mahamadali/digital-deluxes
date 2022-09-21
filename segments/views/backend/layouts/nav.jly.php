@@ -14,12 +14,10 @@
         </a>
         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
 
-          @if(auth()->role->name == 'user'):
-          <a class="dropdown-item" href="{{ url('user/profile/edit/'.auth()->id) }}">
-            <i class="ti-user text-primary"></i>
-            Update Profile 
+          <a class="dropdown-item" href="{{ route('frontend.home') }}">
+            <i class="ti-globe text-primary"></i>
+            Go to Site
           </a>
-          @endif
           <a class="dropdown-item" href="{{ route('auth.logout') }}">
             <i class="ti-power-off text-primary"></i>
             Logout 

@@ -19,6 +19,7 @@
             'my_account' => 'My Account',
             'logout' => 'Log Out',
             'follow_us_media' => 'Follow us on social media',
+            'dashboard' => 'Dashboard'
         ],
 
         'validation' => [

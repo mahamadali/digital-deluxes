@@ -19,6 +19,7 @@
             'my_account' => 'Mi cuenta',
             'logout' => 'Cerrar sesión',
             'follow_us_media' => 'Síguenos en las redes sociales',
+            'dashboard' => 'Dashboard'
         ],
 
         'validation' => [

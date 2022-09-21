@@ -12,5 +12,7 @@ Router::bunch('/api', ['as' => 'api.'], function() {
 	Router::get('/search-product', [ProductController::class, 'search'])->name('search-product');
 	Router::get('/region-countries', [ProductController::class, 'regionCountries'])->name('region-countries');
 	Router::get('/update-currency-rate', [ProductController::class, 'updateCurrencyRate'])->name('update-currency-rate');
+
+	Router::get('/upload-new-products', [ ProductController::class, 'uploadNewProduct' ])->name('upload-new-products');
 });
 

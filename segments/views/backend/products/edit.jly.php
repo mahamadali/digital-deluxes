@@ -39,10 +39,16 @@
         </div>
 
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="form-group">
                     <label>Platform</label>
                     <input type="text" class="form-control" name="platform" value="{{ $product->platform ?? '' }}" placeholder="Platform" >
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Regional Limitations</label>
+                    <input type="text" class="form-control" name="regionalLimitations" placeholder="Regional Limitations" value="{{ $product->regionalLimitations ?? '' }}">
                 </div>
             </div>
         </div>
@@ -396,7 +402,7 @@
           
         <div class="row">
           <div class="col-md-4">
-              <button type="submit" class="btn btn-primary">Create Product</button>
+              <button type="submit" class="btn btn-primary">Update Product</button>
             </div>
         </div>
         </form>
