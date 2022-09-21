@@ -258,16 +258,16 @@ class ProductController
 			
 			$product->name = $kproduct->name ?? null;
 			$product->description = $kproduct->description ?? null;
-			$product->coverImage = $kproduct->coverImage ?? $kproduct->images->cover->thumbnail ?? '';
-			$product->coverImageOriginal = $kproduct->coverImageOriginal ?? $kproduct->images->cover->url ?? '';
+			$product->coverImage = $kproduct->coverImage ?? $kproduct->images->cover->thumbnail ?? null;
+			$product->coverImageOriginal = $kproduct->coverImageOriginal ?? $kproduct->images->cover->url ?? null;
 			if(empty($product->coverImage)) {
 				if(!empty($kproduct->images->screenshots[0])) {
-					$product->coverImage = $kproduct->images->screenshots[0]->thumbnail;
+					$product->coverImage = $kproduct->images->screenshots[0]->thumbnail ?? null;
 				}
 			}
 			if(empty($product->coverImageOriginal)) {
 				if(!empty($kproduct->images->screenshots[0])) {
-					$product->coverImageOriginal = $kproduct->images->screenshots[0]->url;
+					$product->coverImageOriginal = $kproduct->images->screenshots[0]->url ?? null;
 				}
 			}
 			$product->platform = $kproduct->platform ?? null;
@@ -300,8 +300,8 @@ class ProductController
 				foreach($kproduct->images->screenshots as $screenshot){
 					$product_screenshot = new ProductScreenshot();
 					$product_screenshot->product_id  = $product->id;
-					$product_screenshot->url  = $screenshot->thumbnail;
-					$product_screenshot->url_original  = $screenshot->url;
+					$product_screenshot->url  = $screenshot->thumbnail ?? null;
+					$product_screenshot->url_original  = $screenshot->url ?? null;
 					$product_screenshot->save();
 				}
 			}
