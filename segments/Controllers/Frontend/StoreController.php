@@ -62,7 +62,19 @@ class StoreController
         }
 
 		if($name){
-			$products = $products->where('name', '%'.$name.'%', 'LIKE');
+			if(count(explode(" ", $name)) > 1) {
+				$conc_string = '';
+				foreach(explode(" ", $name) as $namePart) {
+					$conc_string .= '%';
+					$conc_string .= $namePart;
+					$conc_string .= '%';
+				}
+				// dd($conc_string);
+				$products = $products->where('name', $conc_string, 'LIKE');
+			} else {
+				$products = $products->where('name', '%'.$name.'%', 'LIKE');
+			}
+			
 			// $products = $products->where('MATCH(name) AGAINST ("'.$name.'" IN NATURAL LANGUAGE MODE)');
         }
 
