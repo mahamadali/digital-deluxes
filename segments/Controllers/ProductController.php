@@ -180,6 +180,7 @@ class ProductController
 		$data = json_decode($raw_post_data);
 		$product = Product::where('productId', $data->productId)->first();
 		$product->qty = $data->qty;
+		$product->textQty = $data->textQty;
 		$product->kinguinId = $data->kinguinId;
 		$product->price = $data->price;
 		$product->updated_at = $data->updatedAt;
