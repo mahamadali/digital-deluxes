@@ -196,11 +196,11 @@
 
                     <div class="col-custom-row-12">
                         @if(session()->has('order_coupon')):
-                            <p style="color:#4fae82;"><b>{{ $coupon->code }}</b> coupon applied. {{ $coupon->percentage }}% discount will apply on order amount.</p>
+                            <p style="color:#4fae82;"><b>{{ $coupon->code }}</b> coupon applied. {{ $coupon->percentage }}% discount will apply on order amount. <a href="{{ route('frontend.checkout.remove-coupon') }}">{{ trans('checkout.remove_coupon') }}</a></p>
                         @else
                             <div class="col-custom-12" id="coupon-code-container" style="display: flex;">
                                 <input type="text" class="uk-input" id="coupon_code" placeholder="Enter Code" autocomplete="off">
-                                <button type="button" class="uk-button uk-button-danger" id="apply_coupon" style="height: 60px;border-radius:0px;">Apply</button>
+                                <button type="button" class="uk-button uk-button-danger" id="apply_coupon" style="height: 60px;border-radius:0px;">{{ trans('checkout.apply') }}</button>
                             </div>
                         @endif
                     </div>

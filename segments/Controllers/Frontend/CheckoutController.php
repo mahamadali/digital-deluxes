@@ -459,4 +459,12 @@ class CheckoutController
 			return response()->json(['status' => 304, 'message' => 'Invalid coupon code!']);
 		}
 	}
+
+	public function removeCoupon() {
+		if(session()->has('order_coupon')) {
+			session()->remove('order_coupon');
+		}
+
+		return redirect()->withFlashSuccess('Coupon removed successfully!')->back();
+	}
 }

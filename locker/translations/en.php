@@ -129,7 +129,9 @@
             'age' => 'Age',
             'national_identification_id' => 'National Identification ID',
             'cpassword' => 'Confirm Password',
-            'apply_coupon' => 'Apply Coupon'
+            'apply_coupon' => 'Apply Coupon',
+            'apply' => 'Apply',
+            'remove_coupon' => 'Remove Coupon'
         ],
 
         'login_page' => [
