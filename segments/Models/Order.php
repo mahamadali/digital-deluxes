@@ -9,7 +9,7 @@ class Order extends Model
 {
     protected $table = 'orders';
     
-    protected $with = ['user', 'keys', 'items'];
+    protected $with = ['user', 'keys', 'items', 'coupon'];
     
     public function user() {
         return $this->parallelTo(User::class, 'user_id')->without('orders');
@@ -30,6 +30,10 @@ class Order extends Model
             $order_total += $item->product_price;
         }
         return $order_total;
+    }
+
+    public function coupon() {
+        return $this->parallelTo(Coupon::class, 'coupon_id');
     }
 
 }

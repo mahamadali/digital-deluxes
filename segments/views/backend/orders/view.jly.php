@@ -44,6 +44,11 @@
                     <div class="col">
                         <div class="order-info-label">Total: <span>${{ $order->order_total() }} </span></div>
                     </div>
+                    @if(!empty($order->coupon_id)):
+                    <div class="col">
+                        <div class="order-info-label">Coupon: <span>{{ $order->coupon->code }} </span></div>
+                    </div>
+                    @endif
                     <div class="col">
                         <div class="order-info-label">Created At: <span>{{ date('M d, Y, H:i', strtotime($order->created_at)) }} </span></div>
                     </div>

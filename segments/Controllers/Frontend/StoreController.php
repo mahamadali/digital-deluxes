@@ -69,7 +69,6 @@ class StoreController
 					$conc_string .= $namePart;
 					$conc_string .= '%';
 				}
-				// dd($conc_string);
 				$products = $products->where('name', $conc_string, 'LIKE');
 			} else {
 				$products = $products->where('name', '%'.$name.'%', 'LIKE');

@@ -95,7 +95,11 @@ class CartController
 	public function removeToCart(Request $request,$cart_id)
 	{
 		Cart::where('id',$cart_id)->where('user_id',auth()->id)->delete();
-
+		
+		if(session()->has('order_coupon')) {
+			session()->remove('order_coupon');
+		}
+		
 		return redirect()->withFlashSuccess('Product removed from cart successfully!')->with('addedcart', 1)->back();
 		
 	}

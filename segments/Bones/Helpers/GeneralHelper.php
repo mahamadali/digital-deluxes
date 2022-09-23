@@ -4,6 +4,7 @@ use Bones\Str;
 use Google\Service\AdExchangeBuyerII\Price;
 use Models\User;
 use Models\Cart;
+use Models\Coupon;
 use Models\CurrencyRate;
 use Models\PaymentMethod;
 use Models\PriceProfit;
@@ -522,5 +523,31 @@ if (!function_exists('paymentFee')) {
         } else {
             return 0;
         }
+    }
+}
+
+if (!function_exists('applyCouponDiscount')) {
+    function applyCouponDiscount($cartTotal) {
+        if(session()->has('order_coupon')) {
+            $coupon_id = session()->get('order_coupon');
+            $coupon = Coupon::find($coupon_id);
+            $coupon_discount = ($cartTotal * $coupon->percentage) / 100;
+            $cartTotal = $cartTotal - $coupon_discount;
+            return $cartTotal;
+        }
+        return $cartTotal;
+    }
+}
+
+if (!function_exists('orderCouponApply')) {
+    function orderCouponApply($order) {
+        if(session()->has('order_coupon')) {
+            $coupon_id = session()->get('order_coupon');
+            $order->coupon_id = $coupon_id;
+            $order->save();
+            session()->remove('order_coupon');
+            return true;
+        }
+        return true;
     }
 }

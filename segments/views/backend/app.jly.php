@@ -19,6 +19,12 @@
     
 
     <link rel="shortcut icon" href="" />
+    <style>
+        .card-header:first-child {
+            background-color: #000;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>

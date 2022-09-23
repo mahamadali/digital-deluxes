@@ -67,6 +67,11 @@
                                     @endif
                                 </div>
                             </div>
+                            @if(!empty($order->coupon_id)):
+                            <div class="game-card__rating-and-price">
+                                <div class="order-info-label">{{ trans('orders.coupon') }}: <span>{{ $order->coupon->code }} </span></div>
+                            </div>
+                            @endif
                             <div class="game-card__rating-and-price">
                                 <div class="order-info-label">{{ trans('orders.created_at') }}: <span>{{ date('M d, Y, H:i', strtotime($order->created_at)) }} </span></div>
                             </div>

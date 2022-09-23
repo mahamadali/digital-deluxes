@@ -51,6 +51,7 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
   Router::bunch('/checkout', ['as' => 'checkout.'], function () {
     Router::get('/', [CheckoutController::class, 'index'])->name('index');
     Router::post('/create-order', [CheckoutController::class, 'createOrder'])->name('createOrder');
+    Router::post('/validate-coupon', [CheckoutController::class, 'validateCoupon'])->name('validate-coupon');
   });
 
   Router::bunch('/payment', ['as' => 'payment.'], function () {

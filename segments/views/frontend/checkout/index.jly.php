@@ -147,10 +147,11 @@
                         @foreach(cartItems() as $cart):
                         <tr>
                             <td>
-                                <a href="{{ url('store/view/'.$cart->product->id) }}" style="font-size: 13px;font-weight: normal;">{{ $cart->product->name }}</a>
+                                <a href="{{ url('store/view/'.$cart->product->id) }}" style="font-size: 13px;font-weight: normal;color:inherit;">{{ $cart->product->name }}</a>
                             </td>
                             <td style="width: 40%;text-align:right;">
-                                <b>{{ (session()->get('platform_currency') != 'cop') ? currencyConverter('EUR', strtoupper(session()->get('platform_currency')), $cart->product->price) : $cart->product->price }}
+                                <b>
+                                    {{ $cart->product->price }}
                                     <small>{{ strtoupper(session()->get('platform_currency')) }}</small>
                                 </b>
                             </td>
@@ -185,6 +186,25 @@
                             </td>
                         </tr>
                     </table>
+                </div>
+
+                <div class="custom__body" style="margin-top: 10px;">
+
+                    <div class="widjet__head">
+                        <h6 class="uk-text-sub-lead">{{ trans('checkout.apply_coupon') }}</h6>
+                    </div>
+
+                    <div class="col-custom-row-12">
+                        @if(session()->has('order_coupon')):
+                            <p style="color:#4fae82;"><b>{{ $coupon->code }}</b> coupon applied. {{ $coupon->percentage }}% discount will apply on order amount.</p>
+                        @else
+                            <div class="col-custom-12" id="coupon-code-container" style="display: flex;">
+                                <input type="text" class="uk-input" id="coupon_code" placeholder="Enter Code" autocomplete="off">
+                                <button type="button" class="uk-button uk-button-danger" id="apply_coupon" style="height: 60px;border-radius:0px;">Apply</button>
+                            </div>
+                        @endif
+                    </div>
+
                 </div>
 
                 <div class="custom__body" style="margin-top: 10px;">
@@ -420,6 +440,39 @@
                     });
                 }
             }
+        });
+
+        $('#apply_coupon').on('click', function() {
+            var obj = $(this);
+            $(obj).prop('disabled', true);
+            $('#page-preloader').show();
+            var formData = new FormData();
+            formData.append('coupon_code', $('#coupon_code').val());
+            formData.append('prevent_csrf_token', '{{ prevent_csrf_token() }}');
+            $.ajax({
+                url : '{{ route("frontend.checkout.validate-coupon") }}',
+                type : 'POST',
+                data : formData,
+                dataType: 'json',
+                contentType: false, processData: false,
+                success: function(response) {
+                    $('#page-preloader').hide();
+                    if(response.status == 304) {
+                        toastr.error(response.message);
+                        $(obj).prop('disabled', false);
+                    } else {
+                        toastr.success(response.message);
+                        $('#coupon-code-container').after(response.html);
+                        $('#coupon-code-container').hide();
+                        location.reload();
+                    }
+                },
+                error: function() {
+                    $(obj).prop('disabled', false);
+                    toastr.error('Something went wrong! Please refresh page and try again!');
+                    $('#page-preloader').hide();
+                }
+            });
         });
     })
 </script>

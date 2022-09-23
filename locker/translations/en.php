@@ -66,7 +66,8 @@
             'serial'=> 'Serial', 
             'offer_id'=> 'Offer Id', 
             'customer_bill_info'=> 'Customer Billing Information', 
-            'view'=> 'View', 
+            'view'=> 'View',
+            'coupon' => 'Coupon'
         ],
 
          'store' => [
@@ -128,7 +129,7 @@
             'age' => 'Age',
             'national_identification_id' => 'National Identification ID',
             'cpassword' => 'Confirm Password',
-            
+            'apply_coupon' => 'Apply Coupon'
         ],
 
         'login_page' => [

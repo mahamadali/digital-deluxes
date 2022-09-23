@@ -14,6 +14,7 @@ use Controllers\Backend\PaymentMethodController;
 use Controllers\SupportTicketController;
 use Controllers\Backend\CMSController;
 use Controllers\Backend\TransactionController;
+use Controllers\Backend\CouponController;
 
 
 Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]], function() {
@@ -104,6 +105,17 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 			Router::get('/view', [SupportTicketController::class, 'view'])->name('view');
 			Router::post('/message', [SupportTicketController::class, 'sendMessage'])->name('message');
 			Router::get('/update-status/{status}', [SupportTicketController::class, 'updateStatus'])->name('update-status');
+		});
+	});
+
+	Router::bunch('/coupons', ['as' => 'coupons.'], function () {
+		Router::get('/', [CouponController::class, 'index'])->name('index');
+		Router::get('/create', [CouponController::class, 'create'])->name('create');
+		Router::post('/store', [CouponController::class, 'store'])->name('store');
+		Router::bunch('/{coupon}', ['as' => ''], function () {
+			Router::get('/edit', [CouponController::class, 'edit'])->name('edit');
+			Router::post('/change-status', [CouponController::class, 'changeStatus'])->name('change-status');
+			Router::post('/update', [CouponController::class, 'update'])->name('update');
 		});
 	});
 });

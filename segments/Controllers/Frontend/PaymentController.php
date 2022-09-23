@@ -83,6 +83,9 @@ class PaymentController
 
     public function success(Request $request)
 	{
+        if(session()->has('order_coupon')) {
+			session()->remove('order_coupon');
+		}
         return render('frontend/payment/success');
     }
 
@@ -729,6 +732,8 @@ class PaymentController
 
         Cart::where('user_id',$user->id)->delete();
 
+        orderCouponApply($order);
+
         return redirect(route('frontend.orders.index'))->withFlashSuccess('Order placed!')->go();    
     }
 
@@ -1006,6 +1011,8 @@ class PaymentController
         $transaction = $transaction->save();
 
         Cart::where('user_id',$user->id)->delete();
+
+        orderCouponApply($order);
 
         return true;
     }

@@ -80,6 +80,13 @@
         </a>
       </li>
 
+      <li class="nav-item {{ (request()->matchesTo('/admin/coupons/*')) ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.coupons.index') }}">
+          <i class="ti-list menu-icon"></i>
+          <span class="menu-title">Coupons</span>
+        </a>
+      </li>
+
     @endif 
 
     <li class="nav-item">

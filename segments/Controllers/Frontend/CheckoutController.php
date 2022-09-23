@@ -8,6 +8,7 @@ use Mail\KeysEmail;
 use Mail\NewOrderAdminEmail;
 use Models\Cart;
 use Models\Country;
+use Models\Coupon;
 use Models\CustomerBillingInfo;
 use Models\GameKey;
 use Models\Order;
@@ -27,6 +28,8 @@ class CheckoutController
 		if(empty($cartTotal)) {
 			return redirect(route('frontend.store.list'))->withFlashError('No items in cart')->go();
 		}
+
+		$cartTotal = applyCouponDiscount($cartTotal);
 		
 		$total_amount = currencyConverter('EUR', "COP", $cartTotal);
 		
@@ -61,8 +64,14 @@ class CheckoutController
 				}
 			}
 		}
+
+		$coupon = [];
+		if(session()->has('order_coupon')) {
+			$coupon = Coupon::find(session()->get('order_coupon'));
+		}
+
 		
-		return render('frontend/checkout/index', ['countries' => $countries, 'user' => $user, 'payment_methods' =>  $payment_methods, 'total_amount' => $total_amount, 'order_reference' => $order_reference, 'walletEnable' => $walletEnable, 'wallet_in_cop' => $wallet_in_cop]);
+		return render('frontend/checkout/index', ['countries' => $countries, 'user' => $user, 'payment_methods' =>  $payment_methods, 'total_amount' => $total_amount, 'order_reference' => $order_reference, 'walletEnable' => $walletEnable, 'wallet_in_cop' => $wallet_in_cop, 'coupon' => $coupon]);
 	}
 
 	public function createOrder(Request $request) {
@@ -85,6 +94,7 @@ class CheckoutController
 		if(!empty($paymentMethod) && $paymentMethod->title == 'Mercado Pago') {
 			
 			$cartTotal = cartTotalOriginal();
+			$cartTotal = applyCouponDiscount($cartTotal);
 			$total_amount = currencyConverter('EUR', "COP", $cartTotal);
 			$fee_perc = $paymentMethod->transaction_fee;
 			$fee_amount = 0;
@@ -131,6 +141,9 @@ class CheckoutController
 		if($request->payment_method == 'Wallet') {
 
 			$cartTotal = cartTotalOriginal();
+			
+			$cartTotal = applyCouponDiscount($cartTotal);
+			
 			$total_amount = currencyConverter('EUR', "COP", $cartTotal);
 
 			$user = user();
@@ -298,6 +311,8 @@ class CheckoutController
 			$user->wallet_amount = $remaining_in_eur;
 			$user->save();
 
+			orderCouponApply($order);
+
 			return response()->json(['status' => 200, 'message' => 'Order placed successfully!', 'redirectUrl' => route('frontend.orders.index')]);
 
 
@@ -306,6 +321,7 @@ class CheckoutController
 		if(!empty($paymentMethod) && $paymentMethod->title == 'Paypal') {
 
 			$cartTotal = cartTotalOriginal();
+			$cartTotal = applyCouponDiscount($cartTotal);
 			$total_amount = currencyConverter('EUR', $paymentMethod->currency, $cartTotal);
 			$fee_perc = $paymentMethod->transaction_fee;
 			$fee_amount = 0;
@@ -344,6 +360,7 @@ class CheckoutController
 		if(!empty($paymentMethod) && $paymentMethod->title == 'Coinbase') {
 
 			$cartTotal = cartTotalOriginal();
+			$cartTotal = applyCouponDiscount($cartTotal);
 			$total_amount = currencyConverter('EUR', $paymentMethod->currency, $cartTotal);
 			$fee_perc = $paymentMethod->transaction_fee;
 			$fee_amount = 0;
@@ -398,5 +415,48 @@ class CheckoutController
 		}
 
 		
+	}
+
+	public function validateCoupon(Request $request) {
+		$validator = $request->validate([
+            'coupon_code' => 'required',
+        ],[
+            'coupon_code.required' => 'Coupon code is required',
+        ]);
+
+        if ($validator->hasError()) {
+            return response()->json(['status' => 304, 'message' => $validator->errors()[0]]);
+        }
+
+		$coupon_code = $request->coupon_code;
+		$coupon = Coupon::where('code', $coupon_code)->where('status', 'ACTIVE')->first();
+		if(!empty($coupon)) {
+			$total_order_used = Order::where('coupon_id', $coupon->id)->count();
+			if(!empty($coupon->activation_count) && $total_order_used > $coupon->activation_count) {
+				return response()->json(['status' => 304, 'message' => 'Invalid coupon code!']);
+			}
+			if(!empty($coupon->price_limit) && $coupon->price_limit > 0) {
+				$cartTotal = cartTotalOriginal();
+				if($coupon->condition == '>=') {
+					if($cartTotal >= $coupon->price_limit) {
+						session()->set('order_coupon', $coupon->id);
+						return response()->json(['status' => 200, 'message' => 'Coupon applied successfully!', 'html' => '<p style="color:#4fae82;">'.$coupon->code.' coupon applied</p>']);	
+					} else {
+						return response()->json(['status' => 304, 'message' => 'Invalid coupon code!']);	
+					}
+				} else if($coupon->condition == '<=') {
+					if($coupon->price_limit >= $cartTotal) {
+						return response()->json(['status' => 200, 'message' => 'Coupon applied successfully!', 'html' => '<p style="color:#4fae82;">'.$coupon->code.' coupon applied</p>']);	
+					} else {
+						return response()->json(['status' => 304, 'message' => 'Invalid coupon code!']);	
+					}
+				}
+			} else {
+				session()->set('order_coupon', $coupon->id);
+				return response()->json(['status' => 200, 'message' => 'Coupon applied successfully!', 'html' => '<p style="color:#4fae82;">'.$coupon->code.' coupon applied</p>']);	
+			}
+		} else {
+			return response()->json(['status' => 304, 'message' => 'Invalid coupon code!']);
+		}
 	}
 }
