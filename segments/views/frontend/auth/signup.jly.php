@@ -3,14 +3,18 @@
 
 <head>
     <meta charset="utf-8">
-    <title>{{ setting('app.title') }}</title>
+    <title>{{ setting('app.title') }} - {{ setting('app.description') }}</title>
     <meta content="Templines" name="author">
     <meta content="TeamHost" name="description">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ setting('app.description') }}">
+    <meta name="keywords" content="Steam, Origin, Uplay, Battle.net and xbox">
+    <meta name="author" content="{{ setting('app.author.name') }}">
     <meta name="HandheldFriendly" content="true">
     <meta name="format-detection" content="telephone=no">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
-    <link rel="shortcut icon" href="{{ url('assets/frontend/img/favicon.png') }}" type="image/x-icon">
+    <link rel="icon" type="image/x-icon" href="{{ url('assets/img/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ url('assets/img/favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url('assets/frontend/css/libs.min.css') }}">
     <link rel="stylesheet" href="{{ url('assets/frontend/css/main.css') }}">
 
@@ -30,13 +34,7 @@
 <body class="page-login">
 
 
-    <input id="toggle" type="checkbox">
-    <script type="text/javascript">
-        document.getElementById("toggle").addEventListener("click", function() {
-            document.getElementsByTagName('body')[0].classList.toggle("dark-theme");
-        });
-
-    </script>
+    
 
     <!-- Loader-->
     <div id="page-preloader">

@@ -2,7 +2,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>@plot('title')</title>
+        <title>@plot('title') - {{ setting('app.description') }}</title>
         @plot('styles')
         <!-- plugins:css -->
       <link rel="stylesheet" href="{{ url('assets/backend/vendors/feather/feather.css') }}">
@@ -14,7 +14,8 @@
       <!-- inject:css -->
       <link rel="stylesheet" href="{{ url('assets/backend/css/vertical-layout-light/style.css') }}">
       <!-- endinject -->
-      <link rel="shortcut icon" href="{{ url('assets/backend/images/favicon.png') }}" />
+      <link rel="icon" type="image/x-icon" href="{{ url('assets/img/favicon.ico') }}">
+        <link rel="shortcut icon" href="{{ url('assets/img/favicon.ico') }}" type="image/x-icon">
     </head>
     <body>
         @plot('content')

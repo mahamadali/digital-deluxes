@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>@plot('title')</title>
+        <title>@plot('title') - {{ setting('app.description') }}</title>
         <meta charset="utf-8">
         <meta content="Templines" name="author">
         <meta content="TeamHost" name="description">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="description" content="{{ setting('app.description') }}">
+        <meta name="keywords" content="Steam, Origin, Uplay, Battle.net and xbox">
+        <meta name="author" content="{{ setting('app.author.name') }}">
         @plot('meta-tags')
         <meta name="HandheldFriendly" content="true">
         <meta name="format-detection" content="telephone=no">
         <meta content="IE=edge" http-equiv="X-UA-Compatible">
         <meta name="token" content="{{ prevent_csrf_token() }}">
-        <link rel="shortcut icon" href="{{ url('assets/frontend/img/favicon.png') }}" type="image/x-icon">
+        <link rel="icon" type="image/x-icon" href="{{ url('assets/img/favicon.ico') }}">
+        <link rel="shortcut icon" href="{{ url('assets/img/favicon.ico') }}" type="image/x-icon">
         <link rel="stylesheet" href="{{ url('assets/frontend/css/libs.min.css') }}">
         <link rel="stylesheet" href="{{ url('assets/frontend/css/main.css') }}">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -19,6 +23,14 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
         <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-BNS3GW5SY0"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-BNS3GW5SY0');
+        </script>
         @plot('styles')
     </head>
     <body class="page-home {{ (session()->has('dark-mode') && session()->get('dark-mode') == 1) ? 'dark-theme' : '' }}">
