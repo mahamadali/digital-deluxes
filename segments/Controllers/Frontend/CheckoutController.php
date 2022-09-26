@@ -446,6 +446,7 @@ class CheckoutController
 					}
 				} else if($coupon->condition == '<=') {
 					if($coupon->price_limit >= $cartTotal) {
+						session()->set('order_coupon', $coupon->id);
 						return response()->json(['status' => 200, 'message' => 'Coupon applied successfully!', 'html' => '<p style="color:#4fae82;">'.$coupon->code.' coupon applied</p>']);	
 					} else {
 						return response()->json(['status' => 304, 'message' => 'Invalid coupon code!']);	
