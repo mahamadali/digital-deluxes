@@ -167,11 +167,13 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Phone Number</th>
+                                <th>National ID</th>
                             </tr>
                             <tr>
                                 <td>{{ $customer_billing_infos->first_name." ".$customer_billing_infos->last_name }}</td>
                                 <td>{{ $customer_billing_infos->email }}</td>
                                 <td>{{ $customer_billing_infos->phone_number }}</td>
+                                <td>{{ $customer_billing_infos->national_id }}</td>
                             </tr>
                         </tbody>
                     </table>

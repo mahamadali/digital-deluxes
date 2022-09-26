@@ -96,7 +96,8 @@
                         <div class="uk-margin"><label>{{ trans('checkout.email') }}</label><input type="email" class="uk-input" name="email" placeholder="{{ trans('checkout.email') }}" value="{{ $user->email }}" required></div>
                         
                         <div class="uk-grid" data-uk-grid>
-                        <div class="uk-width-1-1@l"><label>{{ trans('checkout.country_code') }}</label><input type="hidden" name="country_code" id="country_code" value="{{ $user->country_code }}"><input type="text" class="uk-input" name="phone" id="phone" placeholder="{{ trans('checkout.phone') }}" value="{{ $user->phone }}" required></div>
+                        <div class="uk-width-1-2@l"><label>{{ trans('checkout.country_code') }}</label><input type="hidden" name="country_code" id="country_code" value="{{ $user->country_code }}"><input type="text" class="uk-input" name="phone" id="phone" placeholder="{{ trans('checkout.phone') }}" value="{{ $user->phone }}" required></div>
+                        <div class="uk-width-1-2@l"><label>{{ trans('checkout.national_id') }}</label><input type="text" class="uk-input" name="national_id" placeholder="{{ trans('checkout.national_id') }}" value="{{ $user->national_identification_id }}" required></div>
                         </div>
                         <div class="uk-grid" data-uk-grid>
                         <div class="uk-width-1-1@l"><label>{{ trans('checkout.address') }}</label><input type="text" class="uk-input" name="address" placeholder="{{ trans('checkout.address') }}" value="{{ $user->address }}" required></div>

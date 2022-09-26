@@ -131,7 +131,8 @@
             'cpassword' => 'Confirm Password',
             'apply_coupon' => 'Apply Coupon',
             'apply' => 'Apply',
-            'remove_coupon' => 'Remove Coupon'
+            'remove_coupon' => 'Remove Coupon',
+            'national_id' => 'National Identification'
         ],
 
         'login_page' => [

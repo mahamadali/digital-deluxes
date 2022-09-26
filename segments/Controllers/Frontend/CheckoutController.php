@@ -85,6 +85,7 @@ class CheckoutController
 		$customerBillingInfo->email = $request->email;
 		$customerBillingInfo->phone_number = $request->country_code.str_replace(" ", "", $request->phone);
 		$customerBillingInfo->address = $request->address;
+		$customerBillingInfo->national_id = $request->national_id;
 		$customerBillingInfo->country = $request->country;
 		$customerBillingInfo->city = $request->city;
 		$customerBillingInfo->additional_note = $request->additional_note;

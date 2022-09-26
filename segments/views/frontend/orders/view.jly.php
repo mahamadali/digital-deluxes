@@ -180,11 +180,13 @@
                                         <th>{{ trans('orders.name') }}</th>
                                         <th>{{ trans('login_page.email') }}</th>
                                         <th>{{ trans('checkout.phone') }}</th>
+                                        <th>{{ trans('checkout.national_id') }}</th>
                                     </tr>
                                     <tr>
                                         <td>{{ $customer_billing_infos->first_name." ".$customer_billing_infos->last_name }}</td>
                                         <td>{{ $customer_billing_infos->email }}</td>
                                         <td>{{ $customer_billing_infos->phone_number }}</td>
+                                        <td>{{ $customer_billing_infos->national_id }}</td>
                                     </tr>
                                 </tbody>
                             </table>
