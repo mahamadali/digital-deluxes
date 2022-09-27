@@ -9,6 +9,10 @@
         <meta name="description" content="{{ setting('app.description') }}">
         <meta name="keywords" content="Steam, Origin, Uplay, Battle.net and xbox">
         <meta name="author" content="{{ setting('app.author.name') }}">
+        <meta property="og:title" content="{{ setting('app.title') }}">
+        <meta property="og:image" content="{{ url('assets/img/2.png') }}">
+        <meta property="og:url" content="{{ setting('app.base_url') }}">
+        <meta property="og:description" content="{{ setting('app.description') }}">
         @plot('meta-tags')
         <meta name="HandheldFriendly" content="true">
         <meta name="format-detection" content="telephone=no">
