@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>@plot('title') - {{ setting('app.description') }}</title>
+        <title>@plot('title')</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         @plot('meta-tags')
@@ -26,12 +26,6 @@
         gtag('js', new Date());
         gtag('config', 'G-BNS3GW5SY0');
         </script>
-        <meta property="og:title" content="{{ setting('app.title') }}">
-        <meta property="og:type" content="website">
-        <meta property="og:description" content="{{ setting('app.description') }}">
-        <meta property="og:image" content="{{ url('assets/img/2.png') }}">
-        <meta property="og:url" content="{{ setting('app.base_url') }}">
-        <meta name="twitter:card" content="summary_large_image">
         @plot('styles')
     </head>
     <body class="page-home {{ (session()->has('dark-mode') && session()->get('dark-mode') == 1) ? 'dark-theme' : '' }}">

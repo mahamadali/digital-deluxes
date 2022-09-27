@@ -43,7 +43,7 @@ Router::bunch('/', ['as' => 'frontend.', 'barrier' => ['is-front-auth']], functi
 
   Router::bunch('/store', ['as' => 'store.'], function () {
     Router::get('/', [StoreController::class, 'index'])->name('list')->withOutBarrier('is-front-auth');;
-    Router::get('/view/{product}', [StoreController::class, 'view'])->name('view')->withOutBarrier('is-front-auth');;
+    Router::get('/view/{product}/{?slug}', [StoreController::class, 'view'])->name('view')->withOutBarrier('is-front-auth');;
     Router::post('/add-to-fav/{product}', [StoreController::class, 'addToFav'])->name('add-to-fav');
     Router::post('/remove-from-fav/{product}', [StoreController::class, 'removeFromFav'])->name('remove-from-fav');
   });

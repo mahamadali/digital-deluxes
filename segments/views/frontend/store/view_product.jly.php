@@ -1,6 +1,15 @@
 @extends('app')
 
-@block("title") {{ setting('app.title', 'Ali Rocks!') }} @endblock
+@block("title") {{ setting('app.title', 'Ali Rocks!') }} - {{ $product->name }} @endblock
+
+@block("meta-tags")
+<meta property="og:title" content="{{ $product->name }}">
+<meta property="og:type" content="article">
+<meta property="og:description" content="{{ setting('app.description') }}">
+<meta property="og:image" content="{{ $product->screenshots()[0]->url_original ?? '' }}">
+<meta property="og:url" content="{{ url('store/view/'.$product->id.'/'.$product->slug) }}">
+<meta name="twitter:card" content="summary_large_image">
+@endblock
 
 @block('styles')
 <style>

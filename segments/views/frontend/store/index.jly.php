@@ -113,8 +113,8 @@
         <div>
             <div class="game-card">
                 <div class="game-card__box fixed">
-                    <div class="game-card__media"><a href="{{ url('store/view/'.$product->id) }}"><img src="{{ $product->coverImageOriginal }}" alt="{{ $product->name }}" /></a></div>
-                    <div class="game-card__info"><a class="game-card__title" href="{{ route('frontend.store.view', ['product' => $product->id]) }}"> {{ $product->name }}</a>
+                    <div class="game-card__media"><a href="{{ url('store/view/'.$product->id.'/'.$product->slug) }}"><img src="{{ $product->coverImageOriginal }}" alt="{{ $product->name }}" /></a></div>
+                    <div class="game-card__info"><a class="game-card__title" href="{{ route('frontend.store.view', ['product' => $product->id, 'slug' => $product->slug]) }}"> {{ $product->name }}</a>
                         <div class="game-card__genre">
                             {{ $product->platform }}
                             @foreach($product->platform_logos()->get() as $logo):

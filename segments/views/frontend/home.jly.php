@@ -2,6 +2,15 @@
 
 @block("title") {{ setting('app.title', 'Ali Rocks!') }} @endblock
 
+@block("meta-tags")
+<meta property="og:title" content="{{ setting('app.title') }}">
+<meta property="og:type" content="website">
+<meta property="og:description" content="{{ setting('app.description') }}">
+<meta property="og:image" content="{{ url('assets/img/2.png') }}">
+<meta property="og:url" content="{{ setting('app.base_url') }}">
+<meta name="twitter:card" content="summary_large_image">
+@endblock
+
 @block("content")
 <main class="page-main">
     <div class="uk-grid" data-uk-grid>
@@ -15,7 +24,7 @@
                         <div class="swiper-slide">
                             <div class="recommend-slide">
                                 <div class="tour-slide__box">
-                                    <a href="{{ url('store/view/'.$product->id) }}">
+                                    <a href="{{ url('store/view/'.$product->id.'/'.$product->slug) }}">
                                         <img src="{{ $product->coverImageOriginal }}" alt="banner" style="height: 400px;width: 100%;object-fit: cover;filter: brightness(50%);">
                                         <div class="bottom-left">{{ $product->name }}</div>
                                     </a>
@@ -42,8 +51,8 @@
                         <div class="swiper-slide">
                             <div class="game-card --horizontal">
                                 <div class="game-card__box">
-                                    <div class="game-card__media"><a href="{{ url('store/view/'.$product->id) }}"><img src="{{ $product->coverImageOriginal }}" alt="{{ $product->name }}" /></a></div>
-                                    <div class="game-card__info"><a class="game-card__title" href="{{ url('store/view/'.$product->id) }}"> {{ $product->name }}</a>
+                                    <div class="game-card__media"><a href="{{ url('store/view/'.$product->id.'/'.$product->slug) }}"><img src="{{ $product->coverImageOriginal }}" alt="{{ $product->name }}" /></a></div>
+                                    <div class="game-card__info"><a class="game-card__title" href="{{ url('store/view/'.$product->id.'/'.$product->slug) }}"> {{ $product->name }}</a>
                                         <div class="game-card__genre">
                                         @php
                                             if(strlen($product->description) > 300){
@@ -81,8 +90,8 @@
                         <div class="swiper-slide">
                             <div class="game-card">
                                 <div class="game-card__box fixed">
-                                    <div class="game-card__media"><a href="{{ url('store/view/'.$product->id) }}"><img src="{{ $product->coverImageOriginal }}" alt="{{ $product->name }}" /></a></div>
-                                    <div class="game-card__info"><a class="game-card__title" href="{{ url('store/view/'.$product->id) }}"> {{ $product->name }}</a>
+                                    <div class="game-card__media"><a href="{{ url('store/view/'.$product->id.'/'.$product->slug) }}"><img src="{{ $product->coverImageOriginal }}" alt="{{ $product->name }}" /></a></div>
+                                    <div class="game-card__info"><a class="game-card__title" href="{{ url('store/view/'.$product->id.'/'.$product->slug) }}"> {{ $product->name }}</a>
                                         <div class="game-card__genre">
                                         {{ $product->platform }}
                                         @foreach($product->platform_logos()->get() as $logo):
