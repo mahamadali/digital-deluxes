@@ -9,6 +9,12 @@
         <meta name="format-detection" content="telephone=no">
         <meta content="IE=edge" http-equiv="X-UA-Compatible">
         <meta name="token" content="{{ prevent_csrf_token() }}">
+        <meta property="og:title" content=Digital Deluxes>
+        <meta property="og:site_name" content=Digital Deluxes>
+        <meta property="og:url" content=https://digitaldeluxes.com/>
+        <meta property="og:description" content=Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation.>
+        <meta property="og:type" content=website>
+        <meta property="og:image" content=https://digitaldeluxes.com/assets/img/2.png>
         <link rel="icon" type="image/x-icon" href="{{ url('assets/img/favicon.ico') }}">
         <link rel="shortcut icon" href="{{ url('assets/img/favicon.ico') }}" type="image/x-icon">
         <link rel="stylesheet" href="{{ url('assets/frontend/css/libs.min.css') }}">
