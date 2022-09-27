@@ -3,13 +3,11 @@
 @block("title") {{ setting('app.title', 'Ali Rocks!') }} @endblock
 
 @block("meta-tags")
-<meta name="keywords" content="free, meta, tag, meta tag, generator">
-<meta name="description" content="The meta tag generator will create description, keyword and other important meta tags for you with provided content..">
-<meta name="og:description" content="The meta tag generator will create description, keyword and other important meta tags for you with provided content..">
-<meta name="og:title" content="Free Meta Tag Generator - SEOptimer">
-<meta name="og:url" content="https://www.seoptimer.com/meta-tag-generator">
-<meta name="og:image" content="https://www.seoptimer.com/img/report-preview.png">
-<meta name="og:site_name" content="SEOptimer: SEO Audit &amp; Reporting Tool">
+<meta property="og:url"                content="http://www.nytimes.com/2015/02/19/arts/international/when-great-minds-dont-think-alike.html" />
+<meta property="og:type"               content="article" />
+<meta property="og:title"              content="Digital Deluxes" />
+<meta property="og:description"        content="Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation" />
+<meta property="og:image"              content="http://static01.nyt.com/images/2015/02/19/arts/international/19iht-btnumbers19A/19iht-btnumbers19A-facebookJumbo-v2.jpg" />
 @endblock
 
 @block("content")
