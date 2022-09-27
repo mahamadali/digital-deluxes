@@ -1,21 +1,24 @@
 @extends('app')
 
-@block("title") {{ setting('app.title', 'Ali Rocks!') }} - Cheap Game CD Keys | Activation codes for Steam and more @endblock
-
 @block("meta-tags")
-<meta name="title" content="Digital Deluxes">
-<meta name="description" content="Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation.">
-<meta name="keywords" content="Digital Deluxes">
-<meta name="robots" content="noindex, nofollow">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta name="language" content="English">
 
-<meta property="og:title" content="{{ setting('app.title') }}">
+<!-- Primary Meta Tags -->
+<title>Digital Deluxes - Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation.</title>
+<meta name="title" content="Digital Deluxes - Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation.">
+<meta name="description" content="Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation.">
+<!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
-<meta property="og:description" content="{{ setting('app.description') }}">
-<meta property="og:image" content="{{ url('assets/img/2.png') }}">
-<meta property="og:url" content="{{ setting('app.base_url') }}">
-<meta name="twitter:card" content="summary_large_image">
+<meta property="og:url" content="https://digitaldeluxes.com/">
+<meta property="og:title" content="Digital Deluxes - Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation.">
+<meta property="og:description" content="Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation.">
+<meta property="og:image" content="https://digitaldeluxes.com/assets/img/2.png">
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://digitaldeluxes.com/">
+<meta property="twitter:title" content="Digital Deluxes - Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation.">
+<meta property="twitter:description" content="Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation.">
+<meta property="twitter:image" content="https://digitaldeluxes.com/assets/img/2.png">
+
 @endblock
 
 @block("content")
