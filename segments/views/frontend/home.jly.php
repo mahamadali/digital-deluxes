@@ -1,15 +1,6 @@
 @extends('app')
 
-@block("title") {{ setting('app.title', 'Ali Rocks!') }} @endblock
-
-@block("meta-tags")
-<meta property="og:title" content="{{ setting('app.title') }}">
-<meta property="og:type" content="article">
-<meta property="og:description" content="{{ setting('app.description') }}">
-<meta property="og:image" content="{{ url('assets/img/2.png') }}">
-<meta property="og:url" content="{{ setting('app.base_url') }}">
-<meta name="twitter:card" content="summary_large_image">
-@endblock
+@block("title") {{ setting('app.title', 'Ali Rocks!') }} - Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation @endblock
 
 @block("content")
 <main class="page-main">
