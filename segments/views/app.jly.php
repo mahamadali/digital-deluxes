@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Digital Deluxes - Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation.</title>
+        <title>Digital Deluxes - Cheap Game CD Keys</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         
