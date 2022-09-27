@@ -5,8 +5,8 @@
 @block("meta-tags")
 <meta property="og:url"                content="https://digitaldeluxes.com" />
 <meta property="og:type"               content="article" />
-<meta property="og:title"              content="Digital Deluxes" />
-<meta property="og:description"        content="Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation" />
+<meta property="og:title"              content="Digital Deluxes - Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net ,Xbox, Playstation." />
+<meta property="og:description"        content="Enjoy the cheapest games at now. Get CD Keys for Steam, Origin, Uplay, Battle.net, GOG, PSN and XBOX. Instant delivery" />
 <meta property="og:image"              content="https://digitaldeluxes.com/assets/img/2.png" />
 @endblock
 
