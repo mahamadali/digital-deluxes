@@ -4,7 +4,7 @@
         <title>@plot('title')</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        @plot('meta-tags')
+        
         <meta name="HandheldFriendly" content="true">
         <meta name="format-detection" content="telephone=no">
         <meta content="IE=edge" http-equiv="X-UA-Compatible">
@@ -26,6 +26,7 @@
         gtag('js', new Date());
         gtag('config', 'G-BNS3GW5SY0');
         </script>
+        @plot('meta-tags')
         @plot('styles')
     </head>
     <body class="page-home {{ (session()->has('dark-mode') && session()->get('dark-mode') == 1) ? 'dark-theme' : '' }}">

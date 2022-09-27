@@ -3,11 +3,13 @@
 @block("title") {{ setting('app.title', 'Ali Rocks!') }} @endblock
 
 @block("meta-tags")
-<meta property="og:type" content="website">
-<meta property="og:title" content="Digital Deluxes">
-<meta property="og:description" content="Hello AK">
-<meta property="og:image" content="https://digitaldeluxes.com/assets/img/2.png">
-<meta property="og:url" content="https://digitaldeluxes.com/home">
+<meta name="keywords" content="free, meta, tag, meta tag, generator">
+<meta name="description" content="The meta tag generator will create description, keyword and other important meta tags for you with provided content..">
+<meta name="og:description" content="The meta tag generator will create description, keyword and other important meta tags for you with provided content..">
+<meta name="og:title" content="Free Meta Tag Generator - SEOptimer">
+<meta name="og:url" content="https://www.seoptimer.com/meta-tag-generator">
+<meta name="og:image" content="https://www.seoptimer.com/img/report-preview.png">
+<meta name="og:site_name" content="SEOptimer: SEO Audit &amp; Reporting Tool">
 @endblock
 
 @block("content")
