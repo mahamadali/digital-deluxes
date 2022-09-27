@@ -445,7 +445,7 @@ class ProductController
 			
 			$kproduct = getProduct($product->kinguinId);
 			$kproduct = json_decode($kproduct);
-			if($kproduct->status == 404) {
+			if(isset($kproduct->status) && $kproduct->status == 404) {
 				continue;
 			}
 			$product->description = $kproduct->description ?? null;
