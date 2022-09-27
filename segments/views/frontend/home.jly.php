@@ -1,6 +1,6 @@
 @extends('app')
 
-@block("title") {{ setting('app.title', 'Ali Rocks!') }} - {{ setting('app.description') }} @endblock
+@block("title") {{ setting('app.title', 'Ali Rocks!') }} - Cheap Game CD Keys | Activation codes for Steam and more @endblock
 
 @block("meta-tags")
 <meta name="title" content="Digital Deluxes">
