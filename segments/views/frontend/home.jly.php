@@ -3,6 +3,7 @@
 @block("title") {{ setting('app.title', 'Ali Rocks!') }} @endblock
 
 @block("meta-tags")
+<meta property="og:description" {exp:streeng allowed='none'}content="{{ setting('app.description') }}"{/exp:streeng}>
 <meta property="og:url"                content="{{ setting('app.base_url') }}" />
 <meta property="og:type"               content="article" />
 <meta property="og:title"              content="{{ setting('app.title') }}" />
