@@ -437,4 +437,43 @@ class ProductController
 		echo "New Products Successfully Imported.";
 		exit;
 	}
+
+	public function updateProductDetails(Request $request) {
+		$products = Product::SelectSet(['kinguinId'])->whereNull('activationDetails')->where('product_type', 'K')->get(200);
+		$count = 0;
+		foreach($products as $product) {
+			
+			$kproduct = getProduct($product->kinguinId);
+			$kproduct = json_decode($kproduct);
+			if($kproduct->status == 404) {
+				continue;
+			}
+			$product->description = $kproduct->description ?? null;
+			$product->activationDetails = $kproduct->activationDetails ?? null;
+			$product->languages = $kproduct->languages ? json_encode($kproduct->languages) :  null;
+			$product->tags = $kproduct->tags ? json_encode($kproduct->tags) :  null;
+			$product->merchantName = $kproduct->merchantName ?? null ? json_encode($kproduct->merchantName) :  null;
+			$product->developers = $kproduct->developers ?? null ? json_encode($kproduct->developers) :  null;
+			$product->publishers = $kproduct->publishers ?? null ? json_encode($kproduct->publishers) :  null;
+			$product->genres = $kproduct->genres  ?? null ? json_encode($kproduct->genres) :  null;
+			$product->updated_at = date('y-m-d h:i:s');
+			$product->save();
+
+			if(!empty($kproduct->systemRequirements)){
+				ProductSystemRequirement::where('product_id', $product->id)->delete();
+				foreach($kproduct->systemRequirements as $systemRequirement){
+					$product_system_requirement = new ProductSystemRequirement();
+					$product_system_requirement->product_id  = $product->id;
+					$product_system_requirement->system  = $systemRequirement->system;
+					$product_system_requirement->requirement  = $systemRequirement->requirement ? json_encode($systemRequirement->requirement) : null;
+					$product_system_requirement->save();
+				}
+			}
+
+			$count++;
+
+		}
+		echo $count. " products info updated";
+		exit();
+	}
 }

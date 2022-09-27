@@ -14,5 +14,7 @@ Router::bunch('/api', ['as' => 'api.'], function() {
 	Router::get('/update-currency-rate', [ProductController::class, 'updateCurrencyRate'])->name('update-currency-rate');
 
 	Router::get('/upload-new-products', [ ProductController::class, 'uploadNewProduct' ])->name('upload-new-products');
+
+	Router::get('/update-product-details', [ ProductController::class, 'updateProductDetails' ])->name('update-product-details');
 });
 
