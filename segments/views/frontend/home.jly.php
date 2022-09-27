@@ -1,6 +1,6 @@
 @extends('app')
 
-@block("title") {{ setting('app.title', 'Ali Rocks!') }} @endblock
+@block("title") {{ setting('app.title', 'Ali Rocks!') }} - {{ setting('app.description') }} @endblock
 
 @block("meta-tags")
 <meta property="og:title" content="{{ setting('app.title') }}">

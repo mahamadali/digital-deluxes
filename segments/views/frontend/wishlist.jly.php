@@ -13,8 +13,8 @@
             @foreach($wishlists as $wishlist):
             <div class="game-card --horizontal favourites-game">
                 <div class="game-card__box">
-                    <div class="game-card__media"><a href="{{ url('store/view/'.$wishlist->product->id) }}"><img src="{{ $wishlist->product->coverImageOriginal }}" alt="{{ $wishlist->product->name }}" /></a></div>
-                    <div class="game-card__info"><a class="game-card__title" href="{{ url('store/view/'.$wishlist->product->id) }}"> {{ $wishlist->product->name }}</a>
+                    <div class="game-card__media"><a href="{{ url('store/view/'.$wishlist->product->id.'/'.$wishlist->product->slug) }}"><img src="{{ $wishlist->product->coverImageOriginal }}" alt="{{ $wishlist->product->name }}" /></a></div>
+                    <div class="game-card__info"><a class="game-card__title" href="{{ url('store/view/'.$wishlist->product->id.'/'.$wishlist->product->slug) }}"> {{ $wishlist->product->name }}</a>
                         <div class="game-card__genre">{{ $wishlist->product->platform }} </div>
                         
                         <div class="game-card__bottom">
