@@ -2,6 +2,14 @@
 
 @block("title") {{ setting('app.title', 'Ali Rocks!') }} @endblock
 
+@block("meta-tags")
+<meta property="og:url"                content="https://digitaldeluxes.com" />
+<meta property="og:type"               content="article" />
+<meta property="og:title"              content="Digital Deluxes" />
+<meta property="og:description"        content="Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation" />
+<meta property="og:image"              content="https://digitaldeluxes.com/assets/img/2.png" />
+@endblock
+
 @block("content")
 <main class="page-main">
     <div class="uk-grid" data-uk-grid>

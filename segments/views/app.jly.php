@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Digital Deluxes - Cheap Game CD Keys</title>
+        <title>@plot('title')</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         
@@ -9,11 +9,7 @@
         <meta name="format-detection" content="telephone=no">
         <meta content="IE=edge" http-equiv="X-UA-Compatible">
         <meta name="token" content="{{ prevent_csrf_token() }}">
-        <meta property="og:type" content="website">
-        <meta property="og:url" content="https://digitaldeluxes.com/login">
-        <meta property="og:title" content="Digital Deluxes - Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation.">
-        <meta property="og:description" content="TeamHost">
-        <meta property="og:image" content="">
+        
         <link rel="icon" type="image/x-icon" href="{{ url('assets/img/favicon.ico') }}">
         <link rel="shortcut icon" href="{{ url('assets/img/favicon.ico') }}" type="image/x-icon">
         <link rel="stylesheet" href="{{ url('assets/frontend/css/libs.min.css') }}">
