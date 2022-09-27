@@ -4,9 +4,8 @@
         <title>@plot('title')</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        
-        <meta name="HandheldFriendly" content="true">
-        <meta name="format-detection" content="telephone=no">
+        <meta name="description" content="{{ setting('app.title') }}" />
+        <meta name="keywords" content="{{ setting('app.description') }}" />
         <meta content="IE=edge" http-equiv="X-UA-Compatible">
         <meta name="token" content="{{ prevent_csrf_token() }}">
         
