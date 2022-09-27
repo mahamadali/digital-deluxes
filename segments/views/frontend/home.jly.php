@@ -3,12 +3,11 @@
 @block("title") {{ setting('app.title', 'Ali Rocks!') }} @endblock
 
 @block("meta-tags")
-<meta property="og:description" {exp:streeng allowed='none'}content="{{ setting('app.description') }}"{/exp:streeng}>
-<meta property="og:url"                content="{{ setting('app.base_url') }}" />
-<meta property="og:type"               content="article" />
-<meta property="og:title"              content="{{ setting('app.title') }}" />
-<meta property="og:description"        content="{{ setting('app.description') }}" />
-<meta property="og:image"              content="{{ url('assets/img/2.png') }}" />
+<meta property="og:type" content="website">
+<meta property="og:title" content="Digital Deluxes">
+<meta property="og:description" content="Hello AK">
+<meta property="og:image" content="https://digitaldeluxes.com/assets/img/2.png">
+<meta property="og:url" content="https://digitaldeluxes.com/home">
 @endblock
 
 @block("content")
