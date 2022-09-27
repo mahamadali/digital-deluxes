@@ -3,6 +3,13 @@
 @block("title") {{ setting('app.title', 'Ali Rocks!') }} - {{ setting('app.description') }} @endblock
 
 @block("meta-tags")
+<meta name="title" content="Digital Deluxes">
+<meta name="description" content="Cheap Game CD Keys | Activation codes for Steam, Origin, Uplay, Battle.net, Xbox, Playstation.">
+<meta name="keywords" content="Digital Deluxes">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+
 <meta property="og:title" content="{{ setting('app.title') }}">
 <meta property="og:type" content="website">
 <meta property="og:description" content="{{ setting('app.description') }}">
