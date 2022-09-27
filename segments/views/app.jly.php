@@ -3,16 +3,7 @@
     <head>
         <title>@plot('title') - {{ setting('app.description') }}</title>
         <meta charset="utf-8">
-        <meta content="Templines" name="author">
-        <meta content="TeamHost" name="description">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        <meta name="description" content="{{ setting('app.description') }}">
-        <meta name="keywords" content="Steam, Origin, Uplay, Battle.net and xbox">
-        <meta name="author" content="{{ setting('app.author.name') }}">
-        <meta property="og:title" content="{{ setting('app.title') }}">
-        <meta property="og:image" content="{{ url('assets/img/2.png') }}">
-        <meta property="og:url" content="{{ setting('app.base_url') }}">
-        <meta property="og:description" content="{{ setting('app.description') }}">
         @plot('meta-tags')
         <meta name="HandheldFriendly" content="true">
         <meta name="format-detection" content="telephone=no">
@@ -35,6 +26,12 @@
         gtag('js', new Date());
         gtag('config', 'G-BNS3GW5SY0');
         </script>
+        <meta property="og:title" content="{{ setting('app.title') }}">
+        <meta property="og:type" content="website">
+        <meta property="og:description" content="{{ setting('app.description') }}">
+        <meta property="og:image" content="{{ url('assets/img/2.png') }}">
+        <meta property="og:url" content="{{ setting('app.base_url') }}">
+        <meta name="twitter:card" content="summary_large_image">
         @plot('styles')
     </head>
     <body class="page-home {{ (session()->has('dark-mode') && session()->get('dark-mode') == 1) ? 'dark-theme' : '' }}">
