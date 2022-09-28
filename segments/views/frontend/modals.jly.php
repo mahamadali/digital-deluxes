@@ -55,4 +55,25 @@
             </div>
         </div>
     </div>
+
+
+    <div class="uk-flex-top" id="modal-buy-now-restrication" data-uk-modal>
+        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical"><button class="uk-modal-close-default" type="button" data-uk-close></button>
+            <h2 class="uk-modal-title"></h2>
+            
+                
+                <div class="uk-margin mt-3  text-center" style="text-align: center;">
+                    <h5>THIS PRODUCT VERSION CANNOT BE ACTIVATED IN YOUR COUNTRY</h5>
+                </div>
+
+                <div class="uk-margin mt-1 text-center" style="text-align: center;">
+                    <button type="button" class="uk-button uk-button-small uk-button-danger buy_now_current_choice">CONTINUE WITH CURRENT CHOICE</button>
+                </div>
+
+                <div class="uk-margin text-center" style="text-align: center;">
+                    <button class="uk-button uk-button-small uk-button-link close_buynow_restrication_popup" type="button"  data-uk-close>Cancel</button>
+                </div>
+            
+        </div>
+    </div>
 </div>

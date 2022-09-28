@@ -11,6 +11,8 @@ use Jolly\Engine;
 use Models\Role;
 use Models\Setting;
 use Models\User;
+use Mail\VerifyEmail;
+
 
 class AuthController
 {
@@ -108,15 +110,43 @@ class AuthController
 		$user->phone = $request->phone;
 		$user->password = md5($request->password);
 		$user->role_id = Role::where('name', 'user')->first()->id;
+		$user->status = 'Deactivate';
 		$user = $user->save();
 
-		Alert::as(new WelcomeEmail(User::where('id', $user->id)->first()))->notify();
+		
+
+		// Alert::as(new WelcomeEmail(User::where('id', $user->id)->first()))->notify();
+
+		// return response()->json([
+		// 		'status' => 200,
+		// 		'message' => 'Registration success!'
+		// 	]);
+
+		
+		Alert::as(new VerifyEmail(User::where('id', $user->id)->first()))->notify();
+		
 
 		return response()->json([
 				'status' => 200,
-				'message' => 'Registration success!'
+				// 'message' => 'Registration success!'
+				'message' => 'Please check your email and do verification process!'
 			]);
 
+
 	}
+
+
+	public function verify(Request $request,$user_id)
+	{
+		$user_id = decrypt($user_id);
+
+		User::where('id',$user_id)->update(['status' => 'Active']);
+
+		Alert::as(new WelcomeEmail(User::where('id', $user_id)->first()))->notify();
+		
+		return redirect()->to(url('/login'))->withFlashSuccess('Verify Successfully!')->go();
+
+	}
+
 
 }

@@ -54,11 +54,12 @@ class Product extends Model
 		$price = $this->price;
 		$this->price_original_value = $price;
 		
-		if(!session()->has('base_price') && empty(session()->get('base_price'))) {
+		if(!session()->has('base_price') || empty(session()->get('base_price'))) {
 			session()->set('platform_currency', 'cop');
 			$base_price = currencyConverter('EUR', 'COP', 1);
 			session()->set('base_price', $base_price);
 		}
+		
 		
 		$currenctCurrencyPrice = (float) session()->get('base_price') * (float) getProfitPrice($price);
 		

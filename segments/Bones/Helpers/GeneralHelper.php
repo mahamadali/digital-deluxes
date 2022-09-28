@@ -551,3 +551,15 @@ if (!function_exists('orderCouponApply')) {
         return true;
     }
 }
+
+if (!function_exists('encrypt')) {
+    function encrypt($plaintext) {
+        return openssl_encrypt($plaintext, 'AES-128-CTR', 'HM', 0, '9182381361541234');
+    }
+}
+
+if (!function_exists('decrypt')) {
+    function decrypt($ciphertext) {
+        return openssl_decrypt($ciphertext, 'AES-128-CTR', 'HM', 0, '9182381361541234');
+    }
+}

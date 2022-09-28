@@ -202,6 +202,7 @@ class AuthController
 		$user->city_id = $request->city_id;
 		$user->law_firm = $request->law_firm;
 		$user->role_id = Role::where('name', 'user')->first()->id;
+		// $user->status = 'Deactivate';
 		$user = $user->save();
 
 		foreach($request->practice_areas as $key => $practice_area) {
@@ -213,13 +214,18 @@ class AuthController
 		}
 
 		Alert::as(new WelcomeEmail(User::where('id', $user->id)->with('city')->first()))->notify();
+		// Alert::as(new VerifyEmail(User::where('id', $user->id)->with('city')->first()))->notify();
+		
 
 		return response()->json([
 				'status' => 200,
 				'message' => 'Registration success!'
+				// 'message' => 'Please check your email and do verification process!'
 			]);
 
 	}
+
+	
 
 	public function facebookcallback() {
 

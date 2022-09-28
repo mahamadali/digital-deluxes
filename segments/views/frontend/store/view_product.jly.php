@@ -156,9 +156,13 @@
                             <hr>
                             <div class="game-profile-price__value">{{ currencySymbol() }}{{ $product->price }} {{ strtoupper(session()->get('platform_currency')) }}</div>
                             @if($productQty > 0):
-                            <a href="{{ route('frontend.cart.add',[$product->id]) }}" class="uk-button uk-button-danger uk-width-1-1 buy-now-btn">
+                            <a style="display: none;" href="{{ route('frontend.cart.add',[$product->id]) }}" class="uk-button uk-button-danger uk-width-1-1 buy-now-btn buy-now-btn-currect">
                                 <span class="ico_shopping-cart"></span><span>{{ trans('store.buy_now') }}</span>
                             </a>
+
+                            <a style="display: none;" href="#modal-buy-now-restrication" class="uk-button uk-button-danger uk-width-1-1 buy-now-btn buy-now-btn-wrong" data-uk-toggle><span class="ico_shopping-cart"></span><span>{{ trans('store.buy_now') }}</span></a>
+
+
                             @endif
                             @if(!empty(auth()) && $product->isInWishlist()):
                             <button class="uk-button uk-button-danger uk-width-1-1 remove_from_fav" data-url="{{ route('frontend.store.remove-from-fav', ['product' => $product->id]) }}" type="button">
@@ -309,6 +313,10 @@
                 $('.country_restriction_success_text').show();
                 $('.country_restriction_danger_text').hide();
                 $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country);
+
+                $('.buy-now-btn-currect').show();
+                $('.buy-now-btn-wrong').hide();
+                
             } else {
                 var allowCountry = 0;
                 
@@ -326,11 +334,17 @@
                                 if(allowCountry == 0) {
                                     $('.country_restriction_success_text').hide();
                                     $('.country_restriction_danger_text').show();
-                                    $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(country)
+                                    $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(country);
+
+                                    $('.buy-now-btn-currect').hide();
+                                    $('.buy-now-btn-wrong').show();
                                 } else {
                                     $('.country_restriction_success_text').show();
                                     $('.country_restriction_danger_text').hide();
-                                    $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country)
+                                    $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country);
+
+                                    $('.buy-now-btn-currect').show();
+                                    $('.buy-now-btn-wrong').hide();
                                 }
                             }
                         });
@@ -338,16 +352,34 @@
                         if(restriction_countries == country) {
                             $('.country_restriction_success_text').show();
                             $('.country_restriction_danger_text').hide();
-                            $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country)
+                            $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country);
+
+                            $('.buy-now-btn-currect').show();
+                            $('.buy-now-btn-wrong').hide();
                         } else {
                             $('.country_restriction_success_text').hide();
                             $('.country_restriction_danger_text').show();
-                            $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(country)
+                            $('.country_restriction_danger_text').find('.YOUR_COUNTRY').text(country);
+
+                            $('.buy-now-btn-currect').hide();
+                            $('.buy-now-btn-wrong').show();
                         }
                     }
                 });
             }
             
         }
+
+
+        $('.close_buynow_restrication_popup').click(function(){
+            $('#modal-buy-now-restrication').removeClass('uk-open');
+        })
+
+        
+        $('.buy_now_current_choice').click(function(){
+            $('#modal-buy-now-restrication').removeClass('uk-open');
+            // $('.buy-now-btn-currect').trigger('click');
+            window.location.href="{{ route('frontend.cart.add',[$product->id]) }}";
+        })
 </script>
 @endblock
