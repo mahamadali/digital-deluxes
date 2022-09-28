@@ -62,16 +62,16 @@
             <h2 class="uk-modal-title"></h2>
             
                 
-                <div class="uk-margin mt-3  text-center" style="text-align: center;">
+                <div class="text-center" style="text-align: center;margin-top: 50px;">
                     <h5>THIS PRODUCT VERSION CANNOT BE ACTIVATED IN YOUR COUNTRY</h5>
                 </div>
 
-                <div class="uk-margin mt-1 text-center" style="text-align: center;">
-                    <button type="button" class="uk-button uk-button-small uk-button-danger buy_now_current_choice">CONTINUE WITH CURRENT CHOICE</button>
+                <div class="uk-margin mt-2 text-center" style="text-align: center;">
+                    <button type="button" class="uk-button uk-button-small uk-button-danger buy_now_current_choice" style="background-color: #4aa138;color: #fff;">CONTINUE WITH CURRENT CHOICE</button>
                 </div>
 
                 <div class="uk-margin text-center" style="text-align: center;">
-                    <button class="uk-button uk-button-small uk-button-link close_buynow_restrication_popup" type="button"  data-uk-close>Cancel</button>
+                    <button class="uk-button uk-button-danger close_buynow_restrication_popup" type="button">Cancel</button>
                 </div>
             
         </div>
