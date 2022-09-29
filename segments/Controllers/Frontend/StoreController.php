@@ -17,7 +17,7 @@ class StoreController
 	{
 		$operatingSystems = ProductSystemRequirement::selectSet(['system'])->groupBy('system')->orderBy('id','ASC')->get();
 		
-        $products = Product::whereNotLike('platform', 'kinguin')->whereNotLike('name', '%Kinguin%');
+        $products = Product::whereNotLike('platform', 'kinguin')->whereNotLike('name', '%Kinguin%')->whereNotNull('price');
 		
         $name = $request->get("name") ?? '';
 		$category = $request->get("category") ?? '';
