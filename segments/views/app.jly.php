@@ -222,11 +222,22 @@ $( function() {
             function handleIpProduct(country, code, limited_country, limited_product_id) {
                 var restriction_countries = limited_country;
                 if(restriction_countries == '' || restriction_countries.toLowerCase() == 'region free' || restriction_countries.toLowerCase() == 'rest of the world' || restriction_countries.toLowerCase() == 'outside europe' || restriction_countries.toLowerCase() == 'other' || restriction_countries.toLowerCase() == 'other') {
-                    $('#country_restriction_success_text_cart_'+limited_product_id).show();
-                    $('#country_restriction_danger_text_cart_'+limited_product_id).hide();
-                    $('#country_restriction_success_text_cart_'+limited_product_id).find('.YOUR_COUNTRY').text(country);
+                    var restriction_countries = $('#product_limit_from_title_'+limited_product_id).data('region_limitation_from_title');
+                    if(restriction_countries != '') {
+                        checkWithRegionProduct(restriction_countries, code, country, limited_product_id);
+                    } else {
+                        $('#country_restriction_success_text_cart_'+limited_product_id).show();
+                        $('#country_restriction_danger_text_cart_'+limited_product_id).hide();
+                        $('#country_restriction_success_text_cart_'+limited_product_id).find('.YOUR_COUNTRY').text(country);
+                    }
                 } else {
-                    var allowCountry = 0;
+                    checkWithRegionProduct(restriction_countries, code, country, limited_product_id);
+                }
+                
+            }
+
+            function checkWithRegionProduct(restriction_countries, code, country, limited_product_id) {
+                var allowCountry = 0;
                     
                     $.getJSON("{{ route('api.region-countries') }}?region="+restriction_countries, function(e) {
                         var total_countries = Object.keys(e.data).length;
@@ -262,8 +273,6 @@ $( function() {
                             }
                         }
                     });
-                }
-                
             }
 
             $('.change-language').on('click', function() {
