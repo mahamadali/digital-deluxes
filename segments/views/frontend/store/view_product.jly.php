@@ -309,16 +309,28 @@
     
         function handleIp(country, code) {
             var restriction_countries = '<?php echo $product->regionalLimitations ?>';
+            
             if(restriction_countries.toLowerCase() == 'region free' || restriction_countries.toLowerCase() == 'rest of the world' || restriction_countries.toLowerCase() == 'outside europe' || restriction_countries.toLowerCase() == 'other' || restriction_countries.toLowerCase() == 'other') {
-                $('.country_restriction_success_text').show();
-                $('.country_restriction_danger_text').hide();
-                $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country);
+                var restriction_countries = '<?php echo $forspecificregion ?>';
+                if(restriction_countries != '') {
+                    checkWithRegion(restriction_countries, code, country);
+                } else {
+                    $('.country_restriction_success_text').show();
+                    $('.country_restriction_danger_text').hide();
+                    $('.country_restriction_success_text').find('.YOUR_COUNTRY').text(country);
 
-                $('.buy-now-btn-currect').show();
-                $('.buy-now-btn-wrong').hide();
+                    $('.buy-now-btn-currect').show();
+                    $('.buy-now-btn-wrong').hide();
+                }
                 
             } else {
-                var allowCountry = 0;
+                checkWithRegion(restriction_countries, code, country);
+            }
+            
+        }
+
+        function checkWithRegion(restriction_countries, code, country) {
+            var allowCountry = 0;
                 
                 $.getJSON("{{ route('api.region-countries') }}?region="+restriction_countries, function(e) {
                     var total_countries = Object.keys(e.data).length;
@@ -366,8 +378,6 @@
                         }
                     }
                 });
-            }
-            
         }
 
 

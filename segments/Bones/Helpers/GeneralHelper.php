@@ -563,3 +563,18 @@ if (!function_exists('decrypt')) {
         return openssl_decrypt($ciphertext, 'AES-128-CTR', 'HM', 0, '9182381361541234');
     }
 }
+
+if (!function_exists('findForRegion')) {
+    function findForRegion($slug) {
+        $limitForRegions = ['Turkey' => 'TR', 'Europe' => 'EU', 'United States' => 'US', 'United Kingdom' => 'UK', 'France' => 'FR', 'Germany' => 'DE'];
+        $slug = strtoupper($slug);
+        $explode_slug = explode("-", $slug);
+        foreach($limitForRegions as $limitForRegionKey => $limitForRegion) {
+            if(in_array(strtoupper($limitForRegion), $explode_slug)) {
+                return $limitForRegionKey; 
+            }
+        }
+        return '';
+        
+    }
+}

@@ -100,8 +100,9 @@ class StoreController
 		
 	}
 
-    public function view(Request $request, Product $product)
+    public function view(Request $request, Product $product, $slug)
 	{
+		$forspecificregion = findForRegion($slug);
 		if(empty($product->price))
 			error('404');
 
@@ -115,7 +116,8 @@ class StoreController
 		return render('frontend/store/view_product', [
 			'product' => $product,
 			'platformLogos' => $platformLogos,
-			'productQty' => $productQty
+			'productQty' => $productQty,
+			'forspecificregion' => $forspecificregion
 		]);
 	}
 
