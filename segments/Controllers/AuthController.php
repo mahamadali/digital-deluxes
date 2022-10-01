@@ -50,7 +50,7 @@ class AuthController
 			return redirect()->to(route('admin.dashboard'))->go();
 			break;
 			case 'user':
-			return redirect()->to(route('user.dashboard'))->go();
+			return redirect()->to(route('frontend.home'))->go();
 			break;
 			default:
 			return Engine::error([

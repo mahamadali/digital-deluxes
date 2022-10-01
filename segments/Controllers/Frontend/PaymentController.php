@@ -486,9 +486,12 @@ class PaymentController
         // }
         // if($request->status == 'approved') {
             $paymentMethod = PaymentMethod::find($request->dd_payment_method_id);
-            $paymentId = $request->payment_id ?? '';
-            \MercadoPago\SDK::setAccessToken(setting('mercadopago.access_token'));
-            $transaction = \MercadoPago\SDK::get("/v1/payments/".$paymentId);
+            $paymentId = $request->has('payment_id') ? $request->payment_id : '';
+
+            if(!empty($paymentId)) {
+                \MercadoPago\SDK::setAccessToken(setting('mercadopago.access_token'));
+                $transaction = \MercadoPago\SDK::get("/v1/payments/".$paymentId);
+            }
             
             $currencyInEur = currencyConverter($paymentMethod->currency, 'EUR', $request->amount);
             $user = user();
@@ -561,9 +564,13 @@ class PaymentController
     public function mercadopago_order_success(Request $request)
     {
         $paymentMethod = PaymentMethod::find($request->dd_payment_method_id);
-        $paymentId = $request->payment_id ?? '';
-        \MercadoPago\SDK::setAccessToken(setting('mercadopago.access_token'));
-        $transaction = \MercadoPago\SDK::get("/v1/payments/".$paymentId);
+        $paymentId = $request->has('payment_id') ? $request->payment_id : '';
+        
+        if(!empty($paymentId)) {
+            \MercadoPago\SDK::setAccessToken(setting('mercadopago.access_token'));
+            $transaction = \MercadoPago\SDK::get("/v1/payments/".$paymentId);
+        }
+        
         $user = user();
         $cartItems = cartItems($user->id);
         

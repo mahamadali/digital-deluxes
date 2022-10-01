@@ -10,6 +10,10 @@ class IsAuthenticated
 	public function check(Request $request)
 	{
 		if(!empty(auth()->id)) {
+
+			if(user()->role->name == 'user') {
+				return redirect()->to(route('frontend.home'))->go();
+			}
 			return true;
 		}
 		

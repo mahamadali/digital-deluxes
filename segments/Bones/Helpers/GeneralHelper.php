@@ -566,7 +566,7 @@ if (!function_exists('decrypt')) {
 
 if (!function_exists('findForRegion')) {
     function findForRegion($slug) {
-        $limitForRegions = ['Turkey' => 'TR', 'Europe' => 'EU', 'United States' => 'US', 'United Kingdom' => 'UK', 'France' => 'FR', 'Germany' => 'DE'];
+        $limitForRegions = ['Turkey' => 'TR', 'Europe' => 'EU', 'United States' => 'US', 'United Kingdom' => 'UK', 'France' => 'FR', 'Germany' => 'DE', 'Lithuania' => 'LT'];
         $slug = strtoupper($slug);
         $explode_slug = explode("-", $slug);
         foreach($limitForRegions as $limitForRegionKey => $limitForRegion) {

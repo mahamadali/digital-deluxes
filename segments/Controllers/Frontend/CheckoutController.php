@@ -32,6 +32,8 @@ class CheckoutController
 		$cartTotal = applyCouponDiscount($cartTotal);
 		
 		$total_amount = currencyConverter('EUR', "COP", $cartTotal);
+		$total_amount = (int) $total_amount;
+		
 		
 		$wallet_in_cop = currencyConverter('EUR', 'COP', user()->wallet_amount);
 		if($wallet_in_cop > $total_amount) {
@@ -118,7 +120,7 @@ class CheckoutController
 			$preference->back_urls = array(
 				"success" => route('frontend.payment.mercadopago-order.success').'?dd_payment_method_id='.$paymentMethod->id.'&amount='.$total_amount.'&order_reference='.$request->order_reference,
 				"failure" => route('frontend.payment.mercadopago-order.failure'), 
-				"pending" => route('frontend.payment.mercadopago-order.pending')
+				"pending" => route('frontend.payment.mercadopago-order.success').'?dd_payment_method_id='.$paymentMethod->id.'&amount='.$total_amount.'&order_reference='.$request->order_reference,
 
 				// "success" => 'https://dev.wisencode.com/webhook/mercadopago/success.php?dd_payment_method_id='.$paymentMethod->id.'&amount='.$total_amount,
 				// "failure" => 'https://dev.wisencode.com/webhook/mercadopago/failure.php',
