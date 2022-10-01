@@ -343,7 +343,7 @@ class ProductController
 		$page = 1;
 		$limit = 100;
 		$total_pages = ceil($total_products / $limit);
-
+		$newProducts = 0;
 		for($i = 1; $i <= $total_pages; $i++){
 		
 			$products = callKinguinApi('/v1/products', ['page' => $i, 'limit' => $limit]);
@@ -429,9 +429,15 @@ class ProductController
 							$product_system_requirement->save();
 						}
 					}
+
+					$newProducts++;
 				}
 			}
 			
+		}
+
+		if($newProducts > 0) {
+			file_put_contents('new-products-logs.txt', $newProducts.' products added on '.date('Y-m-d H:i:s'));
 		}
 
 		echo "New Products Successfully Imported.";
