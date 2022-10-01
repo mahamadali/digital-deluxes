@@ -5,6 +5,20 @@
   .entry-content p {
     color: black;
   }
+  .entry-media {
+    max-height: 250px;
+    min-height: 250px;
+  }
+
+  .entry-media a {
+    width: 100%;
+  }
+
+  .entry-media img {
+    min-height: 250px;
+    max-height: 250px;
+    width: 100%;
+  }
 </style>
 @block("content")
 <main class="page-main">
