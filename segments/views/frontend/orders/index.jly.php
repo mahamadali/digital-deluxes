@@ -10,7 +10,7 @@
                     <h3 class="uk-text-lead">{{ trans('orders.title') }}</h3>
                 </div>
             </div>
-            <div class="game-card__box">
+            <div class="game-card__box" style="overflow-x:auto;">
             <table class="uk-table">
                 <thead>
                     <tr>
