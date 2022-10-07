@@ -30,7 +30,7 @@
                         @endif
 
                         <div class="user-info__box">
-                            <div class="user-info__title">{{ $user->getFullNameProperty() }}</div>
+                            <div class="user-info__title">{{ $user->full_name }}</div>
                             <div class="user-info__text">{{ trans('profile.member_since') }} {{  date("M Y", strtotime($user->created_at))  }}</div>
                         </div>
                     </div>

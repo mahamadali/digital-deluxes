@@ -15,7 +15,7 @@ class StoreController
 {
 	public function index(Request $request)
 	{
-		$operatingSystems = ProductSystemRequirement::selectSet(['system'])->groupBy('system')->orderBy('id','ASC')->get();
+		$operatingSystems = ProductSystemRequirement::select(['system'])->groupBy('system')->orderBy('id','ASC')->get();
 		
         $products = Product::whereNotLike('platform', 'kinguin')->whereNotLike('name', '%Kinguin%')->whereNotNull('price');
 		
@@ -35,22 +35,22 @@ class StoreController
 		} else if($sort_by == 'Newest') {
 			$products->orderBy('id', 'DESC');
 		} else {
-			$products->orderBy('CASE 
+			$products->orderByRaw('CASE 
 			WHEN regionalLimitations="Region free" THEN rand() 
 			WHEN regionalLimitations="Other" THEN rand() 
 		END', 'DESC');
 		}
 
 		if($system){
-			$productIds = ProductSystemRequirement::where('`system`', $system)->pluck('product_id');
+			$productIds = ProductSystemRequirement::where('system', $system)->pluck('product_id');
 			$productIds = array_map(function($element) {
-				return $element->product_id;
+				return $element;
 			},$productIds);
             $products = $products->whereIn('id', $productIds);
         }
 
 		if($category){
-			$products = $products->where('platform', '%'.$category.'%', 'LIKE');
+			$products = $products->whereLike('platform', '%'.$category.'%');
         }
 
 		if($language){
@@ -69,20 +69,20 @@ class StoreController
 					$conc_string .= $namePart;
 					$conc_string .= '%';
 				}
-				$products = $products->where('name', $conc_string, 'LIKE');
+				$products = $products->whereLike('name', $conc_string);
 			} else {
-				$products = $products->where('name', '%'.$name.'%', 'LIKE');
+				$products = $products->whereLike('name', '%'.$name.'%');
 			}
 			
 			// $products = $products->where('MATCH(name) AGAINST ("'.$name.'" IN NATURAL LANGUAGE MODE)');
         }
 
 		if($min_price){
-            $products = $products->where('price', (int) $min_price, '>=');
+            $products = $products->where('price', '>=', (int) $min_price);
         }
 
 		if($max_price){
-            $products = $products->where('price', (int) $max_price, '<=');
+            $products = $products->where('price', '<=', (int) $max_price);
         }
 
 		$product_limit = 12;

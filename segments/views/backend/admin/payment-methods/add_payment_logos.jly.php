@@ -40,7 +40,7 @@
         <div class="form-group">
             <label>Uploaded Logos</label>
             <div class="row">
-              @if(count($logos) > 0):
+              @if($logos->count() > 0):
               @foreach($logos as $logo):
                 <div class="col-md-3">
                     <img src="{{ url($logo->logo) }}"><br>

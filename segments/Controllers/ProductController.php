@@ -81,7 +81,7 @@ class ProductController
 							$product_offer->textQty  = $offer->textQty;
 							$product_offer->merchantName  = $offer->merchantName;
 							$product_offer->isPreorder  = $offer->isPreorder;
-							$product_offer->releaseDate  = $offer->releaseDate;
+							$product_offer->releaseDate  = $offer->releaseDate ?? null;
 							$product_offer->save();
 						}
 					}
@@ -170,7 +170,7 @@ class ProductController
 	}
 
 	public function checkProductExist($productId){
-		return Product::selectSet(['id'])->where('productId',$productId)->first();
+		return Product::select(['id'])->where('productId',$productId)->first();
 	}
 
 	public function productUpdate(Request $request) {
@@ -203,7 +203,7 @@ class ProductController
 		$products = Product::whereLike('name', "%".$request->term."%")->orWhereLike('description', "%".$request->term."%")->whereNotLike('name', "%Kinguin%")->select('coverImage', 'id', 'name', 'qty', 'price', 'platform')->get();
 
 		$output = array();
-		if(count($products) > 0)
+		if($products->count() > 0)
 		{
 		foreach($products as $product)
 		{
@@ -250,7 +250,7 @@ class ProductController
 	}
 
 	public function syncProductImages(Request $request) {
-		$products = Product::SelectSet(['kinguinId'])->whereNull('coverImage')->get(200);
+		$products = Product::select(['kinguinId'])->whereNull('coverImage')->get(200);
 		$count = 0;
 		foreach($products as $product) {
 
@@ -439,7 +439,7 @@ class ProductController
 	}
 
 	public function updateProductDetails(Request $request) {
-		$products = Product::SelectSet(['kinguinId'])->whereNull('activationDetails')->where('product_type', 'K')->get(200);
+		$products = Product::select(['kinguinId'])->whereNull('activationDetails')->where('product_type', 'K')->get(200);
 		$count = 0;
 		foreach($products as $product) {
 			

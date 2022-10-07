@@ -225,7 +225,7 @@
                     <div class="col-custom-12">
                     <label><input type="radio" name="payment_method" data-value="{{ $payment_method->title }}" data-fee="{{ !empty($payment_method->transaction_fee) ? $payment_method->transaction_fee : 0 }}" value="{{ $payment_method->id }}" {{ ($key == 0) ? 'required' : '' }}> {{ $payment_method->title }} <small>{{ $payment_method->currency }} {{ !empty($payment_method->transaction_fee) ? $payment_method->transaction_fee.'% fee' : '' }}</small> 
                     
-                    @if(file_exists($payment_method->main_logo)):
+                    @if($payment_method->main_logo && file_exists($payment_method->main_logo)):
                     <div class="payment-card__logo"><img src="{{ url($payment_method->main_logo) }}" alt="logo"></div>
                     @endif
                     </label>
@@ -245,6 +245,10 @@
     </form>
 </main>
 @endblock
+
+@php
+    $user = user();
+@endphp
 
 @block('scripts')
 <script>
@@ -293,7 +297,7 @@
                     
                     if(cartTotal > 0 && cartTotal > 1500) {
                         var amountInCents = (cartTotal * 100).toFixed(0);
-                        var user_phone = '{{ !empty(auth()) ? user()->phone : "" }}';
+                        var user_phone = '{{ !empty(auth()) ? $user->phone : "" }}';
                         if(user_phone != '') {
                             var checkout = new WidgetCheckout({
                                 currency: 'COP',
@@ -302,11 +306,11 @@
                                 publicKey: '{{ setting("wompi.PUB_KEY") }}',
                                 redirectUrl: '{{ setting("wompi.REDIRECT_URL") }}', // Opcional
                                 customerData: { // Opcional
-                                    email:'{{ !empty(auth()) ? user()->email : "" }}',
-                                    fullName: '{{ !empty(auth()) ? user()->first_name." ".user()->last_name : "" }}',
-                                    phoneNumber: '{{ !empty(auth()) ? user()->phone : "" }}',
-                                    phoneNumberPrefix: '+{{ !empty(auth()) ? user()->country_code : "" }}',
-                                    legalId: '{{ !empty(auth()) ? user()->id : 0 }}',
+                                    email:'{{ !empty(auth()) ? $user->email : "" }}',
+                                    fullName: '{{ !empty(auth()) ? $user->first_name." ".$user->last_name : "" }}',
+                                    phoneNumber: '{{ !empty(auth()) ? $user->phone : "" }}',
+                                    phoneNumberPrefix: '+{{ !empty(auth()) ? $user->country_code : "" }}',
+                                    legalId: '{{ !empty(auth()) ? $user->id : 0 }}',
                                     legalIdType: 'CC'
                                 }
                             });

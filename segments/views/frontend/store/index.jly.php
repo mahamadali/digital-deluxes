@@ -141,7 +141,7 @@
 </main>
 @endblock
 
-@section('scripts')
+@block('scripts')
 <script>
     $('select[name="sort_by"]').change(function() {
         $('#page-preloader').show();
@@ -167,4 +167,4 @@
             .appendTo(ul);
         };
 </script>
-@endsection
+@endblock

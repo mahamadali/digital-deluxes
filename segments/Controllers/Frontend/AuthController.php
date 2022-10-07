@@ -85,7 +85,7 @@ class AuthController
 		}
 
 		session()->setLanguage('en');
-		Session::set('auth', $user);
+		Session::set('auth', $user->excludeAttrs('db'));
 		return $this->redirectAfterLogin($user);
 
 		// now you can use this profile info to create account in your website and make user logged in.
@@ -116,7 +116,7 @@ class AuthController
 		$user = User::where('email', $email)->where('password', md5($password))->with('role')->first();
 		if (!empty($user) ) {
 			session()->setLanguage('en');
-			Session::set('auth', $user);
+			Session::set('auth', $user->excludeAttrs('db'));
 			return $this->redirectAfterLogin($user);
 		} else {
 			return redirect()->to(route('frontend.auth.login'))->withFlashError('Incorrect credentials!')->go();
@@ -306,7 +306,7 @@ class AuthController
 		}
 
 		session()->setLanguage('en');
-		Session::set('auth', $user);
+		Session::set('auth', $user->excludeAttrs('db'));
 		
 		return $this->redirectAfterLogin($user);
 	}

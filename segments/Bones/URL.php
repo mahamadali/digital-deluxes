@@ -37,7 +37,10 @@ class URL
 
     public static function removeQuery($url)
     {
-        return strtok($url, '?');
+        if (strtok($url, '?'))
+            return strtok($url, '?');
+
+        return $url;
     }
 
     public function addQueryParam($url, $key, $value = '')

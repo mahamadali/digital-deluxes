@@ -12,7 +12,7 @@ trait Commands
     {
         $this->statement = '';
 
-        if (trim(empty($this->action))) 
+        if (trim(empty($this->action)))
             return '';
 
         switch ($this->action) {
@@ -38,24 +38,22 @@ trait Commands
                 Database::rawQuery($statement);
             }
         }
-
     }
 
     public function executeStatements()
     {
         foreach ($this->statements as $statement) {
             if (!empty($statement['index'])) {
-                $indexName = $statement['index'];
-                if ($statement['name'] == 'fulltext') {
-                    $sql = 'ALTER TABLE `'.$this->prefix . $this->table.'` ADD FULLTEXT(`'.implode('`, `', $statement['columns']).'`)';
-                } else {
-                    $sql = 'CREATE INDEX ' . $indexName . ' ON `'.$this->prefix . $this->table.'` (`'.implode('`, `', $statement['columns']).'`)';
-                }
+                $index_type = 'INDEX';
+                if (strtoupper($statement['name']) != 'INDEX')
+                    $index_type = $statement['name'] . ' INDEX';
+
+                $sql = 'CREATE ' . strtoupper($index_type) . ' ' . $statement['index'] . ' ON `' . $this->prefix . $this->table . '` (`' . implode('`, `', $statement['columns']) . '`)';
                 Database::rawQuery($sql);
             } else if ($statement['name'] == 'foreign') {
-                $sql = "ALTER TABLE `".$this->prefix . $this->table."`
-                ADD CONSTRAINT ".$statement['alias']."
-                FOREIGN KEY (`".implode('`, `', $statement['columns'])."`) REFERENCES `".$statement['referenceTable']."`(`".implode('`, `', $statement['referenceToColumns'])."`) ON DELETE ". (!empty($statement['on_delete']) ? $statement['on_delete'] : 'CASCADE') ." ON UPDATE ". (!empty($statement['on_update']) ? $statement['on_update'] : 'CASCADE') .";";
+                $sql = "ALTER TABLE `" . $this->prefix . $this->table . "`
+                ADD CONSTRAINT " . $statement['alias'] . "
+                FOREIGN KEY (`" . implode('`, `', $statement['columns']) . "`) REFERENCES `" . $statement['referenceTable'] . "`(`" . implode('`, `', $statement['referenceToColumns']) . "`) ON DELETE " . (!empty($statement['on_delete']) ? $statement['on_delete'] : 'CASCADE') . " ON UPDATE " . (!empty($statement['on_update']) ? $statement['on_update'] : 'CASCADE') . ";";
                 Database::rawQuery($sql);
             }
         }
@@ -63,14 +61,14 @@ trait Commands
 
     public function prepareCreate()
     {
-        $this->statement = 'CREATE TABLE `'.$this->prefix . $this->table.'` (';
+        $this->statement = 'CREATE TABLE `' . $this->prefix . $this->table . '` (';
         $columnSets = [];
         foreach ($this->columns as $column) {
             $columnAttr = $column->column;
             $columnSets[] = $this->getExecutableColumnDefination($columnAttr);
         }
-        $this->statement.= implode(', ', $columnSets);
-        $this->statement.= ') ENGINE='.$this->engine.' DEFAULT CHARSET='.$this->charSet.' COLLATE='.$this->collation.';';
+        $this->statement .= implode(', ', $columnSets);
+        $this->statement .= ') ENGINE=' . $this->engine . ' DEFAULT CHARSET=' . $this->charSet . ' COLLATE=' . $this->collation . ';';
         return $this->statement;
     }
 
@@ -86,43 +84,45 @@ trait Commands
                     $operation = 'MODIFY';
                 }
                 if (!empty($column->column['after'])) {
-                    $afterColumn = ' AFTER '.$column->column['after'];
+                    $afterColumn = ' AFTER ' . $column->column['after'];
                 }
                 $columnAttr = $column->column;
                 $columnToAdd = $this->getExecutableColumnDefination($columnAttr);
-                $this->statement[] = 'ALTER TABLE `'.$this->prefix . $this->table.'` '.$operation.' COLUMN ' . $columnToAdd.$afterColumn;
+                $this->statement[] = 'ALTER TABLE `' . $this->prefix . $this->table . '` ' . $operation . ' COLUMN ' . $columnToAdd . $afterColumn;
             }
         }
 
         if (!empty($this->dropColumns)) {
             foreach ($this->dropColumns as $columnToRemove) {
-                $this->statement[] = 'ALTER TABLE `'.$this->prefix . $this->table.'` DROP COLUMN IF EXISTS `'.$columnToRemove.'`';
+                if (Database::table($this->prefix . $this->table)->hasColumn($columnToRemove))
+                    $this->statement[] = 'ALTER TABLE `' . $this->prefix . $this->table . '` DROP COLUMN `' . $columnToRemove . '`';
             }
         }
 
         if (!empty($this->dropIndexes)) {
             foreach ($this->dropIndexes as $indexToRemove) {
-                $this->statement[] = 'ALTER TABLE `'.$this->prefix . $this->table.'` DROP INDEX '.$indexToRemove;
+                $this->statement[] = 'ALTER TABLE `' . $this->prefix . $this->table . '` DROP FOREIGN KEY IF EXISTS ' . $indexToRemove;
+                $this->statement[] = 'ALTER TABLE `' . $this->prefix . $this->table . '` DROP INDEX IF EXISTS ' . $indexToRemove;
             }
         }
 
         if (!empty($this->dropForeignKeys)) {
             foreach ($this->dropForeignKeys as $foreignToRemove) {
-                $this->statement[] = 'ALTER TABLE `'.$this->prefix . $this->table.'` DROP FOREIGN KEY '.$foreignToRemove;
-                $this->statement[] = 'ALTER TABLE `'.$this->prefix . $this->table.'` DROP INDEX '.$foreignToRemove;
+                $this->statement[] = 'ALTER TABLE `' . $this->prefix . $this->table . '` DROP FOREIGN KEY IF EXISTS ' . $foreignToRemove;
+                $this->statement[] = 'ALTER TABLE `' . $this->prefix . $this->table . '` DROP INDEX ' . $foreignToRemove;
             }
         }
 
         if (!empty($this->renameAs)) {
-            $this->statement[] = 'ALTER TABLE `'.$this->prefix . $this->table.'` RENAME TO `' . $this->renameAs . '`;';
+            $this->statement[] = 'ALTER TABLE `' . $this->prefix . $this->table . '` RENAME TO `' . $this->renameAs . '`;';
         }
-        
+
         return $this->statement;
     }
 
     public function getExecutableColumnDefination($column)
     {
-        return '`'.$column['name'] . '` ' . $this->getExecutableColumnBehaviour($column);
+        return '`' . $column['name'] . '` ' . $this->getExecutableColumnBehaviour($column);
     }
 
     public function getExecutableColumnBehaviour($column)
@@ -161,49 +161,49 @@ trait Commands
         if ($this->isNumberColumn($column)) {
             $columnTypeArgs = '';
             if (isset($column['total']) || isset($column['places'])) {
-                $columnTypeArgs.= '(';
+                $columnTypeArgs .= '(';
             }
             if (isset($column['total'])) {
-                $columnTypeArgs.= $column['total'].',';
+                $columnTypeArgs .= $column['total'] . ',';
             }
             if (isset($column['places'])) {
-                $columnTypeArgs.= $column['places'];
+                $columnTypeArgs .= $column['places'];
             }
             if (isset($column['total']) || isset($column['places'])) {
-                $columnTypeArgs.= ')';
+                $columnTypeArgs .= ')';
             }
             $constraints[] = $columnTypeArgs;
         }
 
         if ($this->isSpatial($column)) {
             if ($column['type'] == 'point' && isset($column['srid'])) {
-                $constraints[] = "SRID '". $column['srid']."'";
+                $constraints[] = "SRID '" . $column['srid'] . "'";
             }
         }
 
         if (isset($column['auto_calculate']) && $column['auto_calculate'] && isset($column['as'])) {
             $storeMode = (!empty($column['storeMode'])) ? $column['storeMode'] : '';
-            $constraints[] = "GENERATED ALWAYS AS ('". $column['as']."') ".$storeMode;
+            $constraints[] = "GENERATED ALWAYS AS ('" . $column['as'] . "') " . $storeMode;
         }
 
         if ($this->isDateTimeColumn($column) && isset($column['precision'])) {
-            $constraints[] = '('. $column['precision']. ')';
+            $constraints[] = '(' . $column['precision'] . ')';
         }
 
         if ($column['type'] == 'floatAuto' && isset($column['size'])) {
-            $constraints[] = '('. $column['size']. ')';
+            $constraints[] = '(' . $column['size'] . ')';
         }
 
         if ($column['type'] == 'varchar' && isset($column['length'])) {
-            $constraints[] = '('. $column['length']. ')';
+            $constraints[] = '(' . $column['length'] . ')';
         }
 
         if ($column['type'] == 'enum' && !empty($column['allowed'])) {
-            $constraints[] = "('" . implode ( "', '", $column['allowed'] ) . "')";
+            $constraints[] = "('" . implode("', '", $column['allowed']) . "')";
         }
 
         if ($column['type'] == 'set' && !empty($column['allowed'])) {
-            $constraints[] = "('" . implode ( "', '", $column['allowed'] ) . "')";
+            $constraints[] = "('" . implode("', '", $column['allowed']) . "')";
         }
 
         if (isset($column['unsigned']) && $column['unsigned']) {
@@ -231,15 +231,15 @@ trait Commands
         }
 
         if (!empty($column['comment'])) {
-            $constraints[] = "COMMENT '" . addslashes($column['comment'])."'";
+            $constraints[] = "COMMENT '" . addslashes($column['comment']) . "'";
         }
 
         if (!$this->isDateTimeColumn($column) && isset($column['default'])) {
             if (gettype($column['default']) == 'string')
-                $column['default'] = '"'.$column['default'].'"';
+                $column['default'] = '"' . $column['default'] . '"';
             if (gettype($column['default']) == 'boolean')
                 $column['default'] = $column['default'] ? '1' : '0';
-            $constraints[] = 'DEFAULT '.$column['default'];
+            $constraints[] = 'DEFAULT ' . $column['default'];
         }
 
         if ($this->isDateTimeColumn($column) && !empty($column['default'])) {
@@ -248,7 +248,7 @@ trait Commands
             } else if ($column['default'] == 'on_update_current') {
                 $constraints[] = 'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP';
             } else {
-                $constraints[] = 'DEFAULT '.$column['default'];
+                $constraints[] = 'DEFAULT ' . $column['default'];
             }
         }
 

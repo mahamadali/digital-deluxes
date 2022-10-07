@@ -5,6 +5,8 @@ namespace Models\Traits;
 use Bones\Database;
 use Bones\Str;
 use Bones\DatabaseException;
+use Bones\Skeletons\Database\Builder;
+use InvalidArgumentException;
 use Models\Base\Model;
 use Models\Base\Supporters\Transform;
 
@@ -12,13 +14,14 @@ trait SelfResolve
 {
     protected $reserved_props = ['_reserved_model_prop_is_only', '_reserved_model_prop_is_cloned'];
 
-    public function ___save()
+    public function prepareSave()
     {
         $modelData = [];
 
-        foreach ($this->dynamicAttributes as $attribute) {
+        foreach ($this->dynamic_attributes as $attribute) {
             if (!in_array($attribute, array_merge($this->attaches, $this->reserved_props)))
-                $modelData[$attribute] = $this->$attribute;
+                if (!empty($this->$attribute))
+                    $modelData[$attribute] = $this->$attribute;
         }
 
         if ($this->isCloned()) {
@@ -26,50 +29,231 @@ trait SelfResolve
         }
 
         if (!empty($modelData[$this->primary_key])) {
-            if ($this->___clearWhere()->where($this->primary_key, $modelData[$this->primary_key])->update($modelData)) {
-                return $this->___clearWhere()->where($this->primary_key, $modelData[$this->primary_key])->first();
-            } else {
-                throw new DatabaseException('Database error occured while updating ' . $this->model . ' for {' . $this->primary_key . '} with "'. $modelData[$this->primary_key] .'"');
-            }
+            return $this->where($this->primary_key, $modelData[$this->primary_key])->update($this->prepareDataToSave($modelData));
         } else {
-            return $this->___clearWhere()->insert($modelData);
+            return $this->prepareInsert($modelData);
         }
 
         throw new DatabaseException('Database error occured while saving ' . $this->model);
     }
+    
+    public function prepareCreate(array $createData = [])
+    {
+        $elements = (!empty($this->elements)) ? $this->elements : [];
+        if (!empty($elements)) {
+            foreach ($elements as $element) {
+                if (!array_key_exists($element, $createData)) {
+                    if (!Str::empty($this->defaults[$element])) {
+                        $insertData[$element] = $this->defaults[$element];
+                    } else {
+                        throw new DatabaseException('{' . $element . '} presents in ' . $this->model . '::elements but not available in arguments Array in method ' . __FUNCTION__ . '(Array)');
+                    }
+                } else {
+                    $insertData[$element] = $createData[$element];
+                }
+            }
+        } else {
+            foreach ($createData as $param => $value) {
+                $insertData[$param] = $value;
+            }
+            if (!empty($this->defaults)) {
+                foreach ($this->defaults as $element => $default) {
+                    if (!isset($insertData[$element]))
+                        $insertData[$element] = $default;
+                }
+            }
+        }
 
-    public function ___clone()
+        return $this->prepareInsert($insertData);
+    }
+
+    public function prepareInsertGetId($insertData)
+    {
+        return $this->prepareInsert($insertData, true);
+    }
+
+    public function prepareInsert($insertData, $return_last_inserted_id = false)
+    {
+        if ($return_last_inserted_id)
+            return $this->db->insertGetId($this->prepareDataToSave($insertData));
+        else
+            return (new $this->model())->find($this->db->insertGetId($this->prepareDataToSave($insertData)));
+    }
+
+    public function prepareUpdate($updateData)
+    {
+        return $this->db->update($this->prepareDataToSave($updateData, true));
+    }
+
+    public function prepareDataToSave($data, $is_update = false)
+    {
+        if (!empty($this->defaults) && !$is_update) {
+            foreach ($this->defaults as $element => $default) {
+                if (!array_key_exists($element, $data))
+                    $data[$element] = $default;
+            }
+        }
+
+        if (!empty($this->transforms)) {
+            foreach ($data as $elementName => &$elementVal) {
+                if (array_key_exists($elementName, $this->transforms)) {
+                    $elementVal = $this->transformElement($this->transforms[$elementName], $elementVal);
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    public function prepareInsertMulti($multiInsertData)
+    {
+        if (count($multiInsertData) === count($multiInsertData, COUNT_RECURSIVE))
+            throw new InvalidArgumentException('insertMulti() must have multi-dimensional array at argument #1');
+
+        if (!empty($this->defaults)) {
+            foreach ($multiInsertData as $insertPairIndex => $insertData) {
+                foreach ($this->defaults as $element => $default) {
+                    if (!array_key_exists($element, $insertData))
+                        $multiInsertData[$insertPairIndex][$element] = $default;
+                }
+            }
+        }
+
+        if (!empty($this->transforms)) {
+            foreach ($multiInsertData as $insertPairIndex => &$insertData) {
+                foreach ($insertData as $elementName => &$elementVal) {
+                    if (array_key_exists($elementName, $this->transforms)) {
+                        $elementVal = $this->transformElement($this->transforms[$elementName], $elementVal);
+                    }
+                }
+            }
+        }
+
+        return $this->db->insertMulti($multiInsertData);
+    }
+
+    public function clone()
     {
         $clone = (new $this->model());
 
-        foreach ($this->dynamicAttributes as $attrName) {
+        foreach ($this->dynamic_attributes as $attrName) {
             $clone->$attrName = $this->$attrName;
         }
 
-        return $clone->___clearWhere()->where($clone->primary_key, $clone->{$clone->primary_key})->setCloned(true)->first();
+        return $clone->where($clone->primary_key, $clone->{$clone->primary_key})->setCloned(true)->first();
     }
 
-    public function ___build($model, $attributes)
+    public function validateConditionalAction($whereData = [], $additionalData = [])
+    {
+        if (gettype($whereData) != 'array')
+            throw new InvalidArgumentException(__FUNCTION__ . ' must have an array as argument #1');
+        if (gettype($additionalData) != 'array')
+            throw new InvalidArgumentException(__FUNCTION__ . ' must have an array as argument #2');
+    }
+
+    public function matchedFirst($whereData = [], $additionalData = [])
+    {
+        foreach ($whereData as $attrName => $attrVal) {
+            $this->where($attrName, $attrVal);
+        }
+
+        if (!empty($first = $this->first()))
+            return $first;
+        
+        return false;
+    }
+
+    public function conditionalFirst($whereData = [], $additionalData = [], $action = 'new')
+    {
+        $this->validateConditionalAction($whereData, $additionalData);
+
+        if ($first = $this->matchedFirst($whereData, $additionalData))
+            return $first;
+        
+        $model = new $this->model();
+        
+        if ($action == 'new') {
+            foreach (array_merge($whereData, $additionalData) as $attrName => $attrVal) {
+                $model->$attrName = $attrVal;
+            }
+
+            return $model;
+        } else if ($action == 'create') {
+            return $model->prepareInsert(array_merge($whereData, $additionalData));
+        }
+
+        return false;
+    }
+
+    public function conditionalUpdate($whereData = [], $additionalData = [], $action = 'create')
+    {
+        $this->validateConditionalAction($whereData, $additionalData);
+
+        $first = $this->matchedFirst($whereData, $additionalData);
+
+        if ($first) {
+            $data = $additionalData;
+            $model = $first;
+        } else {
+            $data = array_merge($whereData, $additionalData);
+            $model = new $this->model();
+        }
+
+        foreach ($data as $attrName => $attrVal) {
+            $model->$attrName = $attrVal;
+        }
+
+        return $model->save();
+    }
+    
+    public function selfBuild($attributes, $entries, $is_self_only = false)
+    {
+        $model = (new $this->model());
+        $model = $this->build($model, $attributes);
+        $model->setSelfOnly($is_self_only);
+        $model->db->model = $model;
+        $model = $this->buildWithBlocks($model, $entries);
+
+        return $model;
+    }
+
+    public function build($model, $attributes)
     {
         return $this->attachBehaviour($model, $attributes);
     }
 
-    public function ___attachBehaviour($model, $attributes)
+    public function buildWithBlocks($model, $entries)
+    {
+        if (!$this->skip_relationships) {
+            foreach (array_unique($this->with) as $with) {
+                $without = $this->circularWiths($this->$with());
+                if (in_array($with, $this->without)) continue;
+                $this->$with = $this->$with()->prepareWithout($without);
+                if (!empty($relationalProps = $this->$with->relationalProps) && !empty($this->$with->relationalProps['type'])) {
+                    $model = $this->buildRelationalData($with, $entries, $model, $relationalProps);
+                }
+            }
+        }
+
+        return $model;
+    }
+
+    public function attachBehaviour($model, $attributes)
     {
         foreach ($attributes as $attribute => $value) {
             $model->$attribute = $value;
         }
 
-        if (!$this->skip_attaches) {
-            foreach ($this->attaches as $attach) {
+        if (!empty($this->prop('skip_attaches')) && $this->prop('skip_attaches')) {
+            foreach ($this->prop('attaches') as $attach) {
                 $model->$attach = $model->$attach;
             }
         }
 
-        if (!empty($this->transforms)) {
+        if (!empty($transforms = $this->prop('transforms'))) {
             foreach ($model as $element_name => &$element_val) {
-                if (array_key_exists($element_name, $this->transforms) && !in_array($element_name, $this->hidden)) {
-                    $element_val = $this->transformElement($this->transforms[$element_name], $element_val, 'get');
+                if (array_key_exists($element_name, $transforms) && !in_array($element_name, $this->prop('hidden'))) {
+                    $element_val = $this->transformElement($transforms[$element_name], $element_val, 'get');
                 }
             }
         }
@@ -81,7 +265,7 @@ trait SelfResolve
             }
         }
 
-        foreach ($this->hidden as $confidential_attr) {
+        foreach ($this->prop('hidden') as $confidential_attr) {
             if (isset($model->$confidential_attr)) 
                 unset($model->$confidential_attr);
         }
@@ -95,25 +279,30 @@ trait SelfResolve
 
     public function circularWiths($model)
     {
+        if (get_class($model) === Builder::class)
+            $model = $model->model;
+        else
+            $model = $model;
+
         $circular_withs = [];
         foreach ($model->with as $relative_with) {
             $relative_with_obj = $model->$relative_with();
-            if (get_class($relative_with_obj) === get_class($this))
+            if (get_Class($relative_with_obj) === get_class($this))
                 $circular_withs[] = $relative_with;
         }
 
         return $circular_withs;
     }
 
-    public function ___buildRelationalData($with, $entries, $result, $relational_props)
+    public function buildRelationalData($with, $entries, $result, $relational_props)
     {
-        if ($this->skip_relationships) return $result;
+        if ($this->prop('skip_relationships')) return $result;
         
         if ($relational_props['type'] == 'hasMany') {
-                    
             if (is_array($entries)) {
                 $forein_key_values_to_map = array_map(function($item) use ($relational_props) {
-                    return $item->{$relational_props['local_key']};
+                    if (isset($item->{$relational_props['local_key']}))
+                        return $item->{$relational_props['local_key']};
                 }, $entries);
             } else {
                 $forein_key_values_to_map = [$entries->{$relational_props['local_key']}];
@@ -121,12 +310,9 @@ trait SelfResolve
 
             if (!empty($forein_key_values_to_map)) {
                 $related_model_obj = new $relational_props['related_model']();
-                $related_model_obj = $related_model_obj->___clearWhere()->without($this->circularWiths($related_model_obj))->whereIn($relational_props['foreign_key'], array_unique($forein_key_values_to_map));
-
-                if (!empty($this->where_has && !empty($this->where_has[$with])))
-                    $related_model_obj = call_user_func_array($this->where_has[$with], [$related_model_obj]);
-
-                $relational_data = $related_model_obj->get();
+                $related_model_obj = $related_model_obj->prepareWithout($this->circularWiths($related_model_obj))->whereIn($relational_props['foreign_key'], array_unique($forein_key_values_to_map));
+                
+                $relational_data = $related_model_obj->getWithoutSetWrapper();
 
                 if ($relational_data != null) {
                     if (is_array($entries)) {
@@ -147,10 +333,10 @@ trait SelfResolve
             }
 
         } else if ($relational_props['type'] == 'parallelTo') {
-
             if (is_array($entries)) {
                 $forein_key_values_to_map = array_map(function($item) use ($relational_props) {
-                    return $item->{$relational_props['foreign_key']};
+                    if (isset($item->{$relational_props['foreign_key']}))
+                        return $item->{$relational_props['foreign_key']};
                 }, $entries);
             } else {
                 $forein_key_values_to_map = [$entries->{$relational_props['foreign_key']}];
@@ -159,12 +345,9 @@ trait SelfResolve
             if (!empty($forein_key_values_to_map)) {
                 $related_model_obj = new $relational_props['related_model']();
                 
-                $related_model_obj = $related_model_obj->___clearWhere()->without($this->circularWiths($related_model_obj))->whereIn($relational_props['local_key'], array_unique($forein_key_values_to_map));
+                $related_model_obj = $related_model_obj->prepareWithout($this->circularWiths($related_model_obj))->whereIn($relational_props['local_key'], array_unique($forein_key_values_to_map));
 
-                if (!empty($this->where_has && !empty($this->where_has[$with])))
-                    $related_model_obj = call_user_func_array($this->where_has[$with], [$related_model_obj]);
-
-                $relational_data = $related_model_obj->get();
+                $relational_data = $related_model_obj->getWithoutSetWrapper();
 
                 if ($relational_data != null) {
                     if (is_array($entries)) {
@@ -185,10 +368,10 @@ trait SelfResolve
             }
 
         } else if ($relational_props['type'] == 'hasOne') {
-
             if (is_array($entries)) {
                 $forein_key_values_to_map = array_map(function($item) use ($relational_props) {
-                    return $item->{$relational_props['local_key']};
+                    if (isset($item->{$relational_props['local_key']}))
+                        return $item->{$relational_props['local_key']};
                 }, $entries);
             } else {
                 $forein_key_values_to_map = [$entries->{$relational_props['local_key']}];
@@ -197,12 +380,9 @@ trait SelfResolve
             if (!empty($forein_key_values_to_map)) {
                 $related_model_obj = new $relational_props['related_model']();
                 
-                $related_model_obj = $related_model_obj->___clearWhere()->without($this->circularWiths($related_model_obj))->whereIn($relational_props['foreign_key'], array_unique($forein_key_values_to_map));
+                $related_model_obj = $related_model_obj->prepareWithout($this->circularWiths($related_model_obj))->whereIn($relational_props['foreign_key'], array_unique($forein_key_values_to_map));
 
-                if (!empty($this->where_has && !empty($this->where_has[$with])))
-                    $related_model_obj = call_user_func_array($this->where_has[$with], [$related_model_obj]);
-
-                $relational_data = $related_model_obj->get();
+                $relational_data = $related_model_obj->getWithoutSetWrapper();
 
                 if ($relational_data != null) {
                     if (is_array($entries)) {
@@ -223,7 +403,7 @@ trait SelfResolve
             }
 
         } else if ($relational_props['type'] == 'hasOneVia') {
-
+            
             $final_model = $relational_props['final_model'];
             $intermediate_model = $relational_props['intermediate_model'];
             $intermediate_model_foreign_key = $relational_props['intermediate_model_foreign_key'];
@@ -233,30 +413,29 @@ trait SelfResolve
 
             if (is_array($entries)) {
                 $intermediate_values_to_map = array_map(function($item) use ($local_key) {
-                    return $item->{$local_key};
+                    if (isset($item->{$local_key}))
+                        return $item->{$local_key};
                 }, $entries);
             } else {
                 $intermediate_values_to_map = [$entries->{$local_key}];
             }
 
             if (!empty($intermediate_values_to_map)) {
-                $intermediate_obj = new $intermediate_model();
-                $intermediate_data = $intermediate_obj->___clearWhere()->without($this->circularWiths($intermediate_obj))->select($intermediate_model_local_key, $intermediate_model_foreign_key)->whereIn($intermediate_model_foreign_key, array_unique($intermediate_values_to_map))->___clearLimit()->getAsArray();
+                $intermediate_obj = Database::table($intermediate_model->table);
+                $intermediate_data = $intermediate_obj->select($intermediate_model_local_key, $intermediate_model_foreign_key)->whereIn($intermediate_model_foreign_key, array_unique($intermediate_values_to_map))->getArray();
                 
                 if (!empty($intermediate_data)) {
                     $final_model_obj = new $final_model();
-                    $final_model_obj = $final_model_obj->___clearWhere()->without($this->circularWiths($final_model_obj))->whereIn($final_model_foreign_key, array_column($intermediate_data, $intermediate_model_foreign_key));
+                    $final_model_obj = $final_model_obj->whereIn($final_model_foreign_key, array_column($intermediate_data, $intermediate_model_foreign_key));
 
-                    if (!empty($this->where_has && !empty($this->where_has[$with])))
-                        $final_model_obj = call_user_func_array($this->where_has[$with], [$final_model_obj]);
-
-                    $final_data = $final_model_obj->get();
+                    $final_data = $final_model_obj->getWithoutSetWrapper();
 
                     if (!empty($final_data)) {
                         if (is_array($entries)) {
                             foreach ($result as &$entry) {
                                 $entry->$with = null;
                                 foreach ($intermediate_data as $intermediate) {
+                                    $intermediate = (array) $intermediate;
                                     if ($intermediate[$intermediate_model_foreign_key] == $entry->{$local_key}) {
                                         $loop = true;
                                         foreach ($final_data as $final) {
@@ -280,7 +459,6 @@ trait SelfResolve
             }
 
         } else if ($relational_props['type'] == 'hasManyVia') {
-
             $final_model = $relational_props['final_model'];
             $intermediate_model = $relational_props['intermediate_model'];
             $intermediate_model_foreign_key = $relational_props['intermediate_model_foreign_key'];
@@ -290,30 +468,29 @@ trait SelfResolve
 
             if (is_array($entries)) {
                 $intermediate_values_to_map = array_map(function($item) use ($local_key) {
-                    return $item->{$local_key};
+                    if (isset($item->{$local_key}))
+                        return $item->{$local_key};
                 }, $entries);
             } else {
                 $intermediate_values_to_map = [$entries->{$local_key}];
             }
 
             if (!empty($intermediate_values_to_map)) {
-                $intermediate_obj = new $intermediate_model();
-                $intermediate_data = $intermediate_obj->___clearWhere()->without($this->circularWiths($intermediate_obj))->select($intermediate_model_local_key, $intermediate_model_foreign_key)->whereIn($intermediate_model_foreign_key, array_unique($intermediate_values_to_map))->___clearLimit()->getAsArray();
+                $intermediate_obj = Database::table($intermediate_model->table);
+                $intermediate_data = $intermediate_obj->select($intermediate_model_local_key, $intermediate_model_foreign_key)->whereIn($intermediate_model_foreign_key, array_unique($intermediate_values_to_map))->getArray();
                 
                 if (!empty($intermediate_data)) {
                     $final_model_obj = new $final_model();
-                    $final_model_obj = $final_model_obj->___clearWhere()->without($this->circularWiths($final_model_obj))->whereIn($final_model_foreign_key, array_column($intermediate_data, array_unique($intermediate_model_foreign_key)));
+                    $final_model_obj = $final_model_obj->prepareWithout($this->circularWiths($final_model_obj))->whereIn($final_model_foreign_key, array_column($intermediate_data, $intermediate_model_foreign_key));
 
-                    if (!empty($this->where_has && !empty($this->where_has[$with])))
-                        $final_model_obj = call_user_func_array($this->where_has[$with], [$final_model_obj]);
-
-                    $final_data = $final_model_obj->get();
+                    $final_data = $final_model_obj->getWithoutSetWrapper();
 
                     if (!empty($final_data)) {
                         if (is_array($entries)) {
                             foreach ($result as &$entry) {
                                 $entry->$with = [];
                                 foreach ($intermediate_data as $intermediate) {
+                                    $intermediate = (array) $intermediate;
                                     if ($intermediate[$intermediate_model_foreign_key] == $entry->{$local_key}) {
                                         $loop = true;
                                         foreach ($final_data as $final) {
@@ -336,7 +513,6 @@ trait SelfResolve
             }
 
         } else if ($relational_props['type'] == 'belongsToMany') {
-
             $final_model = $relational_props['final_model'];
             $intermediate_table = $relational_props['intermediate_table'];
             $intermediate_to_primary_foreign_key = $relational_props['intermediate_to_primary_foreign_key'];
@@ -346,7 +522,8 @@ trait SelfResolve
 
             if (is_array($entries)) {
                 $forein_key_values_to_map = array_map(function($item) use ($local_key) {
-                    return $item->{$local_key};
+                    if (isset($item->{$local_key}))
+                        return $item->{$local_key};
                 }, $entries);
             } else {
                 $forein_key_values_to_map = [$entries->{$local_key}];
@@ -354,17 +531,14 @@ trait SelfResolve
 
             if (!empty($forein_key_values_to_map)) {
                 
-                $intermediate_data = Database::getInstance()->__clearWhere();
-                $intermediate_data = $intermediate_data->whereIn($intermediate_to_primary_foreign_key, array_unique($forein_key_values_to_map))->pluck([$intermediate_to_primary_foreign_key, $intermediate_to_secondary_foreign_key], $intermediate_table);
+                $intermediate_data = Database::table($intermediate_table);
+                $intermediate_data = $intermediate_data->whereIn($intermediate_to_primary_foreign_key, array_unique($forein_key_values_to_map))->pluckAssoc([$intermediate_to_primary_foreign_key, $intermediate_to_secondary_foreign_key]);
                 
                 if (!empty($intermediate_data)) {
                     $final_model_obj = new $final_model();
-                    $final_model_obj = $final_model_obj->___clearWhere()->without($this->circularWiths($final_model_obj))->whereIn($final_model_local_key, array_unique(array_column($intermediate_data, $intermediate_to_secondary_foreign_key)));
+                    $final_model_obj = $final_model_obj->prepareWithout($this->circularWiths($final_model_obj))->whereIn($final_model_local_key, array_unique(array_column($intermediate_data, $intermediate_to_secondary_foreign_key)));
 
-                    if (!empty($this->where_has && !empty($this->where_has[$with])))
-                        $final_model_obj = call_user_func_array($this->where_has[$with], [$final_model_obj]);
-
-                    $final_data = $final_model_obj->get();
+                    $final_data = $final_model_obj->getWithoutSetWrapper();
 
                     if (!empty($final_data)) {
                         if (is_array($entries)) {
@@ -396,9 +570,9 @@ trait SelfResolve
         return $result;
     }
 
-    public function ___setDroplets($set, $to, $droplet)
+    public function setDroplets($set, $to, $droplet)
     {
-        if (!$this->skip_relationships) {
+        if (!$this->prop('skip_relationships')) {
             if ($set instanceof Model) 
                 $set->$to = $droplet;
             else
@@ -412,28 +586,28 @@ trait SelfResolve
         return $set;
     }
 
-    public function ___transformElement($transformType, $value, $operation = 'set')
+    public function transformElement($transformType, $value, $operation = 'set')
     {
         return (new Transform($transformType, $value, $operation))->mutate();
     }
 
-    public function ___isSelfOnly()
+    public function isSelfOnly()
     {
         return (!empty($this->_reserved_model_prop_is_only) && $this->_reserved_model_prop_is_only);
     }
 
-    public function ___setSelfOnly($isOnly = false)
+    public function setSelfOnly($isOnly = false)
     {
         $this->_reserved_model_prop_is_only = $isOnly;
         return $this;
     }
 
-    public function ___isCloned()
+    public function isCloned()
     {
         return (!empty($this->_reserved_model_prop_is_cloned) && $this->_reserved_model_prop_is_cloned);
     }
 
-    public function ___setCloned($isCloned = false)
+    public function setCloned($isCloned = false)
     {
         $this->_reserved_model_prop_is_cloned = $isCloned;
         return $this;

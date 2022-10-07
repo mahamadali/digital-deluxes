@@ -34,6 +34,7 @@ class CheckoutController
 		$total_amount = currencyConverter('EUR', "COP", $cartTotal);
 		
 		$wallet_in_cop = currencyConverter('EUR', 'COP', user()->wallet_amount);
+		
 		if($wallet_in_cop > $total_amount) {
 			$walletEnable = true;
 		} else {
@@ -69,7 +70,6 @@ class CheckoutController
 		if(session()->has('order_coupon')) {
 			$coupon = Coupon::find(session()->get('order_coupon'));
 		}
-
 		
 		return render('frontend/checkout/index', ['countries' => $countries, 'user' => $user, 'payment_methods' =>  $payment_methods, 'total_amount' => $total_amount, 'order_reference' => $order_reference, 'walletEnable' => $walletEnable, 'wallet_in_cop' => $wallet_in_cop, 'coupon' => $coupon]);
 	}

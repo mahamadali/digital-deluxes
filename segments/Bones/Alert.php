@@ -22,13 +22,23 @@ class Alert extends AutoMethodMap
         return $this;
     }
 
+    protected function runInBackground()
+    {
+        return !empty($this->notifiable->run_in_background) && $this->notifiable->run_in_background == true;
+    }
+
     public function notify()
     {
         if (!empty($this->notifiable)) {
-            if (is_subclass_of($this->notifiable, Mailer::class)) {
-                return $this->notifiable->prepare()->send();
-            } else if (is_subclass_of($this->notifiable, Texter::class)) {
-                return $this->notifiable->prepare()->send();
+            if ($this->runInBackground()) {
+                $this->notifiable->setAction();
+                return true;
+            } else {
+                if (is_subclass_of($this->notifiable, Mailer::class)) {
+                    return $this->notifiable->prepare()->send();
+                } else if (is_subclass_of($this->notifiable, Texter::class)) {
+                    return $this->notifiable->prepare()->send();
+                }
             }
         }
 

@@ -61,24 +61,24 @@ class SupportTicketController
         $answeredTickets = 0;
         foreach($pendingTickets as $pendingTicket) {
             $ticketMessages = TicketMessage::where('ticket_id', $pendingTicket->id)->get();
-            if(count($ticketMessages) > 0) {
+            if($ticketMessages->count() > 0) {
                 $answeredTickets++;
             }
         }
 
         foreach($completedTickets as $completedTicket) {
             $ticketMessages = TicketMessage::where('ticket_id', $completedTicket->id)->get();
-            if(count($ticketMessages) > 0) {
+            if($ticketMessages->count() > 0) {
                 $answeredTickets++;
             }
         }
 
         return render('backend/admin/support-tickets/index', [
 			'tickets' => $tickets,
-            'pendingTickets' => count($pendingTickets),
-            'completedTickets' => count($completedTickets),
+            'pendingTickets' => $pendingTickets->count(),
+            'completedTickets' => $completedTickets->count(),
             'answeredTickets' => $answeredTickets,
-            'allTickets' => count($allTickets)
+            'allTickets' => $allTickets->count()
 		]);
     }
 

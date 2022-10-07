@@ -68,12 +68,12 @@ class Validation
                         $exceptId = (!empty($uniqueAttrs[2])) ? $uniqueAttrs[2] : null;
                         if (count($uniqueAttrs) < 2 || (Str::empty($tableToCheck) || Str::empty($columnToCheck))) 
                             throw new Exception('Validation rule: unique rule must have {table}, {column} to check.');
-                        $uniqueRecord = Database::where($columnToCheck, $params[$ruleFor]);
+                        $uniqueRecord = Database::table($tableToCheck)->where($columnToCheck, $params[$ruleFor]);
                         if (!empty($exceptId)) {
-                            $uniqueRecord->where('id', $exceptId, '!=');
+                            $uniqueRecord->whereNot('id', $exceptId);
                         }
-                        $uniqueRecord = $uniqueRecord->getOne('id', $tableToCheck);
-                        if (!empty($uniqueRecord->id)) {
+                        $uniqueRecord = $uniqueRecord->pluck('id');
+                        if (!empty($uniqueRecord['id'])) {
                             $this->errors[]  = $this->getErrorMsg($ruleFor, 'unique', ['attrs' => $uniqueAttrs, 'value' => $params[$ruleFor]]);
                         }
                     }

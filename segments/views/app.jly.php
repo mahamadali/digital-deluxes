@@ -31,7 +31,7 @@
     </head>
     <body class="page-home {{ (session()->has('dark-mode') && session()->get('dark-mode') == 1) ? 'dark-theme' : '' }}">
         
-        <a class="action-btn floating-cart-widget" id="cd-cart-trigger" href="Javascript:void(0);" class="floating-cart-widget"><i class="ico_shopping-cart"></i><span class="animation-ripple-delay1">{{ !empty(auth()) ? count(auth()->cart_items()) : 0 }}</span></a>
+        <a class="action-btn floating-cart-widget" id="cd-cart-trigger" href="Javascript:void(0);" class="floating-cart-widget"><i class="ico_shopping-cart"></i><span class="animation-ripple-delay1">{{ !empty(auth()) ? auth()->cart_items()->count() : 0 }}</span></a>
         <!-- <input id="toggle" type="checkbox"> -->
         
 

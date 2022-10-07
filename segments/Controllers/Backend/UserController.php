@@ -2,6 +2,7 @@
 
 namespace Controllers\Backend;
 
+use Bones\Database;
 use Bones\Request;
 use Models\Role;
 use Models\User;
@@ -14,11 +15,13 @@ class UserController
 {
     public function index(Request $request)
 	{
-		$user = User::onlyMembers();
+		$users = User::whereHas('role', function($query) {
+			$query->where('name', 'user');
+		})->get();
 
 		return render('backend/admin/user/list', [
-			'users' => $user->get(),
-			'totalUsers' => $user->count()
+			'users' => $users,
+			'totalUsers' => $users->count()
 		]);
 	}
 

@@ -463,4 +463,16 @@ class Str
             && ($string >= ~PHP_INT_MAX);
     }
 
+    /**
+     * Replace multiple white spaces to single whitespace in a string
+     * 
+     * @param string $string
+     * 
+     * @return string
+     */
+    public static function replaceMultiWhitespaceToSingle($string)
+    {
+        return preg_replace('/\s+/', ' ', $string);
+    }
+
 }

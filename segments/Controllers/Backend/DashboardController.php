@@ -7,6 +7,7 @@ use Bones\Request;
 use Models\User;
 use Models\City;
 use Models\Order;
+use Models\OrderItem;
 use Models\PracticeArea;
 use Models\Product;
 
@@ -16,22 +17,21 @@ class DashboardController
 	{
 		$kinguin_balance = getKinguinBalance();
 		
-		$total_users = count(User::whereHas('role', function($query) {
+		$total_users = User::whereHas('role', function($query) {
 			return $query->where('name', 'user');
-		})->get());
+		})->count();
 
-		$products = Database::rawQueryOne('SELECT count(id) as total_products FROM `products`')->total_products;
+		$products = Product::count();
 		
-		$orders = Database::rawQueryOne('SELECT count(id) as total_orders FROM `orders`')->total_orders;
+		$orders = Order::count();
 
-		$total_wallet_amount = Database::rawQueryOne('SELECT sum(wallet_amount) as total_wallet_amount FROM `users`')->total_wallet_amount;
+		$total_wallet_amount = User::sum('wallet_amount');
 
-		$today_profit = Database::rawQueryOne('SELECT sum(product_price_profit) as today_profit FROM `order_items` WHERE DATE(created_at) = "'.date("Y-m-d").'" ')->today_profit;
+		$today_profit = OrderItem::whereDate('created_at', date("Y-m-d"))->sum('product_price_profit');
 
-		$monthly_profit = Database::rawQueryOne('SELECT sum(product_price_profit) as monthly_profit FROM `order_items` WHERE MONTH(created_at) = MONTH(CURRENT_DATE())
-		AND YEAR(created_at) = YEAR(CURRENT_DATE()) ')->monthly_profit;
+		$monthly_profit = OrderItem::whereMonth('created_at', 'MONTH(CURRENT_DATE())')->whereYear('created_at', 'YEAR(CURRENT_DATE()) ')->sum('product_price_profit');
 
-		$total_profit = Database::rawQueryOne('SELECT sum(product_price_profit) as total_profit FROM `order_items`')->total_profit;
+		$total_profit = OrderItem::sum('product_price_profit');
 		
 		return render('backend/admin/dashboard', [
 			'total_users' => $total_users,

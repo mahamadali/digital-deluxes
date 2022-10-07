@@ -24,6 +24,10 @@ class Product extends Model
 		return $this->hasOne(ProductOffer::class, 'product_id');
 	}
 
+	public function featuredImage(){
+		return $this->hasOne(ProductScreenshot::class, 'product_id')->first();
+	}
+
     public function screenshots(){
 		return $this->hasMany(ProductScreenshot::class, 'product_id')->get();
 	}

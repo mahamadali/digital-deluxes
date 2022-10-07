@@ -75,7 +75,7 @@ class Router
             $barriers = (isset($action['barriers']) && !empty($action['barriers'])) ? $action['barriers'] : [];
             $segments = (isset($action['segments']) && !empty($action['segments'])) ? $action['segments'] : [];
 
-            self::bunch($prefix, ['as' => $prefix . '.', 'barrier' => [$barriers]], function () use ($action, $singular_prefix, $segments) {
+            self::bunch($prefix, ['as' => ltrim($prefix, '/') . '.', 'barrier' => [$barriers]], function () use ($action, $singular_prefix, $segments) {
                 self::get('/', [$action['controller'], 'index'])->name('index');
                 self::get('/' . (!empty($segments['create']) ? $segments['create'] : 'create') . '', [$action['controller'], 'create'])->name('create');
                 self::post('/', [$action['controller'], 'store'])->name('store');

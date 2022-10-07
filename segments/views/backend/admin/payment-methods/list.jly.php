@@ -35,7 +35,7 @@
             </tr>
           </thead>
           <tbody>
-            @if (count($payment_methods) > 0):
+            @if ($payment_methods->count() > 0):
               @foreach ($payment_methods as $payment_method):
               <tr>
                 <td>{{ $payment_method->title }}</td>

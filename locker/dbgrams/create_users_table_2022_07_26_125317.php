@@ -20,7 +20,7 @@ return new class
 			$table->string('phone')->nullable();
 			$table->unsignedBigInteger('role_id');
 			$table->timestamps();
-			$table->softDelete();
+			$table->trashMask();
 			return $table;
 		});
 	}

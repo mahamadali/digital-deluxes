@@ -31,11 +31,6 @@ class AppStarter
         // Include needed components throughout an app
         self::bagNeededComponents();
 
-        // Initialize DB if database has enabled true in settings/database.php
-        if (setting('database.enable') === TRUE) {
-            new \Bones\Database();
-        }
-
         // Start an app session
         \Bones\Session::start();
 

@@ -64,7 +64,7 @@ class Refill
             }
             
             $DBFillerFilePath = path() . DIRECTORY_SEPARATOR . $this->filesBasePath . $dbFillerFile;
-
+            
             if (!file_exists($DBFillerFilePath)) {
                 $this->console->showMsgAndContinue('Trying to find [Database Filler] %s with auto search technique' . PHP_EOL, [basename($DBFillerFilePath)]);
                 $DBFillerFilePath = path() . DIRECTORY_SEPARATOR . $this->filesBasePath . Str::decamelize($dbFillerFile);
@@ -147,13 +147,13 @@ class Refill
         $baseFillerCode .= "\tprotected \$table = '" . $table . "';" . PHP_EOL . PHP_EOL;
         $baseFillerCode .= "\tpublic function fill()" . PHP_EOL;
         $baseFillerCode .= "\t{" . PHP_EOL;
-        $baseFillerCode .= "\t\tDatabase::__insertMulti([" . PHP_EOL;
+        $baseFillerCode .= "\t\tDatabase::table(\$this->table)->insertMulti([" . PHP_EOL;
         $baseFillerCode .= "\t\t\t[" . PHP_EOL;
         $baseFillerCode .= "\t\t\t\t'column_1' => 'value_1'," . PHP_EOL;
         $baseFillerCode .= "\t\t\t\t'column_2' => 'value_2'," . PHP_EOL;
         $baseFillerCode .= "\t\t\t\t'column_3' => 'value_3'," . PHP_EOL;
         $baseFillerCode .= "\t\t\t]," . PHP_EOL;
-        $baseFillerCode .= "\t\t], null, \$this->table);" . PHP_EOL;
+        $baseFillerCode .= "\t\t]);" . PHP_EOL;
         $baseFillerCode .= "\t}" . PHP_EOL . PHP_EOL;
         $baseFillerCode .= "};";
         return $baseFillerCode;

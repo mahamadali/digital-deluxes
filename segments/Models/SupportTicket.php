@@ -20,6 +20,11 @@ class SupportTicket extends Model
         return explode(",", $this->attachments);
     }
 
+    public function answered()
+    {
+        return $this->hasMany(TicketMessage::class, 'ticket_id')->where('status', 'PENDING');
+    }
+
     public function messages() {
         return $this->hasMany(TicketMessage::class, 'ticket_id');
     }

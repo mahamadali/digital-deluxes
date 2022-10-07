@@ -5,62 +5,50 @@ namespace Models\Base;
 use Bones\Database;
 use Bones\Str;
 use Bones\BadMethodException;
-use Bones\DatabaseException;
+use Bones\Set;
 use Contributors\Particles\Pagination;
-use InvalidArgumentException;
+use Exception;
 use Models\Traits\Relation;
 use Models\Traits\SelfResolve;
+use Models\Traits\TrashMask;
 
-class Model extends Database
+class Model
 {
-    use Relation, SelfResolve;
+    use Relation, SelfResolve, TrashMask;
 
-    protected $model;
+    public $model;
     protected $table;
     protected $primary_key = 'id';
     protected $db;
     protected $defaults = [];
     protected $elements = [];
-    protected $columns = ['*'];
-    protected static $returnAs = 'object';
     protected $with = [];
     protected $without = [];
-    protected $withDefaults = [];
-    protected $has = [];
     protected $attaches = [];
     protected $hidden = [];
-    protected $withTrashed = false;
-    protected $relationalProps = [];
-    protected $dynamicAttributes = [];
+    protected $with_trashed = false;
+    protected $dynamic_attributes = [];
     protected $transforms = [];
     protected $skip_relationships = false;
     protected $skip_attaches = false;
+    protected $enable_trash_mask = false;
+    
+    protected $timestamps = false;
+    protected $created_at_column = 'created_at';
+    protected $updated_at_column = 'updated_at';
 
     public function __construct()
     {
         $this->model = get_class($this);
         $this->table = (empty($this->table)) ? Str::camelize(Str::pluralize(basename($this->model))) : $this->table;
-        $this->db = Database::getInstance();
-        Database::$_tableName = $this->table;
+        $this->db = Database::table($this->table);
+        $this->db->setPrimaryKey($this->primary_key);
+        $this->db->setTimestampsStatus($this->timestamps, $this->created_at_column, $this->updated_at_column);
+        $this->db->setTrashMaskStatus($this->hasTrashMask(), $this->getTrashMaskColumn());
+        $this->db->model = $this;
     }
 
-    public function ___makeHidden(...$attrs)
-    {
-        $this->hidden = array_merge($this->hidden, resolveAsArray($attrs));
-        $this->makeUnique('hidden');
-
-        return $this;
-    }
-
-    public function ___makeVisible(...$attrs)
-    {
-        $this->hidden = array_diff($this->hidden, resolveAsArray($attrs));
-        $this->makeUnique('hidden');
-
-        return $this;
-    }
-
-    public function ___with(...$attrs)
+    public function prepareWith(...$attrs)
     {
         $this->with = array_merge($this->with, resolveAsArray($attrs));
         $this->makeUnique('with');
@@ -68,14 +56,31 @@ class Model extends Database
         return $this;
     }
 
-    public function ___withTrashed(bool $trashed = true)
+    public function prepareWithout(...$attrs)
     {
-        $this->withTrashed = $trashed;
+        $this->without = resolveAsArray($attrs);
+        $this->makeUnique('without');
 
         return $this;
     }
 
-    public function ___attach(...$attrs)
+    public function makeHidden(...$attrs)
+    {
+        $this->hidden = array_merge($this->hidden, resolveAsArray($attrs));
+        $this->makeUnique('hidden');
+
+        return $this;
+    }
+
+    public function makeVisible(...$attrs)
+    {
+        $this->hidden = array_diff($this->hidden, resolveAsArray($attrs));
+        $this->makeUnique('hidden');
+
+        return $this;
+    }
+
+    public function prepareAttach(...$attrs)
     {
         $this->attaches = array_merge($this->attaches, resolveAsArray($attrs));
         $this->makeUnique('attaches');
@@ -83,591 +88,187 @@ class Model extends Database
         return $this;
     }
 
-    public function ___hasRelated(...$attrs)
-    {
-        $this->has = array_merge($this->has, resolveAsArray($attrs));
-
-        return $this;
-    }
-
-    public function ___skipRelationships($skip_relationships = true)
+    public function skipRelationships($skip_relationships = true)
     {
         $this->skip_relationships = $skip_relationships;
 
         return $this;
     }
 
-    public function ___skipAttaches($skip_attaches = true)
+    public function skipAttaches($skip_attaches = true)
     {
         $this->skip_attaches = $skip_attaches;
 
         return $this;
     }
 
-    public function ___withoutGlues()
+    public function prepareWithoutGlues()
     {
         return $this->skipRelationships()->skipAttaches();
     }
 
-    public function ___selectSet(...$attrs)
-    {
-        $this->columns = resolveAsArray($attrs);
-
-        return $this;
-    }
-
-    public function ___select(string $column, string $alias = '')
-    {
-        $alias = (!empty($alias)) ? ' AS ' . $alias : '';
-
-        if (!in_array('*', $this->columns))
-            $this->columns[] = $column . $alias;
-
-        return $this;
-    }
-
-    public function ___relationalProps(...$attrs)
+    public function relationalProps(...$attrs)
     {
         $this->relationalProps = resolveAsArray($attrs);
 
         return $this;
     }
 
-    public function ___insert($insertData)
+    public function forceDelete()
     {
-        if (!empty($this->defaults)) {
-            foreach ($this->defaults as $element => $default) {
-                if (!array_key_exists($element, $insertData))
-                    $insertData[$element] = $default;
-            }
+        return $this->db->delete(true);
+    }
+
+    public function withTrashed(bool $with_trashed = true)
+    {
+        $this->with_trashed = $with_trashed;
+
+        return $this;
+    }
+
+    public function hasWithTrashed()
+    {
+        return $this->with_trashed;
+    }
+
+    public function ignoreForeignKeyChecks($ignore = true)
+    {
+        $this->rawQuery('SET FOREIGN_KEY_CHECKS=' . (int) !$ignore . ';');
+        return $this;
+    }
+
+    public function makeUnique($attr)
+    {
+        $static = new static;
+        if (!empty($static->$attr) && is_array($static->$attr)) {
+            $static->$attr = array_unique($static->$attr);
+        }
+    }
+
+    public function excludeAttrs(...$attrs)
+    {
+        $attrs = resolveAsArray($attrs);
+
+        if (count($attrs) == 0) return $this;
+        
+        foreach ($attrs as $attr) {
+            unset($this->$attr);
         }
 
-        if (!empty($this->transforms)) {
-            foreach ($insertData as $elementName => &$elementVal) {
-                if (array_key_exists($elementName, $this->transforms)) {
-                    $elementVal = $this->transformElement($this->transforms[$elementName], $elementVal);
-                }
-            }
+        return $this;
+    }
+
+    public function removeAttr($attrs, $attr)
+    {
+        if (($key = array_search($attr, $attrs)) !== false)
+            unset($attrs[$key]);
+
+        return $attrs;
+    }
+
+    public function hasTrashMask()
+    {
+        return (isset($this->enable_trash_mask) && $this->enable_trash_mask);
+    }
+
+    public function hasTimestamps()
+    {
+        return $this->timestamps;
+    }
+
+    public function reservedProperties()
+    {
+        return ['_reserved_model_prop_is_only'];
+    }
+
+    public function __get($attribute)
+    {
+        if (empty($attribute) || in_array($attribute, ['attaches', 'with', 'without', 'elements', 'hidden', 'has', 'relationalProps'])) {
+            return [];
+        }
+        $attribute = Str::decamelize($attribute);
+        $attributeMehod = 'get' . $attribute . 'Property';
+
+        if (!empty($this) && method_exists($this, $attributeMehod)) {
+            return $this->$attributeMehod();
         }
 
-        $lastInsertedId = $this->db->__insert($insertData, $this->table);
+        if (!empty($this->model) && method_exists($this->model, $attributeMehod)) {
+            return $this->$attributeMehod();
+        }
+        
+        throw new Exception('Property {' . Str::camelize($attribute) . '} not found in ' . $this->model);
+    }
 
-        if ($lastInsertedId > 0) {
-            return $this->where($this->primary_key, $lastInsertedId)->first();
+    public function __set($attribute, $value)
+    {
+        $this->$attribute = $value;
+
+        if ($attribute === 'relationalProps')
+            $this->db->$attribute = $value;
+            
+        if (!in_array($attribute, array_merge($this->with, $this->reservedProperties()))) {
+            $this->dynamic_attributes[] = $attribute;
         }
 
-        return null;
-    }
-
-    public function ___create(array $createData = [])
-    {
-        $elements = (!empty($this->elements)) ? $this->elements : [];
-        if (!empty($elements)) {
-            foreach ($elements as $element) {
-                if (!array_key_exists($element, $createData)) {
-                    if (!Str::empty($this->defaults[$element])) {
-                        $insertData[$element] = $this->defaults[$element];
-                    } else {
-                        throw new DatabaseException('{' . $element . '} presents in ' . $this->model . '::elements but not available in arguments Array in method ' . __FUNCTION__ . '(Array)');
-                    }
-                } else {
-                    $insertData[$element] = $createData[$element];
-                }
-            }
-        } else {
-            foreach ($createData as $param => $value) {
-                $insertData[$param] = $value;
-            }
-            if (!empty($this->defaults)) {
-                foreach ($this->defaults as $element => $default) {
-                    if (!isset($insertData[$element]))
-                        $insertData[$element] = $default;
-                }
-            }
+        $attributeMehod = 'set' . Str::decamelize($attribute) . 'Property';
+        if (method_exists($this->model, $attributeMehod)) {
+            $this->$attributeMehod($value);
         }
-
-        return $this->insert($insertData);
     }
 
-    public function ___insertMulti(array $multiInsertData, array $dataKeys = null)
+    public function prepareSet($entries, $wrap_as_set = true)
     {
-        if (!empty($this->defaults)) {
-            foreach ($multiInsertData as $insertPairIndex => $insertData) {
-                foreach ($this->defaults as $element => $default) {
-                    if (!array_key_exists($element, $insertData))
-                        $multiInsertData[$insertPairIndex][$element] = $default;
-                }
-            }
-        }
-
-        if (!empty($this->transforms)) {
-            foreach ($multiInsertData as $insertPairIndex => &$insertData) {
-                foreach ($insertData as $elementName => &$elementVal) {
-                    if (array_key_exists($elementName, $this->transforms)) {
-                        $elementVal = $this->transformElement($this->transforms[$elementName], $elementVal);
-                    }
-                }
-            }
-        }
-
-        $lastInsertedIds = $this->db->__insertMulti($multiInsertData, $dataKeys, $this->table);
-
-        if (!empty($lastInsertedIds)) {
-            return $this->selectSet($this->elements)->whereIn($this->primary_key, $lastInsertedIds)->get();
-        }
-
-        return null;
-    }
-
-    public function ___update($updateData, $limit = null)
-    {
-        if ($this->isSelfOnly()) {
-            $this->where($this->primary_key, $this->{$this->primary_key});
-            $this->setSelfOnly(false);
-        }
-
-        if (!empty($this->transforms)) {
-            foreach ($updateData as $elementName => &$elementVal) {
-                if (array_key_exists($elementName, $this->transforms)) {
-                    $elementVal = $this->transformElement($this->transforms[$elementName], $elementVal);
-                }
-            }
-        }
-
-        return $this->db->__update($updateData, $limit, $this->table);
-    }
-
-    public function ___delete($limit = null)
-    {
-        if ($this->isSelfOnly()) {
-            $this->where($this->primary_key, $this->{$this->primary_key});
-            $this->setSelfOnly(false);
-        }
-
-        if ($this->hasTrashMask()) {
-            return $this->setTrashMask();
-        }
-
-        return $this->db->__delete($limit, $this->table);
-    }
-
-    public function ___forceDelete($limit = null)
-    {
-        return $this->db->__delete($limit, $this->table);
-    }
-
-    public function ___where($whereProp, $whereValue = 'DBNULL', $operator = '=', $cond = 'AND')
-    {
-        $this->db->__where($whereProp, $whereValue, $operator, $cond);
-        return $this;
-    }
-
-    public function ___whereNot($whereProp, $whereValue = 'DBNULL', $cond = 'AND')
-    {
-        $this->db->__where($whereProp, $whereValue, '!=', $cond);
-        return $this;
-    }
-
-    public function ___OrWhereNot($whereProp, $whereValue = 'DBNULL')
-    {
-        $this->db->__where($whereProp, $whereValue, '!=', 'OR');
-        return $this;
-    }
-
-    public function ___whereNull($whereProp, $cond = 'AND')
-    {
-        $this->db->__whereNull($whereProp, $cond);
-        return $this;
-    }
-
-    public function ___orWhereNull($whereProp)
-    {
-        $this->db->__orWhereNull($whereProp);
-        return $this;
-    }
-
-    public function ___whereNotNull($whereProp, $cond = 'AND')
-    {
-        $this->db->__whereNotNull($whereProp, $cond);
-        return $this;
-    }
-
-    public function ___orWhereNotNull($whereProp)
-    {
-        $this->db->__orWhereNotNull($whereProp);
-        return $this;
-    }
-
-    public function ___orWhere($whereProp, $whereValue = 'DBNULL', $operator = '=')
-    {
-        $this->db->__orWhere($whereProp, $whereValue, $operator);
-        return $this;
-    }
-
-    public function ___whereLike($whereProp, $whereValue = 'DBNULL', $cond = 'AND')
-    {
-        $this->db->__where($whereProp, $whereValue, 'LIKE', $cond);
-        return $this;
-    }
-
-    public function ___orWhereLike($whereProp, $whereValue = 'DBNULL')
-    {
-        $this->db->__where($whereProp, $whereValue, 'LIKE', 'OR');
-        return $this;
-    }
-
-    public function ___whereNotLike($whereProp, $whereValue = 'DBNULL', $cond = 'AND')
-    {
-        $this->db->__where($whereProp, $whereValue, 'NOT LIKE', $cond);
-        return $this;
-    }
-
-    public function ___orWhereNotLike($whereProp, $whereValue = 'DBNULL')
-    {
-        $this->db->__where($whereProp, $whereValue, 'NOT LIKE', 'OR');
-        return $this;
-    }
-
-    public function ___whereIn($whereProp, $rangeSet = [], $cond = 'AND')
-    {
-        $this->db->__where($whereProp, $rangeSet, 'IN', $cond);
-        return $this;
-    }
-
-    public function ___orWhereIn($whereProp, $rangeSet = [])
-    {
-        $this->db->__where($whereProp, $rangeSet, 'IN', 'OR');
-        return $this;
-    }
-
-    public function ___whereNotIn($whereProp, $rangeSet = [], $cond = 'AND')
-    {
-        $this->db->__where($whereProp, $rangeSet, 'NOT IN', $cond);
-        return $this;
-    }
-
-    public function ___orWhereNotIn($whereProp, $rangeSet = [])
-    {
-        $this->db->__where($whereProp, $rangeSet, 'NOT IN', 'OR');
-        return $this;
-    }
-
-    public function ___whereBetween($whereProp, $rangeSet = [], $cond = 'AND')
-    {
-        $this->db->__where($whereProp, $rangeSet, 'BETWEEN', $cond);
-        return $this;
-    }
-
-    public function ___orWhereBetween($whereProp, $rangeSet = [])
-    {
-        $this->db->__where($whereProp, $rangeSet, 'BETWEEN', 'OR');
-        return $this;
-    }
-
-    public function ___whereNotBetween($whereProp, $rangeSet = [], $cond = 'AND')
-    {
-        $this->db->__where($whereProp, $rangeSet, 'NOT BETWEEN', $cond);
-        return $this;
-    }
-
-    public function ___orWhereNotBetween($whereProp, $rangeSet = [])
-    {
-        $this->db->__where($whereProp, $rangeSet, 'NOT BETWEEN', 'OR');
-        return $this;
-    }
-
-    public function ___clearWhere()
-    {
-        $this->db->__clearWhere();
-        return $this;
-    }
-
-    public function ___leftJoin($joinTable, $joinCondition)
-    {
-        $this->db->__joinWhere($joinTable, $joinCondition, 'LEFT');
-        return $this;
-    }
-
-    public function ___rightJoin($joinTable, $joinCondition)
-    {
-        $this->db->__joinWhere($joinTable, $joinCondition, 'RIGHT');
-        return $this;
-    }
-
-    public function ___outerJoin($joinTable, $joinCondition)
-    {
-        $this->db->__joinWhere($joinTable, $joinCondition, 'OUTER');
-        return $this;
-    }
-
-    public function ___innerJoin($joinTable, $joinCondition)
-    {
-        $this->db->__joinWhere($joinTable, $joinCondition, 'INNER');
-        return $this;
-    }
-
-    public function ___leftOuterJoin($joinTable, $joinCondition)
-    {
-        $this->db->__joinWhere($joinTable, $joinCondition, 'LEFT OUTER');
-        return $this;
-    }
-
-    public function ___rightOuterJoin($joinTable, $joinCondition)
-    {
-        $this->db->__joinWhere($joinTable, $joinCondition, 'RIGHT OUTER');
-        return $this;
-    }
-
-    public function ___naturalJoin($joinTable, $joinCondition)
-    {
-        $this->db->__joinWhere($joinTable, $joinCondition, 'NATURAL');
-        return $this;
-    }
-
-    public function ___orderBy($column, $direction = 'DESC', $customFieldsOrRegExp = null)
-    {
-        $this->db->__orderBy($column, $direction, $customFieldsOrRegExp);
-        return $this;
-    }
-
-    public function ___groupBy(...$columns)
-    {
-        $this->db->__groupBy(implode(',', resolveAsArray($columns)));
-        return $this;
-    }
-
-    public function ___setHaving($havingProp, $havingValue = 'DBNULL', $operator = '=', $cond = 'AND')
-    {
-        $this->db->__having($havingProp, $havingValue, $operator, $cond);
-    }
-
-    public function ___having($havingProp, $havingValue = 'DBNULL', $operator = '=')
-    {
-        $this->___setHaving($havingProp, $havingValue, $operator, 'AND');
-        return $this;
-    }
-
-    public function ___orHaving($havingProp, $havingValue = 'DBNULL', $operator = '=')
-    {
-        $this->___setHaving($havingProp, $havingValue, $operator, 'OR');
-        return $this;
-    }
-
-    public function ___havingIn($havingProp, $rangeSet = [])
-    {
-        $this->___setHaving($havingProp, $rangeSet, 'IN', 'AND');
-        return $this;
-    }
-
-    public function ___orHavingIn($havingProp, $rangeSet = [])
-    {
-        $this->___having($havingProp, $rangeSet, 'IN', 'OR');
-        return $this;
-    }
-
-    public function ___havingNotIn($havingProp, $rangeSet = [])
-    {
-        $this->___having($havingProp, $rangeSet, 'NOT IN', 'AND');
-        return $this;
-    }
-
-    public function ___orHavingNotIn($havingProp, $rangeSet = [])
-    {
-        $this->___having($havingProp, $rangeSet, 'NOT IN', 'OR');
-        return $this;
-    }
-
-    public function ___havingBetween($havingProp, $rangeSet = [])
-    {
-        $this->___having($havingProp, $rangeSet, 'BETWEEN', 'AND');
-        return $this;
-    }
-
-    public function ___orHavingBetween($havingProp, $rangeSet = [])
-    {
-        $this->___having($havingProp, $rangeSet, 'BETWEEN', 'OR');
-        return $this;
-    }
-
-    public function ___havingNotBetween($havingProp, $rangeSet = [])
-    {
-        $this->___having($havingProp, $rangeSet, 'NOT BETWEEN', 'AND');
-        return $this;
-    }
-
-    public function ___orHavingNotBetween($havingProp, $rangeSet = [])
-    {
-        $this->___having($havingProp, $rangeSet, 'NOT BETWEEN', 'OR');
-        return $this;
-    }
-
-    public function ___get($numRows = null)
-    {
-        if ($this->hasTrashMask() && !$this->withTrashed) {
-            $this->whereNull($this->getTrashMaskColumn());
-        }
-
-        $entries = $this->select($this->primary_key)->db->__getRows($numRows, $this->columnSet(), $this->table);
-
         $result = [];
 
         foreach ($entries as $key => $entry) {
 
             $modelObj = (new $this->model());
             $modelObj = $this->build($modelObj, $entry);
+            $modelObj->db->model = $modelObj;
 
             if (!empty($modelObj)) {
                 $result[$key] = $modelObj;
             }
         }
 
-        if (!$this->skip_relationships) {
-            foreach ($this->with as $with) {
-                if (in_array($with, $this->without)) continue;
-                $this->$with = $this->$with();
-                if (!empty($relationalProps = $this->$with->relationalProps) && !empty($this->$with->relationalProps['type'])) {
-                    $result = $this->___buildRelationalData($with, $entries, $result, $relationalProps);
-                }
-            }
-        }
+        $result = $this->buildWithBlocks($result, $entries);
 
-        return $result;
+        if (!$wrap_as_set) return $result;
+
+        return (new Set($result));
     }
 
-    public function ___getAsArray($numRows = null)
+    public function prepareOne($result)
     {
-        return objectToArray($this->get($numRows));
+        if (empty($result)) return null;
+
+        $attributes = get_object_vars($result);
+        
+        $modelObj = $this->selfBuild($attributes, $result, true);
+
+        return (new Set($this->sanitize($modelObj)));
     }
 
-    public function ___without(...$attrs)
+    public function prepareSanitize($modelObj = null)
     {
-        $this->without = resolveAsArray($attrs);
-        return $this;
+        if (!empty($modelObj)) 
+            return $modelObj;
+            
+        $modelObj = ($modelObj == null) ? $this : $modelObj;
+
+        return $modelObj->excludeAttrs(array_merge(['db', 'reserved_props', 'relation_captions', 'model', 'attaches', 'with', 'without', 'elements', 'hidden', 'relationalProps'], $modelObj->reserved_props));
     }
-
-    public function ___first()
-    {
-        if ($this->hasTrashMask() && !$this->withTrashed) {
-            $this->whereNull($this->getTrashMaskColumn());
-        }
-
-        $entries = $this->db->__getOne($this->columnSet(), $this->table);
-
-        if (empty($entries)) return null;
-
-        $attributes = get_object_vars($entries);
-
-        $modelObj = (new $this->model());
-        $modelObj = $this->build($modelObj, $attributes);
-        $modelObj->setSelfOnly(true);
-
-        foreach ($this->with as $with) {
-            if (in_array($with, $this->without)) continue;
-            $this->$with = $this->$with();
-            if (!empty($relationalProps = $this->$with->relationalProps) && !empty($this->$with->relationalProps['type'])) {
-                $modelObj = $this->___buildRelationalData($with, $entries, $modelObj, $relationalProps);
-            }
-        }
-
-        return $modelObj;
-    }
-
-    public function ___firstOrNew($whereData = [], $additionalData = [])
-    {
-        if (gettype($whereData) != 'array')
-            throw new InvalidArgumentException(__FUNCTION__ . ' must have an array as argument #1');
-
-        if (gettype($additionalData) != 'array')
-            throw new InvalidArgumentException(__FUNCTION__ . ' must have an array as argument #2');
-
-        $this->__clearWhere();
-
-        foreach ($whereData as $attrName => $attrVal) {
-            $this->where($attrName, $attrVal);
-        }
-
-        if (!empty($first = $this->first()))
-            return $first;
-
-        $model = new $this->model();
-        foreach (array_merge($whereData, $additionalData) as $attrName => $attrVal) {
-            $model->$attrName = $attrVal;
-        }
-
-        return $model;
-    }
-
-    public function ___firstOrCreate($whereData = [], $additionalData = [])
-    {
-        if (gettype($whereData) != 'array')
-            throw new InvalidArgumentException(__FUNCTION__ . ' must have an array as argument #1');
-        if (gettype($additionalData) != 'array')
-            throw new InvalidArgumentException(__FUNCTION__ . ' must have an array as argument #2');
-
-        $this->__clearWhere();
-
-        foreach ($whereData as $attrName => $attrVal) {
-            $this->where($attrName, $attrVal);
-        }
-
-        if (!empty($first = $this->first()))
-            return $first;
-
-        return $this->insert(array_merge($whereData, $additionalData));
-    }
-
-    public function ___isLast()
-    {
-        return ($this->{$this->primary_key} === $this->max($this->primary_key));
-    }
-
-    public function ___exists()
-    {
-        return $this->count() > 0;
-    }
-
-    public function ___find($value)
-    {
-        return $this->___clearWhere()->where($this->primary_key, $value)->setSelfOnly(true)->first();
-    }
-
-    public function ___pluck(...$columns)
-    {
-        return $this->db->__pluck(implode(',', resolveAsArray($columns)));
-    }
-
-    public function ___limit(...$limit)
-    {
-        $this->db->__limit(implode(',', resolveAsArray($limit)));
-        return $this;
-    }
-
-    public function ___clearLimit(...$limit)
-    {
-        $this->db->__limit(implode(',', resolveAsArray($limit)));
-        return $this;
-    }
-
-    public function ___ignoreForeignKeyChecks($ignore = true)
-    {
-        $this->db->query('SET FOREIGN_KEY_CHECKS=' . (int) !$ignore . ';');
-        return $this;
-    }
-
-    public function ___truncate()
-    {
-        return $this->db->__truncate($this->table);
-    }
-
-    public function ___paginate($page_limit = 0, $query_param = 'page')
+    
+    public function preparePaginate($page_limit = 0, $query_param = 'page')
     {
         $page = (!empty(request()->get($query_param))) ? request()->get($query_param) : 1;
 
-        if ($this->hasTrashMask() && !$this->withTrashed) {
-            $this->whereNull($this->getTrashMaskColumn());
-        }
+        return $this->db->paginate($page_limit, $page, $query_param);
+    }
 
-        $paginated = $this->db->paginate($page_limit, $page, $this->columns, $this->table);
+    public function wrapPaginated($paginated, $query_param = 'page')
+    {
         $wrapped = [];
 
         foreach ($paginated as $key => $entry) {
@@ -678,157 +279,97 @@ class Model extends Database
 
             $attributes = (is_object($entry)) ? get_object_vars($entry) : array_keys($entry);
 
-            $modelObj = (new $this->model());
-            $modelObj = $this->build($modelObj, $attributes);
-            $modelObj->setSelfOnly(true);
-
-            foreach ($this->with as $with) {
-                if (in_array($with, $this->without)) continue;
-                $this->$with = $this->$with();
-                if (!empty($relationalProps = $this->$with->relationalProps) && !empty($this->$with->relationalProps['type'])) {
-                    $modelObj = $this->___buildRelationalData($with, $entry, $modelObj, $relationalProps);
-                }
-            }
+            $modelObj = $this->selfBuild($attributes, $entry, true);
 
             $wrapped[] = $modelObj;
         }
 
         return $wrapped;
+
     }
 
-    public function ___aggregate($operator, $column = '', $alias = '')
+    public function prepareFirstOrNew($whereData = [], $additionalData = [])
     {
-        $this->columns = $this->removeAttr($this->columns, '*');
+        return $this->conditionalFirst($whereData, $additionalData, 'new');
+    }
 
-        $column = ltrim($column, '`');
-        $column = rtrim($column, '`');
+    public function prepareFirstOrCreate($whereData = [], $additionalData = [])
+    {
+        return $this->conditionalFirst($whereData, $additionalData, 'create');
+    }
 
-        if (empty($column)) {
-            if (strtolower($operator) == 'count')
-                $column = $this->primary_key;
-            else
-                throw new InvalidArgumentException('Aggregate operation {' . $operator . '} must have column name to peform operation, empty given');
+    public function prepareUpdateOrCreate($whereData = [], $additionalData = [])
+    {
+        return $this->conditionalUpdate($whereData, $additionalData, 'create');
+    }
+
+    public function prepareFindOrFail($id, $columns = [])
+    {
+        if (!$found = $this->db->find($id, $columns))
+            error(404);
+        
+        return $found;
+    }
+
+    public function prepareFirstOrFail($id, $columns = [])
+    {
+        if (!$found = $this->db->first($id, $columns))
+            error(404);
+        
+        return $found;
+    }
+
+    public function prepareFirstOrNull($id, $columns = [])
+    {
+        if (!$found = $this->db->first($id, $columns))
+            return null;
+        
+        return $found;
+    }
+
+    public function prepareIsLast()
+    {
+        return ($this->{$this->primary_key} === $this->max($this->primary_key));
+    }
+
+    protected function initiate($name, $arguments = [])
+    {
+        if (!method_exists($this->db, $name)) {
+            throw new BadMethodException('Method {' . $name . '} not found in ' . $this->model);
         }
 
-        $entry = $this->select($operator . '(`' . $column . '`)', $alias)->withoutGlues()->first();
-        if (!empty($entry)) {
-            $retrive_as = (!empty($alias)) ? $entry->$alias : $operator . '(`' . $column . '`)';
-            return (!empty($entry->{$retrive_as})) ? $entry->{$retrive_as} : 0;
-        }
-
-        return 0;
+        return $this->db->{$name}(...$arguments);
     }
 
-    public function ___makeUnique($attr)
-    {
-        if (!empty($this->$attr) && is_array($this->$attr)) {
-            $this->$attr = array_unique($this->$attr);
-        }
-    }
-
-    public function ___removeAttr($attrs, $attr)
-    {
-        if (($key = array_search($attr, $attrs)) !== false)
-            unset($attrs[$key]);
-
-        return $attrs;
-    }
-
-    public function ___hasTrashMask()
-    {
-        return (isset($this->enable_trash_mask) && $this->enable_trash_mask);
-    }
-
-    public function ___reservedProperties()
-    {
-        return ['_reserved_model_prop_is_only'];
-    }
-
-    public function __get($attribute)
-    {
-        if (empty($attribute) || in_array($attribute, ['attaches', 'with', 'elements', 'hidden', 'withDefaults', 'has', 'relationalProps'])) {
-            return [];
-        }
-        $attribute = Str::decamelize($attribute);
-        $attributeMehod = 'get' . $attribute . 'Property';
-        if (method_exists($this->model, $attributeMehod)) {
-            return $this->$attributeMehod();
-        }
-
-        throw new BadMethodException('Property {' . Str::camelize($attribute) . '} not found in ' . $this->model);
-    }
-
-    public function __set($attribute, $value)
-    {
-        $this->$attribute = $value;
-        if (!in_array($attribute, array_merge($this->with, $this->reservedProperties()))) {
-            $this->dynamicAttributes[] = $attribute;
-        }
-
-        $attributeMehod = 'set' . Str::decamelize($attribute) . 'Property';
-        if (method_exists($this->model, $attributeMehod)) {
-            $this->$attributeMehod($value);
-        }
-    }
-
-    public function columnSet()
-    {
-        if (in_array('*', $this->columns) && count($this->columns) > 1)
-            return implode(',', array_diff($this->columns, ['*']));
-
-        return implode(',', $this->columns);
-    }
-
-    public function ___getWithDefaults($with)
-    {
-        return (!empty($this->withDefaults[$with])) ? $this->withDefaults[$with] : [];
-    }
-
-    public function ___setWithDefaults($relation, $defaultAttrs)
-    {
-        $this->withDefaults[$relation] = $defaultAttrs;
-
-        return $this;
-    }
-
-    public static function __callStatic($method, $parameters)
+    public static function __callStatic($name, $arguments)
     {
         $static = (new static);
 
-        if (in_array($method, ['avg', 'count', 'max', 'min', 'sum'])) {
-            array_unshift($parameters, $method);
-            return $static->{'___aggregate'}(...$parameters);
+        if (method_exists($static, 'prepare'.ucfirst($name))) {
+            return $static->{'prepare'.ucfirst($name)}(...$arguments);
         }
 
-        $wrapMethod = 'wrap' . Str::decamelize($method);
-        if (method_exists($static, $wrapMethod)) {
-            return $static->{$wrapMethod}(...$parameters);
+        if (method_exists($static, 'wrap'.ucfirst($name))) {
+            return $static->{'wrap'.ucfirst($name)}(...$arguments);
         }
 
-        if (method_exists($static, '___' . $method)) {
-            $static->___clearWhere();
-            return $static->{'___' . $method}(...$parameters);
-        }
+        return $static->initiate($name, $arguments);
 
-        throw new BadMethodException('Method {' . $method . '} not found in ' . $static->model);
+        throw new BadMethodException('Method {' . $name . '} not found in ' . $static->model);
     }
 
-    public function __call(string $method, $parameters)
+    public function __call($name, $arguments)
     {
-        if (in_array($method, ['avg', 'count', 'max', 'min', 'sum'])) {
-            array_unshift($parameters, $method);
-            return $this->{'___aggregate'}(...$parameters);
+        if (method_exists($this, 'prepare'.ucfirst($name))) {
+            return $this->{'prepare'.ucfirst($name)}(...$arguments);
         }
 
-        $wrapMethod = 'wrap' . Str::decamelize($method);
-        if (method_exists($this, $wrapMethod)) {
-            return $this->{$wrapMethod}(...$parameters);
+        if (method_exists($this, 'wrap'.ucfirst($name))) {
+            return $this->{'wrap'.ucfirst($name)}(...$arguments);
         }
 
-        if (method_exists($this, '___' . $method)) {
-            return $this->{'___' . $method}(...$parameters);
-        }
+        return $this->initiate($name, $arguments);
 
-        throw new BadMethodException('Method {' . $method . '} not found in ' . $this->model);
+        throw new BadMethodException('Method {' . $name . '} not found in ' . $this->model);
     }
 }

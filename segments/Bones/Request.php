@@ -220,6 +220,15 @@ class Request extends Validation
     }
 
     /**
+     * Get current request uri without query
+     * 
+     */
+    public static function currentUriWithoutQuery()
+    {
+        return URL::removeQuery(self::currentUri());
+    }
+
+    /**
      * Check current page matches to pattern
      * 
      * @param string $pattern

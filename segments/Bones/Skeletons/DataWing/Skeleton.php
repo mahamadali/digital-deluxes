@@ -2,6 +2,7 @@
 
 namespace Bones\Skeletons\DataWing;
 
+use Bones\Database;
 use Bones\Skeletons\DataWing\ColumnStructure;
 use Bones\Traits\DataWing\Commands;
 use Bones\DataWingException;
@@ -375,7 +376,7 @@ class Skeleton extends ColumnStructure
 
     public function setSpatialIndex($columns, $name = null)
     {
-        return $this->addIndexStatement('spatialIndex', $columns, $name);
+        return $this->addIndexStatement('spatial', $columns, $name);
     }
 
     protected function addIndexStatement($type, $columns, $index, $algorithm = null)
@@ -510,6 +511,11 @@ class Skeleton extends ColumnStructure
     public function getColumns()
     {
         return $this->columns;
+    }
+
+    public static function hasColumn($table, $column)
+    {
+        return Database::table($table)->hasColumn($column);
     }
 
     public function prepareAndExecuteStatement()

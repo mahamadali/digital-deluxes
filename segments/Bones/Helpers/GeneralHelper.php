@@ -275,7 +275,7 @@ function currencyConverter($from_Currency,$to_Currency,$amount, $exchange_rate =
 }
 
 function saveCurrencyrate($from_Currency, $to_Currency, $base_price) {
-    $currencyRate = CurrencyRate::where('`from`', $from_Currency)->where('`to`', $to_Currency)->first();
+    $currencyRate = CurrencyRate::where('from', $from_Currency)->where('to', $to_Currency)->first();
     if(empty($currencyRate)) {
         $currencyRate = new CurrencyRate();
     }
@@ -287,7 +287,7 @@ function saveCurrencyrate($from_Currency, $to_Currency, $base_price) {
 }
 
 function getCurrencyrate($from, $to) {
-    $currencyRate = CurrencyRate::where('`from`', $from)->where('`to`', $to)->first();
+    $currencyRate = CurrencyRate::where('from', $from)->where('to', $to)->first();
     if(empty($currencyRate)) {
         $base_price = callCurrencyApi($from, $to, 1);
         $currencyRate = saveCurrencyrate($from, $to, $base_price);
@@ -358,17 +358,23 @@ function getKinguinBalance() {
 if (! function_exists('getProfitPrice')) {
     function getProfitPrice($price)
     {
-        if(!empty($priceProfit = PriceProfit::selectSet(['max(min_price) as maximum_price', 'profit_perc', 'max_price'])->orderBy('id')->first())) {
+        if(!empty($priceProfit = PriceProfit::select(function($select) {
+            $select->max('min_price')->as('maximum_price');
+        })->appendSelect(['profit_perc', 'max_price'])->orderBy('id')->first())) {
             if($priceProfit->maximum_price <= $price) {
-                $profit_prices = PriceProfit::where('min_price', (float) $priceProfit->maximum_price)->first();
+                $profit_prices = PriceProfit::where('min_price', (float) $priceProfit->maximum_price)->firstOrNull();
             } else {
-                $profit_prices = PriceProfit::where('max_price', (float) $price, '>=')->first();
+                $profit_prices = PriceProfit::where('max_price', '>=', (float) $price)->firstOrNull();
             }
         }
 
-        $commission = ($profit_prices->profit_perc * $price) / 100;
-        $profit_price = $price + $commission;
-        return number_format($profit_price, 2);
+        if (!empty($profit_prices)) {
+            $commission = ($profit_prices->profit_perc * $price) / 100;
+            $profit_price = $price + $commission;
+            return number_format($profit_price, 2);
+        } else {
+            return 0;
+        }
     }
 }
 
@@ -380,23 +386,29 @@ if (! function_exists('getProfitCommission')) {
             $price = currencyConverter($currency, 'EUR', $price);
         }
         
-        if(!empty($priceProfit = PriceProfit::selectSet(['max(min_price) as maximum_price', 'profit_perc'])->orderBy('id')->first())) {
+        if(!empty($priceProfit = PriceProfit::select(function($select) {
+            $select->max('min_price')->as('maximum_price');
+        })->appendSelect('profit_perc')->orderBy('id')->first())) {
             if($priceProfit->maximum_price <= $price) {
                 $profit_prices = $priceProfit;
             } else {
-                $profit_prices = PriceProfit::where('max_price', (float) $price, '>=')->first();
+                $profit_prices = PriceProfit::where('max_price', '>=', (float) $price)->first();
             }
         }
         
-        $commission = ($profit_prices->profit_perc * $price) / 100;
-        return number_format($commission, 2);
+        if (!empty($profit_prices)) {
+            $commission = ($profit_prices->profit_perc * $price) / 100;
+            return number_format($commission, 2);
+        } else {
+            return 0;
+        }
     }
 }
 
 if (! function_exists('admin')) {
     function admin()
     {
-        $admin = Setting::where('`key`', 'receive_email_alerts_at')->first();
+        $admin = Setting::where('key', 'receive_email_alerts_at')->first();
         return $admin;
     }
 }
@@ -439,7 +451,7 @@ if (! function_exists('getRegionCountries')) {
 
 if (! function_exists('platforms')) {
     function platforms() {
-        $products = Product::selectSet(['platform'])->whereNotLike('platform', '%Kinguin%')->whereNotNull('platform')->groupBY('platform')->getAsArray();
+        $products = Product::select(['platform'])->whereNotLike('platform', '%Kinguin%')->whereNotNull('platform')->groupBy('platform')->get()->toArray();
         return $products;
     }
 }
@@ -475,7 +487,7 @@ if (! function_exists('remove_format')) {
 
 if (! function_exists('productLanguages')) {
     function productLanguages() {
-        $productLanguages = Product::whereNotNull('languages')->selectSet(['languages'])->groupBy('languages')->get();
+        $productLanguages = Product::whereNotNull('languages')->select(['languages'])->groupBy('languages')->get();
         $productLanguagesArray = [];
         foreach($productLanguages as $productLanguage) {
             $product_languages = json_decode($productLanguage->languages);
@@ -491,7 +503,7 @@ if (! function_exists('productLanguages')) {
 
 if (! function_exists('productGenres')) {
     function productGenres() {
-        $productGenres = Product::whereNotNull('genres')->selectSet(['genres'])->groupBy('genres')->get();
+        $productGenres = Product::whereNotNull('genres')->select(['genres'])->groupBy('genres')->get();
         $productGenresArray = [];
         foreach($productGenres as $productGenre) {
             $product_languages = json_decode($productGenre->genres);

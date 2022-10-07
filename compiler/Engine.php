@@ -22,7 +22,7 @@ class Engine
         self::$parameters = $parameters;
     }
 
-    public static function render(string $view, array $data = [], bool $return = false, $stopExecution = false): string
+    public static function render(string $view, array $data = [], bool $return = false): string
     {
         // self::$path = __DIR__.'../../views/';
         self::$path = 'segments/views/';

@@ -4,6 +4,7 @@ namespace Bones;
 
 use Bones\Skeletons\DBFiller\Refill;
 use Bones\Skeletons\DBGram\Adjustor;
+use Bones\Skeletons\Supporters\BackgroundAction;
 use Bones\Skeletons\Supporters\BaseCodeTemplate;
 
 class Commander
@@ -21,6 +22,7 @@ class Commander
         unset($commands[0]);
         $this->commands = array_values($commands);
         $this->baseCodeTemplate = new BaseCodeTemplate(array_values($this->commands));
+        session()->set('from_cli', true, true);
     }
 
     public static function run(string $args)
@@ -81,6 +83,9 @@ class Commander
             case 'set':
                 $this->set($commandFor);
                 break;
+            case 'listen':
+                $this->listen($commandFor);
+                break;
             case 'self-update':
                 $this->selfUpdate();
                 break;
@@ -116,6 +121,9 @@ class Commander
                 break;
             case 'texter':
                 $this->createTexterFile();
+                break;
+            case 'bg-action':
+                $this->createBGAction();
                 break;
             default:
                 return $this->throwError('%s is not a valid segment to create', [$commandFor]);
@@ -165,6 +173,10 @@ class Commander
             case 'db-backups':
                 $this->clearDir('locker/system/db/backups/');
                 break;
+            case 'bg-actions':
+                (new BackgroundAction())->clearAll();
+                return $this->showMsg('All background processes are cleared', [], 'success');
+                break;
             default:
                 return $this->throwError('%s is not a valid segment to clear', [$commandFor]);
                 break;
@@ -194,6 +206,9 @@ class Commander
                 break;
             case 'dbfiller':
                 $this->execDBFillers();
+                break;
+            case 'bg-actions':
+                $this->execBGActions();
                 break;
             default:
                 return $this->throwError('%s is not a valid segment to run (NOT EXECUTABLE)', [$commandFor]);
@@ -225,6 +240,18 @@ class Commander
         }
     }
 
+    public function listen(string $commandFor)
+    {
+        switch ($commandFor) {
+            case 'bg-actions':
+                $this->listenBGActions();
+                break;
+            default:
+                return $this->throwError('%s is not a valid segment to listen (NOT LISTENABLE)', [$commandFor]);
+                break;
+        }
+    }
+
     public function selfUpdate()
     {
         return (new JollyManager($this))->update();
@@ -236,7 +263,7 @@ class Commander
             return $this->throwError('EMPTY [Model] FILE CAN NOT BE CREATED' . PHP_EOL);
         }
 
-        $modelFilePath = 'segments/Models/' . $this->getDeCamelizedPath() . '.php';
+        $modelFilePath = 'segments/Models/' . $this->getDecamelizedPath() . '.php';
         if (file_exists($modelFilePath)) {
             return $this->throwError('[Model] FILE ALREADY EXISTS at %s' . PHP_EOL, [$modelFilePath]);
         }
@@ -258,7 +285,7 @@ class Commander
         }
         fwrite($f, $this->baseCodeTemplate->model($modelFileNameParts[0], $nameSpace));
         fclose($f);
-        return $this->showMsg('Model saved at ' . $modelFilePath . '!');
+        return $this->showMsg('Model saved at ' . $modelFilePath . '!', [], 'success');
     }
 
     public function createControllerFile()
@@ -267,7 +294,7 @@ class Commander
             return $this->throwError('EMPTY [Controller] FILE CAN NOT BE CREATED' . PHP_EOL);
         }
 
-        $controllerFilePath = 'segments/Controllers/' . $this->getDeCamelizedPath() . 'Controller.php';
+        $controllerFilePath = 'segments/Controllers/' . $this->getDecamelizedPath() . 'Controller.php';
         if (file_exists($controllerFilePath)) {
             return $this->throwError('[Controller] FILE ALREADY EXISTS at %s' . PHP_EOL, [$controllerFilePath]);
         }
@@ -290,7 +317,7 @@ class Commander
         }
         fwrite($f, $this->baseCodeTemplate->controller($controllerFileNameParts[0], $nameSpace));
         fclose($f);
-        return $this->showMsg('Controller saved at ' . $controllerFilePath . '!');
+        return $this->showMsg('Controller saved at ' . $controllerFilePath . '!', [], 'success');
     }
 
     public function createViewFile()
@@ -314,7 +341,7 @@ class Commander
         }
         fwrite($f, $this->baseCodeTemplate->view());
         fclose($f);
-        return $this->showMsg('View saved at ' . $viewFilePath . '!');
+        return $this->showMsg('View saved at ' . $viewFilePath . '!', [], 'success');
     }
 
     public function createBarrierFile()
@@ -323,7 +350,7 @@ class Commander
             return $this->throwError('EMPTY [Barrier] FILE CAN NOT BE CREATED' . PHP_EOL);
         }
 
-        $barrierFilePath = 'segments/Barriers/' . $this->getDeCamelizedPath() . '.php';
+        $barrierFilePath = 'segments/Barriers/' . $this->getDecamelizedPath() . '.php';
         if (file_exists($barrierFilePath)) {
             return $this->throwError('[Barrier] FILE ALREADY EXISTS at %s' . PHP_EOL, [$barrierFilePath]);
         }
@@ -345,7 +372,7 @@ class Commander
         }
         fwrite($f, $this->baseCodeTemplate->barrier($barrierFileNameParts[0], $nameSpace));
         fclose($f);
-        return $this->showMsg('Barrier saved at ' . $barrierFilePath . '!');
+        return $this->showMsg('Barrier saved at ' . $barrierFilePath . '!', [], 'success');
     }
 
     public function createDBGramFile()
@@ -364,7 +391,7 @@ class Commander
             return $this->throwError('EMPTY [Mailer] FILE CAN NOT BE CREATED' . PHP_EOL);
         }
 
-        $mailerFilePath = 'segments/Mail/' . $this->getDeCamelizedPath() . '.php';
+        $mailerFilePath = 'segments/Mail/' . $this->getDecamelizedPath() . '.php';
         if (file_exists($mailerFilePath)) {
             return $this->throwError('[Mailer] FILE ALREADY EXISTS at %s' . PHP_EOL, [$mailerFilePath]);
         }
@@ -387,7 +414,7 @@ class Commander
         }
         fwrite($f, $this->baseCodeTemplate->mailer($mailerFileNameParts[0], $nameSpace));
         fclose($f);
-        return $this->showMsg('Mailer saved at ' . $mailerFilePath . '!');
+        return $this->showMsg('Mailer saved at ' . $mailerFilePath . '!', [], 'success');
     }
 
     public function createTexterFile()
@@ -396,7 +423,7 @@ class Commander
             return $this->throwError('EMPTY [Texter] FILE CAN NOT BE CREATED' . PHP_EOL);
         }
 
-        $texterFilePath = 'segments/SMS/' . $this->getDeCamelizedPath() . '.php';
+        $texterFilePath = 'segments/SMS/' . $this->getDecamelizedPath() . '.php';
         if (file_exists($texterFilePath)) {
             return $this->throwError('[Texter] FILE ALREADY EXISTS at %s' . PHP_EOL, [$texterFilePath]);
         }
@@ -419,7 +446,41 @@ class Commander
         }
         fwrite($f, $this->baseCodeTemplate->texter($texterFileNameParts[0], $nameSpace));
         fclose($f);
-        return $this->showMsg('Texter saved at ' . $texterFilePath . '!');
+        return $this->showMsg('Texter saved at ' . $texterFilePath . '!', [], 'success');
+    }
+
+    public function createBGAction()
+    {
+        if (empty($this->attribute)) {
+            return $this->throwError('EMPTY [Background Action] FILE CAN NOT BE CREATED' . PHP_EOL);
+        }
+
+        $bgActionFilePath = 'segments/BackgroundActions/' . $this->getDecamelizedPath() . '.php';
+        if (file_exists($bgActionFilePath)) {
+            return $this->throwError('[Background Action] FILE ALREADY EXISTS at %s' . PHP_EOL, [$bgActionFilePath]);
+        }
+        $bgActionFileDoors = explode('/', $bgActionFilePath);
+        $bgActionFileNameParts = explode('.php', basename($bgActionFileDoors[count($bgActionFileDoors) - 1]));
+        $nameSpace = '';
+        unset($bgActionFileDoors[count($bgActionFileDoors) - 1]);
+        foreach ($bgActionFileDoors as $doorName => $door) {
+            $bgActionFileDoors[$doorName] = Str::decamelize($door);
+            if (!in_array($door, ['segments'])) {
+                if (!empty($nameSpace))
+                    $nameSpace .= '\\';
+                $nameSpace .= $door;
+            }
+        }
+        if (!file_exists(implode('/', $bgActionFileDoors))) {
+            mkdir(implode('/', $bgActionFileDoors), 0644, true);
+        }
+        $f = fopen($bgActionFilePath, 'wb');
+        if (!$f) {
+            return $this->throwError('%s can not create texter file at ', [$bgActionFilePath]);
+        }
+        fwrite($f, $this->baseCodeTemplate->backgroundAction($bgActionFileNameParts[0], $nameSpace));
+        fclose($f);
+        return $this->showMsg('Background Action file saved at ' . $bgActionFilePath . '!', [], 'success');
     }
 
     public function setConfigSettings()
@@ -428,16 +489,16 @@ class Commander
             $this->showMsgAndContinue($this->settingDir . ' directory already exists. Do you want to remove it and set a fresh config files?' . PHP_EOL);
 
             if ($this->confirm('Enter Y for [Yes] or N for [No]: ')) {
-                $this->showMsgAndContinue('Setting up setting files in %s' . PHP_EOL, [$this->settingDir]);
+                $this->showMsgAndContinue('Setting up setting files in %s' . PHP_EOL, [$this->settingDir], 'info');
             } else {
-                return $this->showMsg('config setup process stopped' . PHP_EOL);
+                return $this->showMsg('config setup process stopped' . PHP_EOL, [], 'error');
             }
         }
 
         if (!file_exists($this->settingDir)) {
-            $this->showMsgAndContinue('Creating %s [SETTING DIRECTORY]' . PHP_EOL, [$this->settingDir]);
+            $this->showMsgAndContinue('Creating %s [SETTING DIRECTORY]' . PHP_EOL, [$this->settingDir], 'warning');
             mkdir($this->settingDir, 655, true);
-            $this->showMsgAndContinue('%s [SETTING DIRECTORY] created!' . PHP_EOL, [$this->settingDir]);
+            $this->showMsgAndContinue('%s [SETTING DIRECTORY] created!' . PHP_EOL, [$this->settingDir], 'success');
         }
 
         return $this->createFreshSettingFiles();
@@ -469,7 +530,7 @@ class Commander
         fwrite($f, $settingContent);
         fclose($f);
 
-        $this->showMsgAndContinue('%s [SETTING FILE] created!' . PHP_EOL, [$settingAppFile]);
+        $this->showMsgAndContinue('%s [SETTING FILE] created!' . PHP_EOL, [$settingAppFile], 'success');
     }
 
     public function createSettingAliasFile()
@@ -486,7 +547,7 @@ class Commander
         fwrite($f, $settingContent);
         fclose($f);
 
-        $this->showMsgAndContinue('%s [SETTING FILE] created!' . PHP_EOL, [$settingAliasFile]);
+        $this->showMsgAndContinue('%s [SETTING FILE] created!' . PHP_EOL, [$settingAliasFile], 'success');
     }
 
     public function createSettingDatabaseFile()
@@ -503,7 +564,7 @@ class Commander
         fwrite($f, $settingContent);
         fclose($f);
 
-        $this->showMsgAndContinue('%s [SETTING FILE] created!' . PHP_EOL, [$settingDatabaseFile]);
+        $this->showMsgAndContinue('%s [SETTING FILE] created!' . PHP_EOL, [$settingDatabaseFile], 'success');
     }
 
     public function createSettingSessionFile()
@@ -520,7 +581,7 @@ class Commander
         fwrite($f, $settingContent);
         fclose($f);
 
-        $this->showMsgAndContinue('%s [SETTING FILE] created!' . PHP_EOL, [$settingSessionFile]);
+        $this->showMsgAndContinue('%s [SETTING FILE] created!' . PHP_EOL, [$settingSessionFile], 'success');
     }
 
     public function createSettingAlertFile()
@@ -537,7 +598,7 @@ class Commander
         fwrite($f, $settingContent);
         fclose($f);
 
-        $this->showMsgAndContinue('%s [SETTING FILE] created!' . PHP_EOL, [$settingAliasFile]);
+        $this->showMsgAndContinue('%s [SETTING FILE] created!' . PHP_EOL, [$settingAliasFile], 'success');
     }
 
     public function createSettingTemplateFile()
@@ -554,7 +615,7 @@ class Commander
         fwrite($f, $settingContent);
         fclose($f);
 
-        $this->showMsgAndContinue('%s [SETTING FILE] created!' . PHP_EOL, [$settingAliasFile]);
+        $this->showMsgAndContinue('%s [SETTING FILE] created!' . PHP_EOL, [$settingAliasFile], 'success');
     }
 
     public function removeModelFile()
@@ -616,7 +677,7 @@ class Commander
         if (!unlink($assetPath))
             return $this->throwError('Error while removing [' . $assetType . ' File] %s', [$assetPath]);
 
-        return $this->showMsg('[' . $assetType . ' File] %s removed successfully!', [$assetPath]);
+        return $this->showMsg('[' . $assetType . ' File] %s removed successfully!', [$assetPath], 'warning');
     }
 
     public function startApp()
@@ -630,11 +691,11 @@ class Commander
                 return $this->throwError('Processing Issue: App can not be started. Kindly remove %s file to start the app manually.', [$this->appStopperFile]);
             } else {
                 $this->writeMessageToAppStopper();
-                return $this->showMsg('App successfully started!');
+                return $this->showMsg('App successfully started!', [], 'success');
             }
         } else {
             $this->writeMessageToAppStopper();
-            return $this->showMsg('App is already in running mode!');
+            return $this->showMsg('App is already in running mode!', [], 'info');
         }
     }
 
@@ -650,11 +711,11 @@ class Commander
                 return $this->throwError('Processing Issue: App can not be stopped. Kindly add %s file to stop the app manually.', [$this->appStopperFile]);
             } else {
                 $this->setAppStopperMsg();
-                return $this->showMsg('App successfully stopped!');
+                return $this->showMsg('App successfully stopped!', [], 'warning');
             }
         } else {
             $this->setAppStopperMsg();
-            return $this->showMsg('App is already in stop mode!');
+            return $this->showMsg('App is already in stop mode!', [], 'warning');
         }
     }
 
@@ -687,7 +748,7 @@ class Commander
             foreach (glob($dir . '*') as $file) {
                 unlink($file);
             }
-            return $this->showMsg('{%s} [DIR] is clear now' . PHP_EOL, [$dir]);
+            return $this->showMsg('{%s} [DIR] is clear now' . PHP_EOL, [$dir], 'success');
         }
         return $this->throwError('{%s} [DIR] does not exists ' . PHP_EOL, [$dir]);
     }
@@ -751,7 +812,17 @@ class Commander
         return (new Refill())->proceedDBFillers($this->attribute);
     }
 
-    public function getDeCamelizedPath()
+    public function execBGActions()
+    {
+        return (new BackgroundAction())->proceedBGActions($this->attribute);
+    }
+
+    public function listenBGActions()
+    {
+        return (new BackgroundAction())->listenBGActions($this->attribute);
+    }
+
+    public function getDecamelizedPath()
     {
         $relativePathParts = explode('/', $this->attribute);
         foreach ($relativePathParts as &$part) {
@@ -768,26 +839,63 @@ class Commander
         return (strtoupper($confirm) == 'Y' || ucfirst(strtolower($confirm)) == 'Yes');
     }
 
-    public function throwError(string $errMsg, array $args = [])
+    public function throwError(string $error_message, array $args = [])
     {
-        $errMsg = $this->agent . $errMsg;
-        $errorParts = array_merge([$errMsg], $args);
-        echo call_user_func_array('sprintf', $errorParts);
+        $error_message = $this->agent() . $this->printedMsg($error_message, 'error');
+        $error_parts = array_merge([$error_message], $args);
+        echo call_user_func_array('sprintf', $error_parts);
         exit;
     }
 
-    public function showMsg(string $errMsg, array $args = [])
+    public function showMsg(string $message, array $args = [], $type = '')
     {
-        $errMsg = $this->agent . $errMsg;
-        $errorParts = array_merge([$errMsg], $args);
-        echo call_user_func_array('sprintf', $errorParts);
+        $message = $this->agent(). $this->printedMsg($message, $type);
+        $error_parts = array_merge([$message], $args);
+        echo call_user_func_array('sprintf', $error_parts);
         return true;
     }
 
-    public function showMsgAndContinue(string $errMsg, array $args = [])
+    public function showMsgAndExit(string $message, array $args = [], $type = '')
     {
-        $errMsg = $this->agent . $errMsg;
-        $errorParts = array_merge([$errMsg], $args);
-        echo call_user_func_array('sprintf', $errorParts);
+        $this->showMsgAndContinue($message, $args, $type);
+        exit;
+    }
+
+    public function showMsgAndContinue(string $message, array $args = [], $type = '')
+    {
+        $message = $this->agent() . $this->printedMsg($message, $type);
+        $error_parts = array_merge([$message], $args);
+        echo call_user_func_array('sprintf', $error_parts);
+    }
+
+    public function agent()
+    {
+        return $this->printedMsg($this->agent, 'important');
+    }
+
+    public function printedMsg($str, $type = '')
+    {
+        switch ($type) {
+            case 'warning' :
+                $color_code = 93;
+                break;
+            case 'info' :
+                $color_code = 95;
+                break;
+            case 'error' :
+                $color_code = 91;
+                break;
+            case 'success' :
+                $color_code = 92;
+                break;
+            case 'important' :
+                $color_code = 96;
+                break;
+            default:
+                $color_code = 0;
+                break;
+        }
+
+        return "\033[" . $color_code . "m" . $str . "\033[0m";
     }
 }

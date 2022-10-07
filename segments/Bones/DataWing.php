@@ -50,6 +50,9 @@ class DataWing
             }
         }
 
+        if (method_exists(Skeleton::class, $name))
+            return Skeleton::$name(...$arguments);
+
         throw new BadMethodException($name.'() method not found');
     }
 

@@ -26,7 +26,8 @@ class BaseCodeTemplate
 
     public function namespace($namespace)
     {
-        $this->template .= 'namespace ' . $namespace . ';' . $this->ls . $this->ls;
+        if (!empty($namespace))
+            $this->template .= 'namespace ' . $namespace . ';' . $this->ls . $this->ls;
     }
 
     public function use($use)
@@ -239,6 +240,30 @@ class BaseCodeTemplate
         $this->tabLine(1, '{', false);
         $this->tabLine(2, "return \$this->template(content('sms/account-activated', ['data' => \$this->data]))", false);
         $this->tabLine(5, "->to('recepient_number')");
+        $this->tabLine(1, '}', false);
+        if (!empty($this->extraAttrs)) {}
+        $this->line('}', false);
+        return $this->template;
+    }
+
+    public function backgroundAction($name, $namespace)
+    {
+        $this->reset();
+        $this->signature();
+        $this->namespace($namespace);
+        $this->use('Bones\Traits\Supporter\RunInBackground');
+        $this->defineClass(Str::decamelize($name));
+        $this->line('{', false);
+        $this->tabLine(1, "use RunInBackground");
+        $this->nl();
+        $this->tabLine(1, "public function __construct(\$data)", false);
+        $this->tabLine(1, '{', false);
+        $this->tabLine(2, "\$this->data = \$data");
+        $this->tabLine(1, '}', false);
+        $this->nl();
+        $this->tabLine(1, "public function prepare()", false);
+        $this->tabLine(1, '{', false);
+        $this->tabLine(2, "return \$this->data; // Prepare your logic here...", false);
         $this->tabLine(1, '}', false);
         if (!empty($this->extraAttrs)) {}
         $this->line('}', false);

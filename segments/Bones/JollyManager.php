@@ -45,17 +45,18 @@ class JollyManager
 
     public function update()
     {
-        $this->console->showMsgAndContinue('[SELF-UPDATE] process will update app base source code from git. Are you sure want to proceed?' . PHP_EOL);
+        $this->console->showMsgAndContinue('[SELF-UPDATE] process will update app base source code from cloud repository. Are you sure want to proceed?' . PHP_EOL, [], 'info');
 
         if (!$this->console->confirm('Enter Y for [Yes] or N for [No]: ')) {
-            $this->console->throwError('[SELF-UPDATE] process aborted by user' . PHP_EOL);
+            $this->console->throwError('[SELF-UPDATE] process aborted by user' . PHP_EOL, [], 'error');
         }
 
-        $this->console->showMsgAndContinue('Fetching latest directory structure from cloud: This may take a while' . PHP_EOL);
+        $this->console->showMsgAndContinue('Fetching latest directory structure from cloud: This may take a while' . PHP_EOL, [], 'info');
         $this->setDirectoryStructure();
         $this->generateFileUrls($this->directory_structure);
-        $this->console->showMsgAndContinue('Update process started. Abortion of process may lead to corrupted code!' . PHP_EOL);
+        $this->console->showMsgAndContinue('Update process started. Abortion of process may lead to corrupted code!' . PHP_EOL, [], 'warning');
         $this->proceed();
+        $this->console->showMsgAndContinue('Congratulations! Your code is now upto date' . PHP_EOL, [], 'success');
     }
 
     public function proceed()
@@ -64,14 +65,14 @@ class JollyManager
             $path = Str::removeWords($url, [$this->endpoint]);
             $file_content = $this->getFileContent($url);
             if (file_exists($path)) {
-                $this->console->showMsgAndContinue('Updating ' . $path . PHP_EOL);
+                $this->console->showMsgAndContinue('Updating ' . $path . PHP_EOL, [], 'warning');
                 file_put_contents($path, $file_content);
             } else {
                 $this->createFile($path);
-                $this->console->showMsgAndContinue('Creating ' . $path . PHP_EOL);
+                $this->console->showMsgAndContinue('Creating ' . $path . PHP_EOL, [], 'important');
                 file_put_contents($path, $file_content);
             }
-            $this->console->showMsgAndContinue($path . ' successfully updated'. PHP_EOL);
+            $this->console->showMsgAndContinue($path . ' successfully updated'. PHP_EOL, [], 'success');
         }
     }
 

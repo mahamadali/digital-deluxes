@@ -11,7 +11,6 @@ use Bones\ModelRelationException;
 trait Relation
 {
     protected $relation_captions = [];
-    protected $where_has = [];
 
     public function hasMany($relatedModel, $foreignKey = null, $localKey = null)
     {
@@ -20,7 +19,7 @@ trait Relation
         $foreignKey = (!empty($foreignKey)) ? $foreignKey :  Str::singular($this->table) . '_id';
         $localKey = (!empty($localKey)) ? $localKey : $this->primary_key;
 
-        $relatedModel = new $relatedModel();
+        $relatedModel = (new $relatedModel());
 
         if (!empty($this->$localKey)) {
             $relatedModel = $relatedModel->where($foreignKey, $this->$localKey);
@@ -39,10 +38,10 @@ trait Relation
     {
         $this->setRelationCaption(__FUNCTION__);
 
-        $foreignKey = (!empty($foreignKey)) ? $foreignKey :  Str::singular($relatedModel->table) . '_id';
-        $localKey = (!empty($localKey)) ? $localKey : $this->primary_key;
-
         $relatedModel = new $relatedModel();
+
+        $foreignKey = (!empty($foreignKey)) ? $foreignKey :  Str::singular($this->table) . '_id';
+        $localKey = (!empty($localKey)) ? $localKey : $this->primary_key;
         
         if (!empty($this->$localKey)) {
             $relatedModel = $relatedModel->where($foreignKey, $this->$localKey);
@@ -50,7 +49,7 @@ trait Relation
 
         return $relatedModel->relationalProps([
             'local_model' => $this->model,
-            'related_model' => $relatedModel->___clearWhere()->model,
+            'related_model' => $relatedModel->model,
             'foreign_key' => $foreignKey,
             'local_key' => $localKey,
             'type' => __FUNCTION__
@@ -66,8 +65,8 @@ trait Relation
         $localKey = (!empty($localKey)) ? $localKey : $this->primary_key;
 
         return $relatedModel->relationalProps([
-            'local_model' => $this->___clearWhere()->model,
-            'related_model' => $relatedModel->___clearWhere()->model,
+            'local_model' => $this->model,
+            'related_model' => $relatedModel->model,
             'foreign_key' => $foreignKey,
             'local_key' => $localKey,
             'type' => __FUNCTION__
@@ -88,20 +87,23 @@ trait Relation
         $interMediateLocalKey = (!empty($interMediateLocalKey)) ? $interMediateLocalKey : $interMediateModel->primary_key;
 
         $interMediateModel = $interMediateModel
-                ->select($interMediateLocalKey, 'has_one_via_intermediate_model_value_' . $interMediateLocalKey)
-                ->leftJoin($this->table, $this->table . '.' . $localKey . '=' . $interMediateModel->table . '.' . $interMediateForeignKey);
+                ->select("`".$interMediateModel->table ."`.`". $interMediateLocalKey. "` as has_one_via_intermediate_model_value_" . $interMediateLocalKey)
+                ->leftJoin($this->table, $this->table . '.' . $localKey, '=', $interMediateModel->table . '.' . $interMediateForeignKey);
 
         if (!empty($this->$localKey)) {
             $interMediateModel = $interMediateModel->where($interMediateForeignKey, $this->$localKey);
+            $intersectData = $interMediateModel->pluck('has_one_via_intermediate_model_value_'.$interMediateLocalKey);
+        } else {
+            $intersectData = [];
         }
-
-        $intersectData = array_column($interMediateModel->getAsArray(), $interMediateLocalKey);
         
-        if (empty($intersectData)) {
-            $intersectData = [-1];
+        if (!empty($intersectData)) {
+            $finalModel = $finalModel->whereIn($localKey, $intersectData)->model;
+        } else {
+            $finalModel->whereIn($finalModelForeignKey, [-1]);
         }
 
-        return $finalModel->whereIn($localKey, $intersectData)->limit(1)->relationalProps([
+        return $finalModel->limit(1)->relationalProps([
             'final_model' => $finalModel->model,
             'intermediate_model' => $interMediateModel->model,
             'intermediate_model_foreign_key' => $interMediateForeignKey,
@@ -126,20 +128,23 @@ trait Relation
         $interMediateLocalKey = (!empty($interMediateLocalKey)) ? $interMediateLocalKey : $interMediateModel->primary_key;
 
         $interMediateModel = $interMediateModel
-                ->select($interMediateLocalKey, 'has_one_via_intermediate_model_value_' . $interMediateLocalKey)
-                ->leftJoin($this->table, $this->table . '.' . $localKey . '=' . $interMediateModel->table . '.' . $interMediateForeignKey);
+                ->select("`".$interMediateModel->table ."`.`". $interMediateLocalKey. "` as has_many_via_intermediate_model_value_" . $interMediateLocalKey)
+                ->leftJoin($this->table, $this->table . '.' . $localKey, '=' , $interMediateModel->table . '.' . $interMediateForeignKey);
 
         if (!empty($this->$localKey)) {
             $interMediateModel = $interMediateModel->where($interMediateForeignKey, $this->$localKey);
+            $intersectData = $interMediateModel->pluck('has_many_via_intermediate_model_value_'.$interMediateLocalKey);
+        } else {
+            $intersectData = [];
         }
-
-        $intersectData = array_column($interMediateModel->getAsArray(), $interMediateLocalKey);
         
-        if (empty($intersectData)) {
-            $intersectData = [-1];
+        if (!empty($intersectData)) {
+            $finalModel = $finalModel->whereIn($finalModelForeignKey, $intersectData)->model;
+        } else {
+            $finalModel->whereIn($finalModelForeignKey, [-1]);
         }
 
-        return $finalModel->whereIn($finalModelForeignKey, $intersectData)->relationalProps([
+        return $finalModel->relationalProps([
             'final_model' => $finalModel->model,
             'intermediate_model' => $interMediateModel->model,
             'intermediate_model_foreign_key' => $interMediateForeignKey,
@@ -163,19 +168,18 @@ trait Relation
         $finalModelLocalKey = (!empty($finalModelLocalKey)) ? $finalModelLocalKey : $finalModel->primary_key;
 
         if (!empty($this->{$localKey})) {
-            $interMediateData = Database::getInstance();
+            $interMediateData = Database::table($interMediateTable);
             $interMediateModel = $interMediateData->where($primaryForeignKey, $this->{$localKey});
-            $intersectData = array_column(
-            (
-                $interMediateModel->__getRows(null, $secondaryForeignKey, $interMediateTable)
-            ), $secondaryForeignKey);
+            $intersectData = $interMediateModel->pluck($secondaryForeignKey);
         }
         
-        if (empty($intersectData)) {
-            $intersectData = [-1];
+        if (!empty($intersectData)) {
+            $finalModel->whereIn($finalModelLocalKey, $intersectData)->model;
+        } else {
+            $finalModel->whereIn($finalModelLocalKey, [-1]);
         }
 
-        return $finalModel->whereIn('id', $intersectData)->relationalProps([
+        return $finalModel->relationalProps([
             'final_model' => $finalModel->model,
             'intermediate_table' => $interMediateTable,
             'intermediate_to_primary_foreign_key' => $primaryForeignKey,
@@ -187,18 +191,58 @@ trait Relation
 
     }
 
-    public function ___whereHas($with, Closure $closure = null)
+    public function prepareWhereHas($with, Closure $closure = null)
     {
-        $this->where_has[$with] = $closure;
+        $where_has = $this->$with();
+        if (!empty($relationalProps = $where_has->relationalProps) && !empty($where_has->relationalProps['type'])) {
+            $relationalProps = (object) $relationalProps;
+            if ($relationalProps->type == 'hasMany') {
+                $relatedModel = (new $relationalProps->related_model());
+                $relatedModel->whereRaw("`".$relatedModel->table."`.`".$relationalProps->foreign_key . '`=' . "`".$this->table."`.`".$relationalProps->local_key."`", []);
+                if (!empty($closure))
+                    $relatedModel->where($closure);
+                $this->db->where_exists[] = 'EXISTS('.$relatedModel->selectRawSQL().')';
+            }
+
+            if ($relationalProps->type == 'parallelTo') {
+                $relatedModel = (new $relationalProps->related_model());
+                if (!empty($closure)) {
+                    $relatedModel->where($closure);
+                    $relatedModel->select($relationalProps->local_key);
+                    $this->db->where_exists[] = "`".$relationalProps->foreign_key . "` IN (".$relatedModel->selectRawSQL().")";
+                }
+            }
+
+            if ($relationalProps->type == 'hasOne') {
+                $relatedModel = (new $relationalProps->related_model());
+                $relatedModel->whereRaw("`".$relatedModel->table."`.`".$relationalProps->foreign_key . '`=' . "`".$this->table."`.`".$relationalProps->local_key."`", []);
+                if (!empty($closure))
+                    $relatedModel->where($closure);
+                $this->db->where_exists[] = 'EXISTS('.$relatedModel->selectRawSQL().')';
+            }
+
+            if ($relationalProps->type == 'belongsToMany') {
+                $final_model_obj = (new $relationalProps->final_model())->select($relationalProps->final_model_local_key);
+                $final_model_obj->where($closure);
+                $final_model_obj_data = $final_model_obj->pluck($relationalProps->final_model_local_key);
+
+                $this->db->where_exists[] = "EXISTS(SELECT * FROM `".$relationalProps->intermediate_table."` WHERE `".$relationalProps->intermediate_table."`.`".$relationalProps->intermediate_to_primary_foreign_key."` = `".$this->table."`.`".$relationalProps->local_key."` AND `".$relationalProps->intermediate_table."`.`".$relationalProps->intermediate_to_secondary_foreign_key."` IN (".implode(',', $final_model_obj_data)."))";
+            }
+        }
 
         return $this;
+    }
+
+    public function prop($prop)
+    {
+        return $this->$prop;
     }
 
     public function add(...$args)
     {
         if (!empty($relation = $this->getRelation('hasOne'))) {
 
-            $relatedModel = $relation['related_model']->___clearWhere();
+            $relatedModel = $relation['related_model']();
 
             $checkRelatedDataExistence = $relatedModel->where($relation['foreign_key'], $relation['related_model_value'])->first();
 
@@ -215,7 +259,7 @@ trait Relation
 
             if (is_array($args[0])) {
 
-                $relatedModel = $relation['related_model']->___clearWhere();
+                $relatedModel = $relation['related_model']();
 
                 if (count($args[0]) == count($args[0], COUNT_RECURSIVE)) {
                     $args[0][$relation['foreign_key']] = $relation['related_model_value'];
@@ -238,7 +282,7 @@ trait Relation
     {
         if (!empty($relation = $this->getRelation('hasOne')) || !empty($relation = $this->getRelation('hasMany'))) {
 
-            $relatedModel = $relation['related_model']->___clearWhere();
+            $relatedModel = $relation['related_model']();
 
             return $relatedModel->where($relation['foreign_key'], $relation['related_model_value'])->___delete();
         } else if (!empty($relation = $this->getRelation('parallelTo'))) {
