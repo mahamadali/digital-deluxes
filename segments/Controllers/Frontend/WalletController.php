@@ -117,7 +117,7 @@ class WalletController
 					// not successful
 					echo $response->getMessage();
 				}
-			} catch(Exception $e) {
+			} catch(\Exception $e) {
 				echo $e->getMessage();
 				exit;
 			}

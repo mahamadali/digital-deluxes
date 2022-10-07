@@ -66,16 +66,6 @@ class AuthController
 		return redirect()->to(route('auth.login'))->go();
 	}
 
-	public function signup()
-	{
-		$practice_areas = PracticeArea::get();
-		$cities = City::get();
-		return render('auth/signup', [
-			'practice_areas' => $practice_areas,
-			 'cities' => $cities
-		]);
-	}
-
 	public function register(Request $request)
 	{
 
