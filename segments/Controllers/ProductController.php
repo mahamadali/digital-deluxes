@@ -179,13 +179,15 @@ class ProductController
         file_put_contents('product-update.txt', $raw_post_data);
 		$data = json_decode($raw_post_data);
 		$product = Product::where('productId', $data->productId)->first();
-		$product->qty = $data->qty;
-		$product->textQty = $data->textQty;
-		$product->kinguinId = $data->kinguinId;
-		$product->price = $data->price;
-		$product->updated_at = $data->updatedAt;
-		$product->cheapestOfferId = json_encode($data->cheapestOfferId);
-		$product->save();
+		if(!empty($product)) {
+			$product->qty = $data->qty;
+			$product->textQty = $data->textQty;
+			$product->kinguinId = $data->kinguinId;
+			$product->price = $data->price;
+			$product->updated_at = $data->updatedAt;
+			$product->cheapestOfferId = json_encode($data->cheapestOfferId);
+			$product->save();
+		}
 
 		ob_start();
 
@@ -200,14 +202,14 @@ class ProductController
 	}
 
 	public function search(Request $request) {
-		$products = Product::whereLike('name', "%".$request->term."%")->orWhereLike('description', "%".$request->term."%")->whereNotLike('name', "%Kinguin%")->select('coverImage', 'id', 'name', 'qty', 'price', 'platform')->get();
+		$products = Product::whereLike('name', "%".$request->term."%")->orWhereLike('description', "%".$request->term."%")->whereNotLike('name', "%Kinguin%")->whereNotNull('price')->select('coverImage', 'id', 'name', 'qty', 'price', 'platform')->get();
 
 		$output = array();
 		if($products->count() > 0)
 		{
 		foreach($products as $product)
 		{
-		if (strpos(strtolower($product->name), 'kinguin') !== false) {
+		if (strpos(strtolower($product->name), 'kinguin') !== false || empty($product->price)) {
 			continue;	
 		}
 		$html = "<table style='width:100%;'>";
@@ -343,7 +345,7 @@ class ProductController
 		$page = 1;
 		$limit = 100;
 		$total_pages = ceil($total_products / $limit);
-
+		$newProducts = 0;
 		for($i = 1; $i <= $total_pages; $i++){
 		
 			$products = callKinguinApi('/v1/products', ['page' => $i, 'limit' => $limit]);
@@ -429,9 +431,15 @@ class ProductController
 							$product_system_requirement->save();
 						}
 					}
+
+					$newProducts++;
 				}
 			}
 			
+		}
+
+		if($newProducts > 0) {
+			file_put_contents('new-products-logs.txt', $newProducts.' products added on '.date('Y-m-d H:i:s'));
 		}
 
 		echo "New Products Successfully Imported.";

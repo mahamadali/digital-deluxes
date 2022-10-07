@@ -49,7 +49,7 @@ class WalletController
 			$preference->back_urls = array(
 				"success" => route('frontend.payment.mercadopago.success').'?dd_payment_method_id='.$paymentMethod->id.'&amount='.$request->balance,
 				"failure" => route('frontend.payment.mercadopago.failure', ['payment_method' => $paymentMethod->id]), 
-				"pending" => route('frontend.payment.mercadopago.pending', ['payment_method' => $paymentMethod->id])
+				"pending" => route('frontend.payment.mercadopago.success').'?dd_payment_method_id='.$paymentMethod->id.'&amount='.$request->balance,
 
 				// "success" => 'https://dev.wisencode.com/webhook/mercadopago/success.php?dd_payment_method_id='.$paymentMethod->id.'&amount='.$request->balance,
 				// "failure" => 'https://dev.wisencode.com/webhook/mercadopago/failure.php',

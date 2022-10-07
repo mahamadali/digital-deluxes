@@ -484,11 +484,19 @@ class PaymentController
         // if(!$request->has('status')) {
         //     return redirect(route('frontend.wallet.recharge', ['payment_method' => $request->dd_payment_method_id]))->withFlashError('Payment failed! Please try again.')->go();
         // }
-        // if($request->status == 'approved') {
+
+        if($request->has('status') && $request->status != 'approved') {
+            return redirect(route('frontend.wallet.recharge', ['payment_method' => $request->dd_payment_method_id]))->withFlashError('Payment failed! Please try again.')->go();
+        }
+        
+        if($request->status == 'approved') {
             $paymentMethod = PaymentMethod::find($request->dd_payment_method_id);
-            $paymentId = $request->payment_id ?? '';
-            \MercadoPago\SDK::setAccessToken(setting('mercadopago.access_token'));
-            $transaction = \MercadoPago\SDK::get("/v1/payments/".$paymentId);
+            $paymentId = $request->has('payment_id') ? $request->payment_id : '';
+
+            if(!empty($paymentId)) {
+                \MercadoPago\SDK::setAccessToken(setting('mercadopago.access_token'));
+                $transaction = \MercadoPago\SDK::get("/v1/payments/".$paymentId);
+            }
             
             $currencyInEur = currencyConverter($paymentMethod->currency, 'EUR', $request->amount);
             $user = user();
@@ -507,9 +515,9 @@ class PaymentController
             $transaction->kind_of_tx = 'CREDIT';
             $transaction->save();
             return redirect(route('frontend.wallet.recharge', ['payment_method' => $paymentMethod->id]))->withFlashSuccess('$'.$request->amount. ' '.$paymentMethod->currency.' added in your wallet successfully')->go();
-        // } else {
-        //     return redirect(route('frontend.wallet.recharge', ['payment_method' => $request->payment_method_id]))->withFlashError('Payment '.$request->status.'!')->go();
-        // }
+        } else {
+            return redirect(route('frontend.wallet.recharge', ['payment_method' => $request->payment_method_id]))->withFlashError('Payment '.$request->status.'!')->go();
+        }
     }
 
     public function mercadopago_failure(Request $request, PaymentMethod $paymentMethod)
@@ -560,10 +568,18 @@ class PaymentController
 
     public function mercadopago_order_success(Request $request)
     {
+        if($request->has('status') && $request->status != 'approved') {
+            return redirect(route('frontend.checkout.index'))->withFlashSuccess('Payment failed! Please try again.')->go();
+        }
+        
         $paymentMethod = PaymentMethod::find($request->dd_payment_method_id);
-        $paymentId = $request->payment_id ?? '';
-        \MercadoPago\SDK::setAccessToken(setting('mercadopago.access_token'));
-        $transaction = \MercadoPago\SDK::get("/v1/payments/".$paymentId);
+        $paymentId = $request->has('payment_id') ? $request->payment_id : '';
+        
+        if(!empty($paymentId)) {
+            \MercadoPago\SDK::setAccessToken(setting('mercadopago.access_token'));
+            $transaction = \MercadoPago\SDK::get("/v1/payments/".$paymentId);
+        }
+        
         $user = user();
         $cartItems = cartItems($user->id);
         
