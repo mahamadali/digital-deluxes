@@ -17,7 +17,7 @@ class StoreController
 	{
 		$operatingSystems = ProductSystemRequirement::selectSet(['system'])->groupBy('system')->orderBy('id','ASC')->get();
 		
-        $products = Product::whereNotLike('platform', 'kinguin')->whereNotLike('name', '%Kinguin%')->whereNotNull('price');
+        $products = Product::whereNotLike('platform', 'kinguin')->whereNotLike('name', '%Kinguin%')->whereNotNull('price')->whereNotNull('qty')->where('qty', 0, '>');
 		
         $name = $request->get("name") ?? '';
 		$category = $request->get("category") ?? '';
@@ -103,7 +103,7 @@ class StoreController
     public function view(Request $request, Product $product, $slug)
 	{
 		$forspecificregion = findForRegion($slug);
-		if(empty($product->price))
+		if(empty($product->price) || empty($product->qty))
 			error('404');
 
 		if($product->product_type == 'M'):
