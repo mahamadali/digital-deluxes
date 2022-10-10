@@ -6,6 +6,7 @@ jQuery(document).ready(function($){
 	//if you change this breakpoint in the style.css file (or _layout.scss if you use SASS), don't forget to update this value as well
 	var $L = 1200,
 		$menu_navigation = $('#main-nav'),
+
 		$cart_trigger = $('#cd-cart-trigger'),
 		$hamburger_icon = $('#cd-hamburger-menu'),
 		$lateral_cart = $('#cd-cart'),
@@ -106,36 +107,38 @@ function isNumber(evt) {
 }
 
 
-$(document).on('keyup keypress blur change', '.quantity', function(e) {
+$(document).on('change', '.quantity', function(e) {
     e.preventDefault();
-    $('#page-preloader').show();
 	var obj = $(this);
 	var qty = $(this).val();
-    $.ajax({
-        url : $(this).data('url'),
-        type : 'POST',
-        data: {
-            'prevent_csrf_token': $('meta[name="token"]').attr('content'),
-            'qty': $(this).val()
-        },
-        dataType: 'json',
-        success: function(response) {
-			if(response.status == 200) {
-				toastr.success(response.message);
-				doCalc();
-			} else {
-				toastr.error(response.message);
-				$(obj).val(qty-1);
-				doCalc();
+	if(qty > 0) {
+		$('#page-preloader').show();
+		$.ajax({
+			url : $(this).data('url'),
+			type : 'POST',
+			data: {
+				'prevent_csrf_token': $('meta[name="token"]').attr('content'),
+				'qty': $(this).val()
+			},
+			dataType: 'json',
+			success: function(response) {
+				if(response.status == 200) {
+					toastr.success(response.message);
+					doCalc();
+				} else {
+					toastr.error(response.message);
+					$(obj).val(qty-1);
+					doCalc();
+				}
+				$('#page-preloader').hide();
+				
+			},
+			error: function() {
+				$('#page-preloader').hide();
+				toastr.success('Something went wrong!');
 			}
-            $('#page-preloader').hide();
-            
-        },
-        error: function() {
-            $('#page-preloader').hide();
-            toastr.success('Something went wrong!');
-        }
-    });
+		});
+	}
 })
 
 function doCalc(){

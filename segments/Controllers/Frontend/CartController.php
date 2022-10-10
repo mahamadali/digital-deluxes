@@ -106,6 +106,9 @@ class CartController
 
 	public function updateQty(Request $request, Product $product)
 	{
+		if($request->has('qty') && $request->has('qty') <= 0) {
+			return response()->json(['status' => 304, 'message' => 'Qty should not empty!']); 
+		}
 		$is_cart_exist = Cart::where('product_id', $product->id)->where('user_id', auth()->id)->first();
 		$product = Product::where('id',$product->id)->first();
 		
