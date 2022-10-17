@@ -209,7 +209,7 @@ class ProductController
 		{
 		foreach($products as $product)
 		{
-		if (strpos(strtolower($product->name), 'kinguin') !== false || empty($product->price)) {
+		if (strpos(strtolower($product->name), 'kinguin') !== false || empty($product->price) || empty($product->qty)) {
 			continue;	
 		}
 		$html = "<table style='width:100%;'>";

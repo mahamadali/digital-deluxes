@@ -164,7 +164,8 @@ if (! function_exists('cartTotal')) {
         $cart_details  = Cart::where('user_id', $userId)->orderBy('id')->get();
         $total = 0;
         foreach($cart_details as $cart) {
-            $total += remove_format($cart->product->price) * $cart->product_qty;
+            $product_qty = !empty($cart->product_qty) ? $cart->product_qty : 1;
+            $total += remove_format($cart->product->price) * $product_qty;
         }
         return $total;
     }

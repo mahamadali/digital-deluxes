@@ -151,22 +151,24 @@ class PaymentController
                     $mannual_order_item->product_qty = $manualOrderItems->product_qty;
                     $mannual_order_item->save();
 
-                    $productKeys = ProductKeys::where('product_id', $manualOrderItems->product_id)->where('is_used', 0)->get($manualOrderItems->product_qty);
+                    if($transaction->status == 'APPROVED') {
+                        $productKeys = ProductKeys::where('product_id', $manualOrderItems->product_id)->where('is_used', 0)->get($manualOrderItems->product_qty);
 
-                    if(!empty($productKeys)) {
-                        foreach($productKeys as $productKey) {
-                            $game_key = new GameKey();
-                            $game_key->order_id = $mannual_order->id;
-                            $game_key->product_id = $manualOrderItems->product_id;
-                            $game_key->serial = $productKey->key;
-                            $game_key->type = 'text/plain';
-                            $game_key->name = $manualOrderItems->product->name;
-                            $game_key->kinguinId = NULL;
-                            $game_key->offerId = NULL;
-                            $game_key->save();
+                        if(!empty($productKeys)) {
+                            foreach($productKeys as $productKey) {
+                                $game_key = new GameKey();
+                                $game_key->order_id = $mannual_order->id;
+                                $game_key->product_id = $manualOrderItems->product_id;
+                                $game_key->serial = $productKey->key;
+                                $game_key->type = 'text/plain';
+                                $game_key->name = $manualOrderItems->product->name;
+                                $game_key->kinguinId = NULL;
+                                $game_key->offerId = NULL;
+                                $game_key->save();
 
-                            $productKey->is_used = 1;
-                            $productKey->save();
+                                $productKey->is_used = 1;
+                                $productKey->save();
+                            }
                         }
                     }
                 }
@@ -200,63 +202,65 @@ class PaymentController
                     $orderItem->product_qty = $kinguinOrderItem->product_qty;
                     $orderItem->save();
                 }
-
-                $orderProducts = OrderItem::where('order_id', $order->id)->get();
+                
+                if($transaction->status == 'APPROVED') {
+                    $orderProducts = OrderItem::where('order_id', $order->id)->get();
         
-                $products = [];
-                foreach($orderProducts as $orderProduct) {
-                    $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
-                    // $keyTypeResponse = $this->fetchKeyType($orderProduct);
-                    // $keyTypeResponse = json_decode($keyTypeResponse);
-                    // $offerId = $this->fetchOfferId($keyTypeResponse);
-                    // $offer = json_decode($offerId);
+                    $products = [];
+                    foreach($orderProducts as $orderProduct) {
+                        $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
+                        // $keyTypeResponse = $this->fetchKeyType($orderProduct);
+                        // $keyTypeResponse = json_decode($keyTypeResponse);
+                        // $offerId = $this->fetchOfferId($keyTypeResponse);
+                        // $offer = json_decode($offerId);
+                        
+                        $products[] = (object) [
+                            'kinguinId' => $orderProduct->product->kinguinId,
+                            'qty' => $orderProduct->product_qty,
+                            'name' => $orderProduct->product_name,
+                            'price' => $orderProduct->product->price_original_value,
+                            // 'keyType' => 'text',
+                            'offerId' => $offerId,
+                        ];
+                    }
+
                     
-                    $products[] = (object) [
-                        'kinguinId' => $orderProduct->product->kinguinId,
-                        'qty' => $orderProduct->product_qty,
-                        'name' => $orderProduct->product_name,
-                        'price' => $orderProduct->product->price_original_value,
-                        // 'keyType' => 'text',
-                        'offerId' => $offerId,
+                    // $orderExternalId = $this->orderExternalId($keyTypeResponse);
+                    // $orderExternalId = json_decode($orderExternalId);
+                    $params = (object) [
+                        'products' => $products,
+                        'orderExternalId' => $order->reference
                     ];
+
+                    // dd(json_decode("{\"products\":[{\"kinguinId\":1949,\"qty\":1,\"name\":\"Counter-Strike: Source Steam CD Key\",\"price\":5.79}]}"));
+
+                    // dd($params);
+
+                    // Generated by curl-to-PHP: http://incarnate.github.io/curl-to-php/
+                    $ch = curl_init();
+
+                    curl_setopt($ch, CURLOPT_URL, setting('kinguin.endpoint').'/v1/order');
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_POST, 1);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+
+                    $headers = array();
+                    $headers[] = 'X-Api-Key: '.setting('kinguin.api_key');
+                    $headers[] = 'Content-Type: application/json';
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+                    $order_result = curl_exec($ch);
+                    if (curl_errno($ch)) {
+                        echo 'Error:' . curl_error($ch);
+                    }
+                    curl_close($ch);
+                    file_put_contents('create-order.txt', $order_result);
+
+                    $orderData = json_decode($order_result);
+                    
+                    $order->kg_orderid = $orderData->orderId ?? '';
+                    $order->save();
                 }
-
-                
-                // $orderExternalId = $this->orderExternalId($keyTypeResponse);
-                // $orderExternalId = json_decode($orderExternalId);
-                $params = (object) [
-                    'products' => $products,
-                    'orderExternalId' => $order->reference
-                ];
-
-                // dd(json_decode("{\"products\":[{\"kinguinId\":1949,\"qty\":1,\"name\":\"Counter-Strike: Source Steam CD Key\",\"price\":5.79}]}"));
-
-                // dd($params);
-
-                // Generated by curl-to-PHP: http://incarnate.github.io/curl-to-php/
-                $ch = curl_init();
-
-                curl_setopt($ch, CURLOPT_URL, setting('kinguin.endpoint').'/v1/order');
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
-
-                $headers = array();
-                $headers[] = 'X-Api-Key: '.setting('kinguin.api_key');
-                $headers[] = 'Content-Type: application/json';
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-                $order_result = curl_exec($ch);
-                if (curl_errno($ch)) {
-                    echo 'Error:' . curl_error($ch);
-                }
-                curl_close($ch);
-                file_put_contents('create-order.txt', $order_result);
-
-                $orderData = json_decode($order_result);
-                
-                $order->kg_orderid = $orderData->orderId ?? '';
-                $order->save();
             }
 
             $paymentMethod = PaymentMethod::where('title', 'Wompi')->first();

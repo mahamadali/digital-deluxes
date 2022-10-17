@@ -21,16 +21,17 @@ class WelcomeController
     		$productIds = array_map(function($element) {
 				return $element;
 			},$latest_products_slider);
-    		$latest_products = Product::whereIn('id',$productIds)->whereNotNull('coverImageOriginal')->get();
+    		$latest_products = Product::whereIn('id',$productIds)->whereNotNull('coverImageOriginal')->whereNotLike('platform', 'kinguin')->whereNotLike('name', '%Kinguin%')->whereNotNull('price')->whereNotNull('qty')->where('qty', 0, '>')->get();
     	}
     	else
     	{
-			$latest_products = Product::whereNotNull('coverImageOriginal')->limit(3)->get()->shuffle();
+			$latest_products = Product::whereNotNull('coverImageOriginal')->whereNotLike('platform', 'kinguin')->whereNotLike('name', '%Kinguin%')->whereNotNull('price')->whereNotNull('qty')->where('qty', 0, '>')->orderByRaw('RAND()')->limit(3)->get();
     	}
 
-        $tranding_products = Product::whereNotNull('coverImageOriginal')->limit(3)->get()->shuffle();
+        $tranding_products = Product::whereNotNull('coverImageOriginal')->whereNotLike('platform', 'kinguin')->whereNotLike('name', '%Kinguin%')->whereNotNull('price')->whereNotNull('qty')->where('qty', 0, '>')->orderByRaw('RAND()')->limit(3)->get();
 
-        $popular_products = Product::whereNotNull('coverImageOriginal')->limit(10)->get()->shuffle();
+        $popular_products = Product::whereNotNull('coverImageOriginal')->whereNotLike('platform', 'kinguin')->whereNotLike('name', '%Kinguin%')->whereNotNull('price')->whereNotNull('qty')->where('qty', 0, '>')->orderByRaw('RAND()')->limit(10)->get();
+        
 
         return render('frontend/home', [
 			'latest_products' => $latest_products,
