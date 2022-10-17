@@ -93,11 +93,8 @@ class WelcomeController
 		}
 
 
-		if (User::where('id', auth()->id)->update($userData)) {
-			return redirect()->withFlashSuccess('Profile updated successfully!')->with('old', $request->all())->back();
-		} else {
-			return redirect()->withFlashError('Oops! Something went wrong!')->back();
-		}
+		User::where('id', auth()->id)->update($userData);
+		return redirect()->withFlashSuccess('Profile updated successfully!')->with('old', $request->all())->back();
 
 	}
 
@@ -120,11 +117,8 @@ class WelcomeController
 			unset($userData['password']);
 		}
 
-		if (User::where('id', auth()->id)->update($userData)) {
-			return redirect()->withFlashSuccess('Profile password updated successfully!')->with('old', $request->all())->back();
-		} else {
-			return redirect()->withFlashError('Oops! Something went wrong!')->back();
-		}
+		User::where('id', auth()->id)->update($userData);
+		return redirect()->withFlashSuccess('Profile password updated successfully!')->with('old', $request->all())->back();
 
 	}
 

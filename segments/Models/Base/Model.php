@@ -247,7 +247,7 @@ class Model
         
         $modelObj = $this->selfBuild($attributes, $result, true);
 
-        return (new Set($this->sanitize($modelObj)));
+        return $this->sanitize($modelObj);
     }
 
     public function prepareSanitize($modelObj = null)

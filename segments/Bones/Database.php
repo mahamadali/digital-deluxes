@@ -93,7 +93,6 @@ class Database extends Builder
     {
         $config = self::getCurrentConfig();
         $builder = new Builder($config);
-        $builder->setConfig(self::getCurrentConfig());
         return $builder;
     }
 

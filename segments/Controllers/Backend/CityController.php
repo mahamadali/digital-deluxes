@@ -62,11 +62,8 @@ class CityController
 
 		$cityData = $request->getOnly(['name']);
 
-		if (City::where('id', $request->id)->update($cityData)) {
-			return redirect()->withFlashSuccess('City updated successfully!')->with('old', $request->all())->back();
-		} else {
-			return redirect()->withFlashError('Oops! Something went wrong!')->back();
-		}
+		City::where('id', $request->id)->update($cityData);
+		return redirect()->withFlashSuccess('City updated successfully!')->with('old', $request->all())->back();
 	}
 
 	public function delete(Request $request, City $city)

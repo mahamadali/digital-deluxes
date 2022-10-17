@@ -112,6 +112,7 @@ class StoreController
 		if($product->product_type == 'K'):
 			$productQty = $product->qty;
 		endif;
+		
 		$platformLogos = PlatformLogo::where('platform', $product->platform)->get();
 		return render('frontend/store/view_product', [
 			'product' => $product,

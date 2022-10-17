@@ -30,6 +30,11 @@ class Builder
     public $where_exists = [];
     public $relationalProps = [];
 
+    public function __construct($config = null)
+    {
+        $this->setConfig($config);
+    }
+
     public function setTable($name)
     {
         $this->TABLE = $name;
@@ -37,7 +42,8 @@ class Builder
 
     public function setConfig($config)
     {
-        $this->CONFIG = $config;
+        if (!empty($config))
+            $this->CONFIG = $config;
     }
 
     public function setAction($action)
@@ -86,16 +92,16 @@ class Builder
         $this->PARAMS = $params;
 
         if ($this->PARAMS == null) {
-            $stmt = $this->CONFIG->pdo()->query($query);
+            $stmt = Config::getPDO()->query($query);
         } else {
-            $stmt = $this->CONFIG->pdo()->prepare($query);
+            $stmt = Config::getPDO()->prepare($query);
             $stmt->execute($this->PARAMS);
         }
 
         Database::setQueryLog($this->mapParams($query, $this->PARAMS));
 
         if (!$stmt) {
-            $db_error = $this->CONFIG->pdo()->errorInfo();
+            $db_error = Config::getPDO()->errorInfo();
             $db_error_message = $db_error[0] . '[#' . $db_error[1] . ']: ' . $db_error[2];
             throw new DatabaseException($db_error_message);
         }

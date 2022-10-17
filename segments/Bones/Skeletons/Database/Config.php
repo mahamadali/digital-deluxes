@@ -39,7 +39,7 @@ class Config extends Database
     private $CHARSET = 'utf8mb4';
     private $COLLATION = '';
 
-    private $PDO = false;
+    protected static $PDO;
 
 
     public function __construct(array $params = [])
@@ -58,7 +58,10 @@ class Config extends Database
         $this->setPassword($params['password'] ?? false);
     }
 
-
+    public static function getPDO()
+    {
+        return self::$PDO;
+    }
 
     public function setCharset(string $charset)
     {
@@ -107,7 +110,6 @@ class Config extends Database
 
     public function makeConnectionString()
     {
-
         // driver and host
         $dsn = "$this->DRIVER:host=$this->SERVER_HOST";
 
@@ -126,13 +128,22 @@ class Config extends Database
         return $dsn;
     }
 
+    public function isConnected()
+    {
+        return $this->IS_CONNECT;
+    }
+
+    public function setConnected()
+    {
+        $this->IS_CONNECT = true;
+    }
 
     public function connect()
     {
-        if (!$this->IS_CONNECT) {
+        if (!self::$PDO) {
             $dsn = $this->makeConnectionString();
 
-            $this->PDO = new \PDO($dsn, $this->USERNAME, $this->PASSWORD, [
+            self::$PDO = new \PDO($dsn, $this->USERNAME, $this->PASSWORD, [
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_WARNING,
                 \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES '$this->CHARSET' COLLATE '$this->COLLATION'"
             ]);
@@ -142,7 +153,7 @@ class Config extends Database
                 Database::$USE_DATABASE = 'main';
             }
 
-            $this->IS_CONNECT = true;
+            $this->setConnected();
         }
     }
 
@@ -151,13 +162,13 @@ class Config extends Database
         return $this->FETCH;
     }
 
-    public function pdo()
+    public static function pdo()
     {
-        if (!$this->PDO) {
+        if (!self::$PDO) {
             throw new \Exception("The database settings were not made correctly and the connection was not established\n Please check 'https://github.com/webrium/foxql' Documents.");
         }
 
-        return $this->PDO;
+        return self::$PDO;
     }
 
     public function getAsArray()
