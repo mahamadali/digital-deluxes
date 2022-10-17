@@ -155,6 +155,8 @@ class Config extends Database
 
             $this->setConnected();
         }
+
+        return self::$PDO;
     }
 
     public function getFetch()

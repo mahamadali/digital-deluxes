@@ -15,9 +15,11 @@ class StoreController
 {
 	public function index(Request $request)
 	{
+		\Bones\Database::keepQueryLog();
+
 		$operatingSystems = ProductSystemRequirement::select(['system'])->groupBy('system')->orderBy('id','ASC')->get();
 		
-        $products = Product::whereNotLike('platform', 'kinguin')->whereNotLike('name', '%Kinguin%')->whereNotNull('price')->whereNotNull('qty')->where('qty', 0, '>');
+        $products = Product::whereNotLike('platform', 'kinguin')->whereNotLike('name', '%Kinguin%')->whereNotNull('price')->whereNotNull('qty')->where('qty', '>', 0);
 		
         $name = $request->get("name") ?? '';
 		$category = $request->get("category") ?? '';
@@ -46,19 +48,19 @@ class StoreController
 			$productIds = array_map(function($element) {
 				return $element;
 			},$productIds);
-            $products = $products->whereIn('id', $productIds);
+            $products->whereIn('id', $productIds);
         }
 
 		if($category){
-			$products = $products->whereLike('platform', '%'.$category.'%');
+			$products->whereLike('platform', '%'.$category.'%');
         }
 
 		if($language){
-			$products = $products->whereLike('languages', "%$language%");
+			$products->whereLike('languages', "%$language%");
         }
 
 		if($genre){
-			$products = $products->whereLike('genres', "%$genre%");
+			$products->whereLike('genres', "%$genre%");
         }
 
 		if($name){
@@ -69,27 +71,26 @@ class StoreController
 					$conc_string .= $namePart;
 					$conc_string .= '%';
 				}
-				$products = $products->whereLike('name', $conc_string);
+				$products->whereLike('name', $conc_string);
 			} else {
-				$products = $products->whereLike('name', '%'.$name.'%');
+				$products->whereLike('name', '%'.$name.'%');
 			}
 			
 			// $products = $products->where('MATCH(name) AGAINST ("'.$name.'" IN NATURAL LANGUAGE MODE)');
         }
 
 		if($min_price){
-            $products = $products->where('price', '>=', (int) $min_price);
+            $products->whereRaw('CAST(price AS UNSIGNED) >= ?' , [ $min_price ]);
         }
 
 		if($max_price){
-            $products = $products->where('price', '<=', (int) $max_price);
+            $products->whereRaw('CAST(price AS UNSIGNED) <= ?', [ $max_price ]);
         }
 
 		$product_limit = 12;
         $products = $products->paginate(12);
 
-		// echo \Bones\Database::getLastQuery();
-		// exit;
+		//dd(\Bones\Database::getQueryLog());
 		
         return render('frontend/store/index', [
 			'products' => $products,

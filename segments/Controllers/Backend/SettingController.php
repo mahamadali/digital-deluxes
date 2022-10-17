@@ -68,7 +68,7 @@ class SettingController
 
 	public function platformLogos(Request $request) {
 
-		$logos = [];
+		$logos = new \Bones\Set([]);
 		if($request->has('platform')) {
 			
 			$logos = PlatformLogo::where('platform', $request->platform)->get();

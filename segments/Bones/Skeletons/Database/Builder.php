@@ -6,6 +6,7 @@ use Bones\Database;
 use Bones\DatabaseException;
 use Bones\Str;
 use Bones\Traits\Database\Process;
+use PDO;
 use stdClass;
 
 class Builder
@@ -1542,21 +1543,27 @@ class Builder
     {
         $this->CONFIG->connect();
 
-        foreach ($params as $index => $param) {
-            if (empty($param)) {
-                continue;
+        $keys = [];
+        $values = $params;
+
+        foreach ($params as $key => $value) {
+            if (is_string($key)) {
+                $keys[] = '/'.$key.'/';
+            } else {
+                $keys[] = '/[?]/';
             }
-            if (
-                $param &&
-                !Str::startsWith($param, "`") &&
-                !Str::endsWith($param, "`")
-            ) {
-                $param = $this->CONFIG->pdo()->quote($param);
-            }
-            $query = str_replace($index, $param, $query);
+
+            if (is_string($value))
+                $values[$key] = Config::getPDO()->quote($value);
+
+            if (is_array($value))
+                $values[$key] = implode("','", Config::getPDO()->quote($value));
+
+            if (is_null($value))
+                $values[$key] = 'NULL';
         }
 
-        return $query;
+        return preg_replace($keys, $values, $query);
     }
 
     public function __call($name, $arguments)

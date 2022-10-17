@@ -8,6 +8,7 @@ class JollyManager
     protected $endpoint = 'https://bitbucket.org/wisencode/jolly/raw/HEAD/';
     protected $directory_structure = [];
     protected $file_urls = [];
+    protected $special_files = ['/commander', '/readme', '/.htaccess'];
 
     public function __construct($console)
     {
@@ -59,16 +60,25 @@ class JollyManager
         $this->console->showMsgAndContinue('Congratulations! Your code is now upto date' . PHP_EOL, [], 'success');
     }
 
+    public function parseSpecialFiles($path)
+    {
+        if (in_array($path, $this->special_files))
+            return ltrim($path, '/');
+        
+        return $path;
+    }
+
     public function proceed()
     {
         foreach ($this->file_urls as $url) {
             $path = Str::removeWords($url, [$this->endpoint]);
             $file_content = $this->getFileContent($url);
+            $path = $this->parseSpecialFiles($path);
             if (file_exists($path)) {
                 $this->console->showMsgAndContinue('Updating ' . $path . PHP_EOL, [], 'warning');
                 file_put_contents($path, $file_content);
             } else {
-                $this->createFile($path);
+                $path = $this->createFile($path);
                 $this->console->showMsgAndContinue('Creating ' . $path . PHP_EOL, [], 'important');
                 file_put_contents($path, $file_content);
             }
@@ -78,11 +88,17 @@ class JollyManager
 
     public function createFile($path)
     {
-        if (!file_exists(dirname($path)))
-            mkdir(dirname($path), 0644, true);
+        if (in_array($path, $this->special_files)) {
+            $path = ltrim($path, '/');
+        } else {
+            if (!file_exists(dirname($path)))
+                mkdir(dirname($path), 0644, true);
+        }
 
         $f = fopen($path, 'w');
         fclose($f);
+
+        return $path;
     }
 
     public function getFileContent($url)
