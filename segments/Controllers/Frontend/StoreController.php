@@ -88,7 +88,7 @@ class StoreController
         }
 
 		$product_limit = 12;
-        $products = $products->paginate(12);
+        $products = $products->paginate($product_limit);
 
 		//dd(\Bones\Database::getQueryLog());
 		

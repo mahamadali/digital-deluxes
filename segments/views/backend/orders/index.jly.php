@@ -42,22 +42,28 @@
             </tr>
           </thead>
           <tbody>
-            @foreach($orders as $order):
-                    <tr>
-                        <td><input type="checkbox" name="delete_order" id="delete_order" class="delete_order" value="{{$order->id}}"></td>
-                        <td>{{ $order->id }}</td>
-                        <td>{{ $order->user->fullName }} #{{ $order->user->id }}</td>
-                        <td>{{ $order->kg_orderid }}</td>
-                        <td>{{ $order->transaction_id }}</td>
-                        <td>${{ number_format($order->order_amount, 2) }}</td>
-                        <td>{{ $order->status }}</td>
-                        <td>{{ $order->order_type }}</td>
-                        <td>{{ date('M d, Y, H:i', strtotime($order->created_at)) }}</td>
-                        <td>
-                            <a href="{{ route('admin.orders.view', ['order' => $order->id]) }}" class="btn btn-sm btn-info">View</a>
-                        </td>
-                    </tr>
+            @if ($orders->count() > 0):
+              @foreach($orders as $order):
+                      <tr>
+                          <td><input type="checkbox" name="delete_order" id="delete_order" class="delete_order" value="{{$order->id}}"></td>
+                          <td>{{ $order->id }}</td>
+                          <td>{{ $order->user->fullName }} #{{ $order->user->id }}</td>
+                          <td>{{ $order->kg_orderid }}</td>
+                          <td>{{ $order->transaction_id }}</td>
+                          <td>${{ number_format($order->order_amount, 2) }}</td>
+                          <td>{{ $order->status }}</td>
+                          <td>{{ $order->order_type }}</td>
+                          <td>{{ date('M d, Y, H:i', strtotime($order->created_at)) }}</td>
+                          <td>
+                              <a href="{{ route('admin.orders.view', ['order' => $order->id]) }}" class="btn btn-sm btn-info">View</a>
+                          </td>
+                      </tr>
                 @endforeach
+                @else
+                  <tr>
+                    <td colspan="10">No order found</td>
+                  </tr>
+                @endif
           </tbody>
         </table>
       </div>

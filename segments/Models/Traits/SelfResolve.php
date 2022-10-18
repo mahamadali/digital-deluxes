@@ -206,9 +206,9 @@ trait SelfResolve
         return $model->save();
     }
     
-    public function selfBuild($attributes, $entries, $is_self_only = false)
+    public function selfBuild($model_obj_skeleton, $attributes, $entries, $is_self_only = false)
     {
-        $model = (new $this->model());
+        $model = $model_obj_skeleton;
         $model = $this->build($model, $attributes);
         $model->setSelfOnly($is_self_only);
         $model->db->model = $model;

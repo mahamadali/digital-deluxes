@@ -222,13 +222,12 @@ class Model
         $result = [];
 
         foreach ($entries as $key => $entry) {
+            $model_obj = new $this->model();
+            $model_obj = $this->build($model_obj, $entry);
+            $model_obj->db->model = $model_obj;
 
-            $modelObj = (new $this->model());
-            $modelObj = $this->build($modelObj, $entry);
-            $modelObj->db->model = $modelObj;
-
-            if (!empty($modelObj)) {
-                $result[$key] = $modelObj;
+            if (!empty($model_obj)) {
+                $result[$key] = $model_obj;
             }
         }
 
@@ -245,22 +244,22 @@ class Model
 
         $attributes = get_object_vars($result);
         
-        $modelObj = $this->selfBuild($attributes, $result, true);
+        $model_obj = $this->selfBuild((new $this->model()), $attributes, $result, true);
 
-        return $this->sanitize($modelObj);
+        return $this->sanitize($model_obj);
     }
 
-    public function prepareSanitize($modelObj = null)
+    public function prepareSanitize($model_obj = null)
     {
-        if (!empty($modelObj)) 
-            return $modelObj;
+        if (!empty($model_obj)) 
+            return $model_obj;
             
-        $modelObj = ($modelObj == null) ? $this : $modelObj;
+        $model_obj = ($model_obj == null) ? $this : $model_obj;
 
-        return $modelObj->excludeAttrs(array_merge(['db', 'reserved_props', 'relation_captions', 'model', 'attaches', 'with', 'without', 'elements', 'hidden', 'relationalProps'], $modelObj->reserved_props));
+        return $model_obj->excludeAttrs(array_merge(['db', 'reserved_props', 'relation_captions', 'model', 'attaches', 'with', 'without', 'elements', 'hidden', 'relationalProps'], $model_obj->reserved_props));
     }
     
-    public function preparePaginate($page_limit = 0, $query_param = 'page')
+    public function preparePaginate($page_limit = 10, $query_param = 'page')
     {
         $page = (!empty(request()->get($query_param))) ? request()->get($query_param) : 1;
 
@@ -279,9 +278,9 @@ class Model
 
             $attributes = (is_object($entry)) ? get_object_vars($entry) : array_keys($entry);
 
-            $modelObj = $this->selfBuild($attributes, $entry, true);
+            $model_obj = $this->selfBuild(new $this->model(), $attributes, $entry, true);
 
-            $wrapped[] = $modelObj;
+            $wrapped[] = $model_obj;
         }
 
         return $wrapped;
@@ -372,4 +371,5 @@ class Model
 
         throw new BadMethodException('Method {' . $name . '} not found in ' . $this->model);
     }
+
 }

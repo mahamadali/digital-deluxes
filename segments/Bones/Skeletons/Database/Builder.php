@@ -30,6 +30,8 @@ class Builder
     public $model = null;
     public $where_exists = [];
     public $relationalProps = [];
+    
+    protected static $PDO_CONN = false;
 
     public function __construct($config = null)
     {
@@ -89,29 +91,30 @@ class Builder
 
     protected function execute($query, $params = [], $return = false)
     {
-        $this->CONFIG->connect();
+        if (!self::$PDO_CONN)
+            self::$PDO_CONN = $this->CONFIG->connect();
+            
         $this->PARAMS = $params;
 
         if ($this->PARAMS == null) {
-            $stmt = Config::getPDO()->query($query);
+            $stmt = self::$PDO_CONN->query($query);
         } else {
-            $stmt = Config::getPDO()->prepare($query);
+            $stmt = self::$PDO_CONN->prepare($query);
             $stmt->execute($this->PARAMS);
         }
 
         Database::setQueryLog($this->mapParams($query, $this->PARAMS));
 
         if (!$stmt) {
-            $db_error = Config::getPDO()->errorInfo();
+            $db_error = self::$PDO_CONN->errorInfo();
             $db_error_message = $db_error[0] . '[#' . $db_error[1] . ']: ' . $db_error[2];
             throw new DatabaseException($db_error_message);
         }
 
-        if ($return) {
+        if ($return)
             $result = $stmt->fetchAll($this->CONFIG->getFetch());
-        } else {
+        else
             $result = $stmt->rowCount();
-        }
 
         return $result;
     }
@@ -1358,6 +1361,7 @@ class Builder
 
     public function update(array $values)
     {
+        $this->applySelfOnlyCheck();
         $return_model = $this->hasModel() && $this->model->isSelfOnly();
         $this->applySelfWhere();
         $this->setAction("update");
@@ -1365,7 +1369,7 @@ class Builder
 
         $return = $this->execute($query, $this->PARAMS);
 
-        if ($return_model) {
+        if ($return_model && false === true) {
             return (new $this->model->model())
                 ->where($this->PRIMARY_KEY, $this->model->{$this->PRIMARY_KEY})
                 ->first();
@@ -1403,11 +1407,22 @@ class Builder
         }
     }
 
+    public function applySelfOnlyCheck()
+    {
+        if (!$this->hasModel())
+            return null;
+        
+        if (isset($this->PRIMARY_KEY)) {
+            $model = $this->model;
+            if (!empty($model->{$this->PRIMARY_KEY}))
+                $model->setSelfOnly(true);
+        }
+    }
+
     public function applySelfWhere()
     {
-        if (!$this->hasModel()) {
+        if (!$this->hasModel())
             return null;
-        }
 
         $model = $this->model;
 
@@ -1541,7 +1556,8 @@ class Builder
 
     public function mapParams($query, $params)
     {
-        $this->CONFIG->connect();
+        if (!self::$PDO_CONN)
+            self::$PDO_CONN = $this->CONFIG->connect();
 
         $keys = [];
         $values = $params;
@@ -1554,10 +1570,10 @@ class Builder
             }
 
             if (is_string($value))
-                $values[$key] = Config::getPDO()->quote($value);
+                $values[$key] = self::$PDO_CONN->quote($value);
 
             if (is_array($value))
-                $values[$key] = implode("','", Config::getPDO()->quote($value));
+                $values[$key] = implode("','", self::$PDO_CONN->quote($value));
 
             if (is_null($value))
                 $values[$key] = 'NULL';

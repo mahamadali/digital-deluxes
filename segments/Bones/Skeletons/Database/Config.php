@@ -167,7 +167,7 @@ class Config extends Database
     public static function pdo()
     {
         if (!self::$PDO) {
-            throw new \Exception("The database settings were not made correctly and the connection was not established\n Please check 'https://github.com/webrium/foxql' Documents.");
+            throw new \Exception("The database settings were not made correctly and the connection was not established\n");
         }
 
         return self::$PDO;
