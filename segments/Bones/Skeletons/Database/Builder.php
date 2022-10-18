@@ -1364,20 +1364,10 @@ class Builder
     public function update(array $values)
     {
         $this->applySelfOnlyCheck();
-        $return_model = $this->hasModel() && $this->model->isSelfOnly();
         $this->applySelfWhere();
         $this->setAction("update");
-        $query = $this->makeUpdateQueryString($values);
 
-        $return = $this->execute($query, $this->PARAMS);
-
-        if ($return_model && false === true) {
-            return (new $this->model->model())
-                ->where($this->PRIMARY_KEY, $this->model->{$this->PRIMARY_KEY})
-                ->first();
-        }
-
-        return $return;
+        return $this->execute($this->makeUpdateQueryString($values), $this->PARAMS);
     }
 
     public function delete($force = false)

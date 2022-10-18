@@ -72,8 +72,8 @@ class Validation
                         if (!empty($exceptId)) {
                             $uniqueRecord->whereNot('id', $exceptId);
                         }
-                        $uniqueRecord = $uniqueRecord->pluck('id');
-                        if (!empty($uniqueRecord['id'])) {
+                        $uniqueRecord = $uniqueRecord->pluckAssoc($columnToCheck);
+                        if (!empty($uniqueRecord) && !empty($uniqueRecord->$columnToCheck)) {
                             $this->errors[]  = $this->getErrorMsg($ruleFor, 'unique', ['attrs' => $uniqueAttrs, 'value' => $params[$ruleFor]]);
                         }
                     }

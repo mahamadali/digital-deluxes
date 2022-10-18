@@ -245,7 +245,7 @@ class Model
 
         $attributes = get_object_vars($result);
         
-        $model_obj = $this->selfBuild((new $this->model()), $attributes, $result, true);
+        $model_obj = $this->selfBuild(unserialize(serialize(new $this->model())), $attributes, $result, true);
 
         return $this->sanitize($model_obj);
     }
@@ -270,6 +270,7 @@ class Model
     public function wrapPaginated($paginated, $query_param = 'page')
     {
         $wrapped = [];
+        $model_skeleton = (new $this->model());
 
         foreach ($paginated as $key => $entry) {
             if (Str::contains($key, '__pagination')) {
@@ -279,7 +280,7 @@ class Model
 
             $attributes = (is_object($entry)) ? get_object_vars($entry) : array_keys($entry);
 
-            $model_obj = $this->selfBuild(new $this->model(), $attributes, $entry, true);
+            $model_obj = $this->selfBuild(unserialize(serialize($model_skeleton)), $attributes, $entry, true);
 
             $wrapped[] = $model_obj;
         }
