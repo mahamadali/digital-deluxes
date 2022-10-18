@@ -220,9 +220,10 @@ class Model
     public function prepareSet($entries, $wrap_as_set = true)
     {
         $result = [];
+        $model_skeleton = new $this->model();
 
         foreach ($entries as $key => $entry) {
-            $model_obj = new $this->model();
+            $model_obj = unserialize(serialize($model_skeleton));
             $model_obj = $this->build($model_obj, $entry);
             $model_obj->db->model = $model_obj;
 
