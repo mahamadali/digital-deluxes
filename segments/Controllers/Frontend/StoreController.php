@@ -87,7 +87,7 @@ class StoreController
             $products->whereRaw('CAST(price AS UNSIGNED) <= ?', [ $max_price ]);
         }
 
-		$product_limit = 12;
+		$product_limit = 5;
         $products = $products->paginate($product_limit);
 
 		//dd(\Bones\Database::getQueryLog());

@@ -134,6 +134,16 @@ class Database extends Builder
         return $primaryDB;
     }
 
+    public static function setLastExecutedQuery($query)
+    {
+        Session::set('last_executed_query', $query, true);
+    }
+
+    public static function getLastExecutedQuery()
+    {
+        return Session::get('last_executed_query', true);
+    }
+
     public static function keepQueryLog($keep_query_log = true)
     {
         Session::remove('db_query_log', true);

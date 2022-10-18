@@ -103,7 +103,9 @@ class Builder
             $stmt->execute($this->PARAMS);
         }
 
-        Database::setQueryLog($this->mapParams($query, $this->PARAMS));
+        $last_executed_query = $this->mapParams($query, $this->PARAMS);
+        Database::setQueryLog($last_executed_query);
+        Database::setLastExecutedQuery($last_executed_query);
 
         if (!$stmt) {
             $db_error = self::$PDO_CONN->errorInfo();
@@ -996,7 +998,7 @@ class Builder
         $page = (!empty(request()->get($query_param))) ? request()->get($query_param) : $page;
 
         $records = $this->page($page - 1, $take);
-        $count = Database::table($this->TABLE)->count();
+        $count = count(Database::rawQuery(preg_replace("/LIMIT (\d+) OFFSET (\d+)/", '', (string) Database::getLastExecutedQuery())));
 
         $total_pages = ceil($count / $take);
 
