@@ -1481,7 +1481,7 @@ class Builder
 
     public function getArray()
     {
-        return $this->get(true)->toArray();
+        return $this->get(true, false);
     }
 
     public function first($columns = [], $plain = false)

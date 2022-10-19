@@ -202,10 +202,10 @@ class ProductController
 	}
 
 	public function search(Request $request) {
-		$products = Product::whereLike('name', "%".$request->term."%")->skipRelationships()->orWhereLike('description', "%".$request->term."%")->whereNotLike('name', "%Kinguin%")->whereNotNull('price')->select('coverImage', 'id', 'name', 'qty', 'price', 'platform')->get();
+		$products = Product::whereLike('name', "%".$request->term."%")->skipRelationships()->orWhereLike('description', "%".$request->term."%")->whereNotLike('name', "%Kinguin%")->whereNotNull('price')->select('coverImage', 'id', 'name', 'qty', 'price', 'platform')->getArray();
 
 		$output = array();
-		if($products->count() > 0)
+		if(count($products) > 0)
 		{
 		foreach($products as $product)
 		{
