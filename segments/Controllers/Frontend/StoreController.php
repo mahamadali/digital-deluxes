@@ -31,9 +31,9 @@ class StoreController
 		$sort_by = $request->get("sort_by") ?? '';
 
         if($sort_by == 'Price Lowest') {
-			$products->orderBy('CAST(price AS DECIMAL(10,2))', 'ASC');
+			$products->orderByRaw('CAST(price AS DECIMAL(10,2))', 'ASC');
 		} else if($sort_by == 'Price Highest') {
-			$products->orderBy('CAST(price AS DECIMAL(10,2))', 'DESC');
+			$products->orderByRaw('CAST(price AS DECIMAL(10,2))', 'DESC');
 		} else if($sort_by == 'Newest') {
 			$products->orderBy('id', 'DESC');
 		} else {
@@ -48,7 +48,7 @@ class StoreController
 			$productIds = array_map(function($element) {
 				return $element;
 			},$productIds);
-            $products->whereIn('id', $productIds);
+            $products->whereRaw('id IN (?)', $productIds);
         }
 
 		if($category){
