@@ -108,7 +108,7 @@ class StoreController
 			error('404');
 
 		if($product->product_type == 'M'):
-			$productQty = count($product->manual_keys()->where('is_used', 0)->get());
+			$productQty = $product->manual_keys()->where('is_used', 0)->count();
 		endif;
 		if($product->product_type == 'K'):
 			$productQty = $product->qty;
