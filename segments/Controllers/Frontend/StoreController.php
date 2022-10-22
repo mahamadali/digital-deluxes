@@ -31,9 +31,9 @@ class StoreController
 		$sort_by = $request->get("sort_by") ?? '';
 
         if($sort_by == 'Price Lowest') {
-			$products->orderByRaw('CAST(price AS DECIMAL(10,2))', 'ASC');
+			$products->orderByRaw('CAST(price AS DECIMAL(10,2)) ASC');
 		} else if($sort_by == 'Price Highest') {
-			$products->orderByRaw('CAST(price AS DECIMAL(10,2))', 'DESC');
+			$products->orderByRaw('CAST(price AS DECIMAL(10,2)) DESC');
 		} else if($sort_by == 'Newest') {
 			$products->orderBy('id', 'DESC');
 		} else {
