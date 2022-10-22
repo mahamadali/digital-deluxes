@@ -76,7 +76,7 @@
       <li class="nav-item {{ (request()->matchesTo('/admin/support-tickets/*')) ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.support-tickets.index') }}">
           <i class="ti-list menu-icon"></i>
-          <span class="menu-title">Tickets</span>
+          <span class="menu-title">Tickets <span class="badge badge-warning" style="font-size: 14px;">{{ unreadTickers() }}</span></span>
         </a>
       </li>
 

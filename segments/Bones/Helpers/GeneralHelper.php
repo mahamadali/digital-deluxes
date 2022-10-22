@@ -10,6 +10,7 @@ use Models\PaymentMethod;
 use Models\PriceProfit;
 use Models\Product;
 use Models\Setting;
+use Models\SupportTicket;
 
 if (! function_exists('generateOTP')) {
     /**
@@ -589,5 +590,12 @@ if (!function_exists('findForRegion')) {
         }
         return '';
         
+    }
+}
+
+if (!function_exists('unreadTickers')) {
+    function unreadTickers() {
+        $unread_tickers =  SupportTicket::where('is_read', 'UNREAD')->count();
+        return $unread_tickers;
     }
 }

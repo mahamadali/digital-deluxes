@@ -891,7 +891,7 @@ class Builder
      * @param  string  $direction
      * @return $this
      */
-    public function orderBy($column, $direction = "asc")
+    public function orderBy($column, $direction = "DESC")
     {
         $column = $this->fixColumnName($column)["name"];
         $this->addToSourceArray("ORDER_BY", "ORDER BY $column $direction");

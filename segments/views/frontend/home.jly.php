@@ -20,6 +20,11 @@
                     <div class="swiper-wrapper">
 
                         @foreach($latest_products as $product):
+                            @php
+            if($product->manual_keys_available()->count() == 0 && $product->product_type == 'M'):
+                continue;
+            endif;
+            @endphp
                         <div class="swiper-slide">
                             <div class="recommend-slide">
                                 <div class="tour-slide__box">
@@ -47,6 +52,11 @@
                 <div class="swiper">
                     <div class="swiper-wrapper">
                         @foreach($tranding_products as $product):    
+                            @php
+            if($product->manual_keys_available()->count() == 0 && $product->product_type == 'M'):
+                continue;
+            endif;
+            @endphp
                         <div class="swiper-slide">
                             <div class="game-card --horizontal">
                                 <div class="game-card__box">
@@ -85,7 +95,12 @@
             <div class="js-popular">
                 <div class="swiper">
                     <div class="swiper-wrapper">
-                        @foreach($popular_products as $product):                                                
+                        @foreach($popular_products as $product):
+                            @php
+            if($product->manual_keys_available()->count() == 0 && $product->product_type == 'M'):
+                continue;
+            endif;
+            @endphp                                                
                         <div class="swiper-slide">
                             <div class="game-card">
                                 <div class="game-card__box fixed">

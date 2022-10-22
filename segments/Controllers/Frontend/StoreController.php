@@ -40,7 +40,7 @@ class StoreController
 			$products->orderByRaw('CASE 
 			WHEN regionalLimitations="Region free" THEN rand() 
 			WHEN regionalLimitations="Other" THEN rand() 
-		END', 'DESC');
+		END DESC');
 		}
 
 		if($system){

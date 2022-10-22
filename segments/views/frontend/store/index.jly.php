@@ -110,6 +110,11 @@
     </div>
     <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-4@l uk-child-width-1-3@s uk-flex-middle uk-grid-small" data-uk-grid>
         @foreach($products as $product):
+            @php
+            if($product->manual_keys_available()->count() == 0 && $product->product_type == 'M'):
+                continue;
+            endif;
+            @endphp
         <div>
             <div class="game-card">
                 <div class="game-card__box fixed">
