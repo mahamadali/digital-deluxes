@@ -4,6 +4,7 @@ namespace Controllers\Backend;
 
 use Bones\Database;
 use Bones\Request;
+use Models\Country;
 use Models\Role;
 use Models\User;
 use Models\PaymentMethod;
@@ -46,6 +47,7 @@ class UserController
 			'user' => $user,
 			'payment_methods' => $payment_methods,
 			'user_payment_methods' => $user_payment_methods,
+			'countries' => Country::get()
 		]);
 	}
 
@@ -59,6 +61,9 @@ class UserController
 			'country_code' => 'required',
 			'age' => 'required',
 			'address' => 'required',
+			'country' => 'required',
+			'city' => 'required',
+			'wallet_amount' => 'required',
 		]);
 
 		if ($validator->hasError()) {
@@ -73,6 +78,37 @@ class UserController
 		$user->age = $request->age;
 		$user->address = $request->address;
 		$user->status = $request->status;
+		$user->national_identification_id = $request->national_identification_id;
+		$user->country = $request->country;
+		$user->city = $request->city;
+		if($request->wallet_amount > $user->wallet_amount) {
+			$plus_wallet_amount = $request->wallet_amount - $user->wallet_amount;
+			$transaction = new TransactionLog();
+			$transaction->user_id = $user->id;
+			$transaction->tx_id = 'ADMIN_CREATED';
+			$transaction->currency = 'EUR';
+			$transaction->type = 'wallet';
+			$transaction->amount = $plus_wallet_amount;
+			$transaction->status = 'COMPLETED';
+			$transaction->payment_method = 'BY ADMIN';
+			$transaction->payment_method_id = '';
+			$transaction->kind_of_tx = 'CREDIT';
+			$transaction->save();
+		} else if ($user->wallet_amount > $request->wallet_amount) {
+			$minus_wallet_amount = $user->wallet_amount - $request->wallet_amount;
+			$transaction = new TransactionLog();
+			$transaction->user_id = $user->id;
+			$transaction->tx_id = 'ADMIN_CREATED';
+			$transaction->currency = 'EUR';
+			$transaction->type = 'wallet';
+			$transaction->amount = $minus_wallet_amount;
+			$transaction->status = 'COMPLETED';
+			$transaction->payment_method = 'BY ADMIN';
+			$transaction->payment_method_id = '';
+			$transaction->kind_of_tx = 'DEBIT';
+			$transaction->save();
+		}
+		$user->wallet_amount = $request->wallet_amount;
 
 		if ($request->hasFile('profile_image')) {
             $file = $request->files('profile_image');

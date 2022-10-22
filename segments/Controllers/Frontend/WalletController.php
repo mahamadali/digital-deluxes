@@ -15,7 +15,7 @@ class WalletController
 	public function index(Request $request)
 	{
 		$paymentMethods = PaymentMethod::where('type', 'both')->orWhere('type', 'wallet')->where('status', 'ACTIVE')->get();
-		$transactions = TransactionLog::where('type', 'wallet')->orderBy('id')->get();
+		$transactions = TransactionLog::where('type', 'wallet')->orderBy('id', 'DESC')->get();
 		return render('frontend/wallet/index',['paymentMethods' => $paymentMethods, 'transactions' => $transactions]);
 		
 	}

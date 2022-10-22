@@ -58,6 +58,27 @@
             <label for="address">Address</label>
             <input type="text" class="form-control" id="address" name="address" placeholder="Address" value="{{ $user->address }}">
           </div>
+          <div class="form-group">
+            <label for="age">National Identification ID</label>
+            <input type="text" class="form-control" id="national_identification_id" name="national_identification_id" placeholder="National Identification ID" value="{{ $user->national_identification_id }}">
+          </div>
+          <div class="form-group">
+            <label for="country">Country</label>
+            <select class="form-control" name="country" required>
+                <option value="">{{ trans('checkout.country') }}</option>
+                @foreach($countries as $country):
+                    <option value="{{ $country->id }}" {{ $user->country == $country->id ? 'selected' : '' }}>{{ $country->country_name }}</option>
+                @endforeach
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="city">City</label>
+            <input type="text" class="form-control" id="city" name="city" placeholder="City" value="{{ $user->city }}">
+          </div>
+          <div class="form-group">
+            <label for="wallet_amount">Wallet Amount</label>
+            <input type="text" class="form-control" id="wallet_amount" name="wallet_amount" placeholder="Wallet Amount" value="{{ $user->wallet_amount }}">
+          </div>
           <div class="form-group row">
             <label class="col-sm-3 col-form-label">Status</label>
             <div class="col-sm-4">
