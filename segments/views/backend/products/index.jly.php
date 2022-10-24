@@ -38,6 +38,7 @@
                 <th>Name</th>
                 <th>Price</th>
                 <th>Qty</th>
+                <th>Product Type</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -49,6 +50,7 @@
                 <td>{{ $product->name }}</td>
                 <td>€{{ $product->price }}</td>
                 <td>{{ $product->qty }}</td>
+                <td>{{ $product->product_type }}</td>
                 <td>
 
                   @if(!empty($product->isInSlider())):

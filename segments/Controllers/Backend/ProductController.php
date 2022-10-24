@@ -141,7 +141,6 @@ class ProductController
 		$product_videos = ProductVideo::where('product_id',$product->id)->get();
 		$product_system_requirements = ProductSystemRequirement::where('product_id',$product->id)->get();
 		$product_keys = ProductKeys::where('product_id',$product->id)->where('is_used', 0)->get();
-		
 		return render('backend/products/edit', [
 			'product' => $product,
 			'tags' => $tags,
@@ -229,7 +228,6 @@ class ProductController
 				$product_system_requirement->save();
 			}
 		}
-
 		if(count($request->product_key) != 0){
 			foreach($request->product_key as $key => $pkey){
 				$product_key = new ProductKeys();

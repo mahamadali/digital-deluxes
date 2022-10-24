@@ -20,7 +20,7 @@ trait SelfResolve
 
         foreach ($this->dynamic_attributes as $attribute) {
             if (!in_array($attribute, array_merge($this->attaches, $this->reserved_props)))
-                if (!empty($this->$attribute))
+                if (isset($this->$attribute))
                     $modelData[$attribute] = $this->$attribute;
         }
 

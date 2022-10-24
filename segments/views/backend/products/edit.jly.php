@@ -356,7 +356,7 @@
         
         <h5 class="mt-3">Product keys</h5>
 
-        @if(!empty($product_keys)):
+        @if($product_keys->count()):
 
                 @foreach($product_keys as $key => $pkey):
                     <div class="row product_key_container">
