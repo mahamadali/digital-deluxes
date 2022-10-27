@@ -166,8 +166,9 @@ class PaymentController
                                 $game_key->offerId = NULL;
                                 $game_key->save();
 
-                                $productKey->is_used = 1;
-                                $productKey->save();
+                                $productKeyTable = ProductKeys::find($productKey->id);
+                                $productKeyTable->is_used = 1;
+                                $productKeyTable->save();
                             }
                         }
                     }
@@ -644,8 +645,9 @@ class PaymentController
                         $game_key->offerId = NULL;
                         $game_key->save();
 
-                        $productKey->is_used = 1;
-						$productKey->save();
+                        $productKeyTable = ProductKeys::find($productKey->id);
+                        $productKeyTable->is_used = 1;
+						$productKeyTable->save();
                     }
                 }
             }
@@ -914,6 +916,7 @@ class PaymentController
 
                 if(!empty($productKeys)) {
                     foreach($productKeys as $productKey) {
+                        
                         $game_key = new GameKey();
                         $game_key->order_id = $mannual_order->id;
                         $game_key->product_id = $manualOrderItems->product_id;
@@ -924,8 +927,9 @@ class PaymentController
                         $game_key->offerId = NULL;
                         $game_key->save();
 
-                        $productKey->is_used = 1;
-						$productKey->save();
+                        $productKeyTable = ProductKeys::find($productKey->id);
+                        $productKeyTable->is_used = 1;
+						$productKeyTable->save();
                     }
                 }
             }
