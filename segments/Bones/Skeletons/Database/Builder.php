@@ -1363,11 +1363,17 @@ class Builder
 
     public function update(array $values)
     {
-        $this->applySelfOnlyCheck();
+        $return_model = $this->hasModel() && $this->model->isSelfOnly();
         $this->applySelfWhere();
         $this->setAction("update");
-
-        return $this->execute($this->makeUpdateQueryString($values), $this->PARAMS);
+        $query = $this->makeUpdateQueryString($values);
+        $return = $this->execute($query, $this->PARAMS);
+        if ($return_model) {
+            return (new $this->model->model())
+                ->where($this->PRIMARY_KEY, $this->model->{$this->PRIMARY_KEY})
+                ->first();
+        }
+        return $return;
     }
 
     public function delete($force = false)
