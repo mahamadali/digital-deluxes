@@ -119,7 +119,7 @@
           
         </p>
 
-        @if(!empty($user_payment_methods)):
+        @if($user_payment_methods->count() > 0):
 
           @foreach($user_payment_methods as $method):
 
