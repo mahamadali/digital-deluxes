@@ -202,7 +202,7 @@ class CheckoutController
 					$mannual_order_item->product_qty = $manualOrderItems->product_qty;
 					$mannual_order_item->save();
 
-					$productKeys = ProductKeys::where('product_id', $manualOrderItems->product_id)->where('is_used', 0)->get($manualOrderItems->product_qty);
+					$productKeys = ProductKeys::where('product_id', $manualOrderItems->product_id)->where('is_used', 0)->limit($manualOrderItems->product_qty)->get();
 
 					if(!empty($productKeys)) {
 						foreach($productKeys as $productKey) {

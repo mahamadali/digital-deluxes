@@ -252,7 +252,7 @@ class ProductController
 	}
 
 	public function syncProductImages(Request $request) {
-		$products = Product::select(['kinguinId'])->whereNull('coverImage')->get(200);
+		$products = Product::select(['kinguinId'])->whereNull('coverImage')->limit(200)->get();
 		$count = 0;
 		foreach($products as $product) {
 
@@ -447,7 +447,7 @@ class ProductController
 	}
 
 	public function updateProductDetails(Request $request) {
-		$products = Product::select(['kinguinId'])->whereNull('activationDetails')->where('product_type', 'K')->get(200);
+		$products = Product::select(['kinguinId'])->whereNull('activationDetails')->where('product_type', 'K')->limit(200)->get();
 		$count = 0;
 		foreach($products as $product) {
 			
