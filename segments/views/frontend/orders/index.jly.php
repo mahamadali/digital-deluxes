@@ -23,7 +23,7 @@
                     </tr>
                 </thead>
             <tbody>
-            @if (count($orders) > 0):
+            @if ($orders->count() > 0):
                 @foreach($orders as $order):
                     <tr>
                         <td>{{ $order->id }}</td>

@@ -10,9 +10,9 @@ use Models\Order;
 class OrderController
 {
     public function index(Request $request) {
-		
+		$orders = Order::where('user_id', auth()->id)->orderBy('id', 'DESC')->get();
 		return render('frontend/orders/index', [
-			'orders' => user()->orders
+			'orders' => $orders
 		]);
 	}
 
