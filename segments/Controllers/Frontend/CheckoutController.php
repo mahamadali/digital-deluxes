@@ -215,9 +215,9 @@ class CheckoutController
 							$game_key->kinguinId = NULL;
 							$game_key->offerId = NULL;
 							$game_key->save();
-
-							$productKey->is_used = 1;
-							$productKey->save();
+							$productKeyTable = ProductKeys::find($productKey->id);
+							$productKeyTable->is_used = 1;
+							$productKeyTable->save();
 						}
 					}
 				}
@@ -258,6 +258,7 @@ class CheckoutController
 				$products = [];
 				foreach($orderProducts as $orderProduct) {
 					// $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
+					$offerId = $this->findCheepestOfferId($orderProduct->product->kinguinId);
 					// $keyTypeResponse = $this->fetchKeyType($orderProduct);
 					// $keyTypeResponse = json_decode($keyTypeResponse);
 					// $offerId = $this->fetchOfferId($keyTypeResponse);
@@ -266,9 +267,9 @@ class CheckoutController
 						'kinguinId' => $orderProduct->product->kinguinId,
 						'qty' => $orderProduct->product_qty,
 						'name' => $orderProduct->product_name,
-						'price' => $orderProduct->product_price,
+						'price' => $orderProduct->product->price_original_value,
 						// 'keyType' => 'text',
-						// 'offerId' => $offerId,
+						'offerId' => $offerId,
 					];
 				}
 				
@@ -471,4 +472,15 @@ class CheckoutController
 
 		return redirect()->withFlashSuccess('Coupon removed successfully!')->back();
 	}
+
+	public function findCheepestOfferId($kinguinId) {
+        $product_offers = json_decode(getProduct($kinguinId), true)['offers'] ?? [];
+		if(!empty($product_offers)) {
+            $prices = array_column($product_offers, 'price');
+            $min_offer = $product_offers[array_search(min($prices), $prices)];
+            return $min_offer['offerId'];
+        } else {
+            return '';
+        }
+    }
 }
