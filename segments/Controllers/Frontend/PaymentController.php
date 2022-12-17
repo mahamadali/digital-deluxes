@@ -209,7 +209,8 @@ class PaymentController
         
                     $products = [];
                     foreach($orderProducts as $orderProduct) {
-                        $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
+                        // $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
+                        $offerId = $this->findCheepestOfferId($orderProduct->product->kinguinId);
                         // $keyTypeResponse = $this->fetchKeyType($orderProduct);
                         // $keyTypeResponse = json_decode($keyTypeResponse);
                         // $offerId = $this->fetchOfferId($keyTypeResponse);
@@ -687,7 +688,8 @@ class PaymentController
     
             $products = [];
             foreach($orderProducts as $orderProduct) {
-                $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
+                // $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
+                $offerId = $this->findCheepestOfferId($orderProduct->product->kinguinId);
                 // $keyTypeResponse = $this->fetchKeyType($orderProduct);
                 // $keyTypeResponse = json_decode($keyTypeResponse);
                 // $offerId = $this->fetchOfferId($keyTypeResponse);
@@ -969,7 +971,8 @@ class PaymentController
     
             $products = [];
             foreach($orderProducts as $orderProduct) {
-                $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
+                // $offerId = json_decode($orderProduct->product->cheapestOfferId)[0];
+                $offerId = $this->findCheepestOfferId($orderProduct->product->kinguinId);
                 // $keyTypeResponse = $this->fetchKeyType($orderProduct);
                 // $keyTypeResponse = json_decode($keyTypeResponse);
                 // $offerId = $this->fetchOfferId($keyTypeResponse);
@@ -1117,6 +1120,17 @@ class PaymentController
 
     public function coinbase_order_success(Request $request, PaymentMethod $paymentMethod) {
         return redirect(route('frontend.orders.index'))->withFlashSuccess('Thanks for payment. we will update your order shortly.')->go();
+    }
+
+    public function findCheepestOfferId($kinguinId) {
+        $product_offers = json_decode(getProduct($kinguinId), true)['offers'] ?? [];
+		if(!empty($product_offers)) {
+            $prices = array_column($product_offers, 'price');
+            $min_offer = $product_offers[array_search(min($prices), $prices)];
+            return $min_offer['offerId'];
+        } else {
+            return '';
+        }
     }
     
 }
