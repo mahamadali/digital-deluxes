@@ -454,12 +454,12 @@ if (! function_exists('getRegionCountries')) {
 if (! function_exists('platforms')) {
     function platforms() {
         $products = Product::select(['platform'])->whereNotLike('platform', '%Kinguin%')->whereNotNull('platform')->groupBy('platform')->get()->toArray();
-        // $products[] = ['platform' => 'PSN Card'];
+        $products[] = ['platform' => 'PSN Card'];
 
         
-        // usort($products, function($a, $b) {
-        //     return strcmp($a["platform"], $b["platform"]);
-        // });
+        usort($products, function($a, $b) {
+            return strcmp($a["platform"], $b["platform"]);
+        });
         
         return $products;
     }

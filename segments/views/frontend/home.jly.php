@@ -10,9 +10,75 @@
 <meta property="og:image"              content="https://digitaldeluxes.com/assets/img/2.png" />
 @endblock
 
+@block('styles')
+<style type="text/css">
+    .wrapper_tabcontent .tabcontent {
+       display: none !important;
+    }
+
+    .wrapper_tabcontent .tabcontent.active {
+       display: block !important;
+    }
+
+    .wrapper_tabcontent .tabcontent p {
+       margin-top: 20px;
+    }
+
+    .home-bottom-tabs .tabs .tablinks {
+        border: none;
+    }
+
+    .home-bottom-tabs .tabs .tablinks.active {
+        border-bottom: 1px solid #f46119;
+    }
+
+    .home-bottom-tabs .tabs .tablinks p {
+        color: #F46119;
+        font-size: 17px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 1.31;
+        transition: all 0.25s linear;
+    }
+    .dMWgxv {
+        display: block;
+        position: relative;
+        margin-bottom: 3rem;
+        border-radius: 1.2rem;
+        overflow: hidden;
+    }
+
+    .dMWgxv a {
+        background-color: transparent;
+    }
+
+    .epXOGW img {
+        max-width: 100%;
+    }
+
+    .gNfMiK {
+/*        position: absolute;*/
+        bottom: 0px;
+        width: 100%;
+        min-height: 2rem;
+        padding: 0rem;
+        font-size: 0.8rem;
+        line-height: 2rem;
+        text-align: center;
+        font-weight: bold;
+        color: rgb(255, 255, 255);
+        text-transform: uppercase;
+        transition: all 0.2s ease-in-out 0s;
+        background: rgb(34 33 33);
+        opacity: 1
+    }
+</style>
+@endblock
+
 @block("content")
 <main class="page-main">
     <div class="uk-grid" data-uk-grid>
+
         <div class="uk-width-2-3@l uk-width-3-3@m uk-width-3-3@s">
             <h3 class="uk-text-lead">{{ trans('homepage.recommended_featured') }}</h3>
             <div class="js-recommend">
@@ -129,6 +195,128 @@
                 </div>
             </div>
         </div>
+        
+
+        <div class="uk-width-1-1">
+            <div class="about">
+                <a class="bg_links social portfolio" href="https://www.rafaelalucas.com" target="_blank">
+                    <span class="icon"></span>
+                </a>
+                <a class="bg_links social dribbble" href="https://dribbble.com/rafaelalucas" target="_blank">
+                    <span class="icon"></span>
+                </a>
+                <a class="bg_links social linkedin" href="https://www.linkedin.com/in/rafaelalucas/" target="_blank">
+                    <span class="icon"></span>
+                </a>
+                <a class="bg_links logo"></a>
+            </div>
+                <!-- end about -->
+
+            <section id="wrapper" class="home-bottom-tabs">
+                <div class="content">
+                    <!-- Tab links -->
+                    <div class="tabs">
+                        <button class="tablinks active" data-country="Genre"><p data-title="Genre">Genre</p></button>
+                        <button class="tablinks" data-country="Platform"><p data-title="Platform">Platform</p></button>
+                        <a href="{{ route('frontend.store.list') }}?genre=Software" style="margin-left: 12px;">Software</a>
+                        <a href="{{ route('frontend.store.list') }}?genre=Subscription" style="margin-left: 12px;">Subscription</a>
+                    </div>
+
+                    <!-- Tab content -->
+                    <div class="wrapper_tabcontent">
+                        <div id="Genre" class="tabcontent active">
+                            <div class="uk-grid">
+                                @foreach(productGenres() as $genre):
+                                @php
+                                $genreImageName = strtolower(str_replace(' ', '-', $genre));
+                                $genreImageName = str_replace('&', 'and', $genreImageName);
+                                if($genreImageName == 'co-op'):
+                                $genreImageName = 'cooperative';
+                                endif;
+                                @endphp
+                                <div class="sc-svwmk5-4 epXOGW uk-width-1-6">
+                                    <a class="sc-svwmk5-2 dMWgxv">
+                                        <a href="{{ route('frontend.store.list') }}?genre={{ $genre }}">
+                                            <img src="https://static.kinguin.net/media/wysiwyg/genres/{{ $genreImageName }}.jpg" alt="{{ $genre }}">
+                                            <div class="sc-svwmk5-3 gNfMiK">{{ $genre }}</div>
+                                        </a>
+                                    </a>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div id="Platform" class="tabcontent">
+                            <div class="uk-grid">
+                                @foreach(platforms() as $platformInfo):
+                                @php
+                                $platform = $platformInfo['platform'];
+                                
+                                $platformImageName = strtolower(str_replace(' ', '-', $platform));
+                                $platformImageName = strtolower(str_replace('.', '-', $platformImageName));
+                                $platformImageName = str_replace('&', 'and', $platformImageName);
+                                if($platformImageName == 'co-op'):
+                                $platformImageName = 'cooperative';
+                                endif;
+                                @endphp
+                                <div class="sc-svwmk5-4 epXOGW uk-width-1-6">
+                                    <a class="sc-svwmk5-2 dMWgxv">
+                                        <a href="{{ route('frontend.store.list') }}?category={{ $platform }}">
+                                            @if($platformImageName == 'psn-card'):
+                                            <img src="https://static.kinguin.net/media/wysiwyg/genres/{{ $platformImageName }}.jpg" alt="{{ $platform }}">
+                                            @elseif(str_contains($platformImageName, 'xbox')):
+                                            <img src="https://static.kinguin.net/media/wysiwyg/platforms/xbox-one.png" alt="{{ $platform }}">
+                                            @else
+                                            <img src="https://static.kinguin.net/media/wysiwyg/platforms/{{ $platformImageName }}.png" alt="{{ $platform }}">
+                                            @endif
+                                            
+                                            <div class="sc-svwmk5-3 gNfMiK">{{ $platform }}</div>
+                                        </a>
+                                    </a>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     </div>
 </main>
+@endblock
+
+@block('scripts')
+<script>
+    $(document).ready(function() {
+        // tabs
+
+        var tabLinks = document.querySelectorAll(".tablinks");
+        var tabContent = document.querySelectorAll(".tabcontent");
+
+
+        tabLinks.forEach(function(el) {
+        el.addEventListener("click", openTabs);
+        });
+
+
+        function openTabs(el) {
+        var btnTarget = el.currentTarget;
+        var country = btnTarget.dataset.country;
+        console.log(country)
+
+        tabContent.forEach(function(el) {
+            el.classList.remove("active");
+        });
+
+        tabLinks.forEach(function(el) {
+            el.classList.remove("active");
+        });
+
+        document.querySelector("#" + country).classList.add("active");
+        
+        btnTarget.classList.add("active");
+        }
+    })
+
+</script>
 @endblock
