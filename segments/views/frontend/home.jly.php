@@ -229,15 +229,24 @@
                                 @foreach(productGenres() as $genre):
                                 @php
                                 $genreImageName = strtolower(str_replace(' ', '-', $genre));
+                                $genreImageName = strtolower(str_replace('-/-', '-', $genreImageName));
                                 $genreImageName = str_replace('&', 'and', $genreImageName);
                                 if($genreImageName == 'co-op'):
                                 $genreImageName = 'cooperative';
+                                elseif($genreImageName == 'adult-games'):
+                                $genreImageName = 'software';
                                 endif;
                                 @endphp
                                 <div class="sc-svwmk5-4 epXOGW uk-width-1-6">
                                     <a class="sc-svwmk5-2 dMWgxv">
                                         <a href="{{ route('frontend.store.list') }}?genre={{ $genre }}">
+                                            @if(str_contains($genreImageName, 'steam')):
+                                            <img src="https://static.kinguin.net/media/wysiwyg/platforms/steam.jpg" alt="{{ $genre }}">
+                                            @elseif(str_contains($genreImageName, 'xbox')):
+                                            <img src="https://static.kinguin.net/media/wysiwyg/platforms/xbox-one.png" alt="{{ $genre }}">
+                                            @else
                                             <img src="https://static.kinguin.net/media/wysiwyg/genres/{{ $genreImageName }}.jpg" alt="{{ $genre }}">
+                                            @endif
                                             <div class="sc-svwmk5-3 gNfMiK">{{ $genre }}</div>
                                         </a>
                                     </a>
@@ -263,9 +272,21 @@
                                     <a class="sc-svwmk5-2 dMWgxv">
                                         <a href="{{ route('frontend.store.list') }}?category={{ $platform }}">
                                             @if($platformImageName == 'psn-card'):
-                                            <img src="https://static.kinguin.net/media/wysiwyg/genres/{{ $platformImageName }}.jpg" alt="{{ $platform }}">
+                                            <img src="https://static.kinguin.net/media/wysiwyg/genres/{{ $platformImageName }}.jpg" alt="{{ $platform }}">@elseif($platformImageName == 'bethesda'):
+                                            <img src="https://static.kinguin.net/media/images/other/_bethesda.png" alt="{{ $platform }}">@elseif($platformImageName == 'mog-station'):
+                                            <img src="https://static.kinguin.net/media/images/other/_mogstation_light_grey.png" alt="{{ $platform }}">
                                             @elseif(str_contains($platformImageName, 'xbox')):
                                             <img src="https://static.kinguin.net/media/wysiwyg/platforms/xbox-one.png" alt="{{ $platform }}">
+                                            @elseif(str_contains($platformImageName, 'epic')):
+                                            <img src="https://static.kinguin.net/media/wysiwyg/platforms/epic.png" alt="{{ $platform }}">
+                                            @elseif(str_contains($platformImageName, 'playstation')):
+                                            <img src="https://static.kinguin.net/media/wysiwyg/platforms/playstation-4.png" alt="{{ $platform }}">
+                                            @elseif(str_contains($platformImageName, 'rockstar')):
+                                            <img src="https://static.kinguin.net/media/images/other/_rockstar.png" alt="{{ $platform }}">
+                                            @elseif(str_contains($platformImageName, 'steam')):
+                                            <img src="https://static.kinguin.net/media/wysiwyg/platforms/steam.jpg" alt="{{ $platform }}">
+                                            @elseif(str_contains($platformImageName, 'windows')):
+                                            <img src="https://static.kinguin.net/media/wysiwyg/genres/software.jpg" alt="{{ $platform }}">
                                             @else
                                             <img src="https://static.kinguin.net/media/wysiwyg/platforms/{{ $platformImageName }}.png" alt="{{ $platform }}">
                                             @endif
