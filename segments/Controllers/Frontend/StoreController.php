@@ -52,7 +52,10 @@ class StoreController
         }
 
 		if($category){
-			$products->whereLike('platform', '%'.$category.'%');
+			if($category == 'PSN Card')
+				$products->whereLike('genres', '%PSN Card%');
+			else
+				$products->whereLike('platform', '%'.$category.'%');
         }
 
 		if($language){
