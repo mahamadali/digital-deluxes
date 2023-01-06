@@ -73,9 +73,17 @@
         opacity: 1
     }
 
+    .m-mt-25 {
+        margin-top: 10px;
+    }
+
     @media only screen and (max-width: 600px) {
         .home-bottom-tabs {
             margin-top: 40px;
+        }
+
+        .m-mt-25 {
+            margin-top: 25px !important;
         }
     }
 </style>
@@ -118,7 +126,7 @@
                 </div>
             </div>
         </div>
-        <div class="uk-width-1-3@l uk-width-3-3@m uk-width-3-3@s">
+        <div class="uk-width-1-3@l uk-width-3-3@m uk-width-3-3@s m-mt-25">
             <h3 class="uk-text-lead">{{ trans('homepage.trending_now') }}</h3>
             <div class="js-trending">
                 <div class="swiper">
@@ -162,7 +170,7 @@
                 </div>
             </div>
         </div>
-        <div class="uk-width-1-1">
+        <div class="uk-width-1-1 m-mt-25">
             <h3 class="uk-text-lead">{{ trans('homepage.most_popular') }}</h3>
             <div class="js-popular">
                 <div class="swiper">
