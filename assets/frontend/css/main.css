@@ -1681,11 +1681,11 @@ body.dark-theme a:hover {
 }
 
 .page-header__content .uk-subnav-pill > * > :first-child {
-    padding: 5px 10px;
+    padding: 5px 5px;
     background: 0 0;
     color: #222;
     font-weight: 500;
-    font-size: 12px;
+    font-size: 10px;
 }
 
 .uk-modal-dialog {

@@ -224,8 +224,8 @@
                     <div class="tabs">
                         <button class="tablinks active" data-country="Genre"><p data-title="Genre">Genre</p></button>
                         <button class="tablinks" data-country="Platform"><p data-title="Platform">Platform</p></button>
-                        <a href="{{ route('frontend.store.list') }}?genre=Software" style="margin-left: 12px;">Software</a>
-                        <a href="{{ route('frontend.store.list') }}?genre=Subscription" style="margin-left: 12px;">Subscription</a>
+                        <a href="{{ route('frontend.store.list') }}?genre=Software" style="margin-left: 8px;">Software</a>
+                        <a href="{{ route('frontend.store.list') }}?genre=Subscription" style="margin-left: 8px;">Subscription</a>
                     </div>
 
                     <!-- Tab content -->
