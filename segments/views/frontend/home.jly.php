@@ -72,6 +72,12 @@
         background: rgb(34 33 33);
         opacity: 1
     }
+
+    @media only screen and (max-width: 600px) {
+        .home-bottom-tabs {
+            margin-top: 40px;
+        }
+    }
 </style>
 @endblock
 
@@ -225,7 +231,7 @@
                     <!-- Tab content -->
                     <div class="wrapper_tabcontent">
                         <div id="Genre" class="tabcontent active">
-                            <div class="uk-grid">
+                            <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-4@l uk-child-width-1-3@s uk-flex-middle uk-grid-small">
                                 @foreach(productGenres() as $genre):
                                 @php
                                 $genreImageName = strtolower(str_replace(' ', '-', $genre));
@@ -237,7 +243,7 @@
                                 $genreImageName = 'software';
                                 endif;
                                 @endphp
-                                <div class="sc-svwmk5-4 epXOGW uk-width-1-6">
+                                <div class="sc-svwmk5-4 epXOGW uk-width-1-6@l uk-width-1-2">
                                     <a class="sc-svwmk5-2 dMWgxv">
                                         <a href="{{ route('frontend.store.list') }}?genre={{ $genre }}">
                                             @if(str_contains($genreImageName, 'steam')):
@@ -256,7 +262,7 @@
                         </div>
 
                         <div id="Platform" class="tabcontent">
-                            <div class="uk-grid">
+                            <div class="uk-grid uk-child-width-1-6@xl uk-child-width-1-4@l uk-child-width-1-3@s uk-flex-middle uk-grid-small">
                                 @foreach(platforms() as $platformInfo):
                                 @php
                                 $platform = $platformInfo['platform'];
@@ -268,7 +274,7 @@
                                 $platformImageName = 'cooperative';
                                 endif;
                                 @endphp
-                                <div class="sc-svwmk5-4 epXOGW uk-width-1-6">
+                                <div class="sc-svwmk5-4 epXOGW uk-width-1-6@l uk-width-1-2">
                                     <a class="sc-svwmk5-2 dMWgxv">
                                         <a href="{{ route('frontend.store.list') }}?category={{ $platform }}">
                                             @if($platformImageName == 'psn-card'):
