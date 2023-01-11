@@ -52,10 +52,16 @@ class StoreController
         }
 
 		if($category){
-			if($category == 'PSN Card')
+			if($category == 'PSN Card') {
 				$products->whereLike('genres', '%PSN Card%');
-			else
+			}
+			else {
 				$products->whereLike('platform', '%'.$category.'%');
+				$playstation_cats = ['PlayStation 3', 'PlayStation 4', 'PlayStation 5'];
+				if(in_array($category, $playstation_cats)) {
+					$products->whereNotLike('genres', '%PSN Card%');	
+				}
+			}
         }
 
 		if($language){
