@@ -29,8 +29,7 @@
         <table id="order-listing" class="table">
           <thead>
             <tr>
-                <td>#</td>
-                <td>Order #</td>
+                <td></td>
                 <td>User</td>
                 <td>Kinguin Order #</td>
                 <td>Transaction #</td>
@@ -46,7 +45,6 @@
               @foreach($orders as $order):
                       <tr>
                           <td><input type="checkbox" name="delete_order" id="delete_order" class="delete_order" value="{{$order->id}}"></td>
-                          <td>{{ $order->id }}</td>
                           <td>{{ $order->user->fullName }} #{{ $order->user->id }}</td>
                           <td>{{ $order->kg_orderid }}</td>
                           <td>{{ $order->transaction_id }}</td>
@@ -55,7 +53,10 @@
                           <td>{{ $order->order_type }}</td>
                           <td>{{ date('M d, Y, H:i', strtotime($order->created_at)) }}</td>
                           <td>
-                              <a href="{{ route('admin.orders.view', ['order' => $order->id]) }}" class="btn btn-sm btn-info">View</a>
+                              <a href="{{ route('admin.orders.view', ['order' => $order->id]) }}" class="btn btn-sm btn-info"><i class="ti-eye"></i> View</a>
+                              @if($order->status == 'APPROVED' && $order->order_type == 'K' && empty($order->kg_orderid)):
+                                <a href="{{ route('admin.orders.resend', ['order' => $order->id]) }}" class="btn btn-sm btn-primary"><i class="ti-game"></i> Resend Order</a>
+                              @endif
                           </td>
                       </tr>
                 @endforeach

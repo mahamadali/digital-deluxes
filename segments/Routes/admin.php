@@ -46,6 +46,7 @@ Router::bunch('/admin', ['as' => 'admin.', 'barrier' => [IsAuthenticated::class]
 		Router::get('/', [OrderController::class, 'index'])->name('index');
 		Router::bunch('/{order}', ['as' => ''], function () {
 			Router::get('/view', [OrderController::class, 'view'])->name('view');
+			Router::get('/resend', [OrderController::class, 'resend'])->name('resend');
 		});
 		Router::post('/delete', [ OrderController::class, 'delete' ])->name('delete');
 	});
