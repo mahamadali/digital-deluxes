@@ -202,10 +202,10 @@ class ProductController
 	}
 
 	public function search(Request $request) {
-		$products = Product::whereLike('name', "%".$request->term."%")->skipRelationships()->orWhereLike('description', "%".$request->term."%")->whereNotLike('name', "%Kinguin%")->whereNotNull('price')->select('coverImage', 'id', 'name', 'qty', 'price', 'platform')->limit(15)->orderByRaw('name ASC, description ASC')->getArray();
+		$products = Product::whereLike('name', "%".$request->term."%")->skipRelationships()->orWhereLike('description', "%".$request->term."%")->whereNotLike('name', "%Kinguin%")->whereNotNull('price')->select('coverImage', 'id', 'name', 'qty', 'price', 'platform')->limit(15)->orderByRaw('name ASC, description ASC')->get();
 
 		$output = array();
-		if(count($products) > 0)
+		if($products->count() > 0)
 		{
 		foreach($products as $product)
 		{
@@ -213,7 +213,7 @@ class ProductController
 			continue;	
 		}
 		$html = "<table style='width:100%;'>";
-		$html .= "<tr>";
+		$html .= "<tr data-url=". url('store/view/'.$product->id.'/'.$product->slug) ." class='searched-product-link'>";
 		$html .= "<td width='70'>";
 		$html .= '<img src="'.$product->coverImage.'" width="50" />';
 		$html .= "</td>";

@@ -282,6 +282,10 @@ $( function() {
                 $('#page-preloader').show();
                 location.reload();
             });
+
+            $(document).on('click', '.searched-product-link', function() {
+                window.location.href = $(this).data('url');
+            });
         </script>
         @plot('scripts')
         @include('layout/alert')
